@@ -17,6 +17,7 @@ void main()
   char line[256];
 
   umask(0);
+  srand(time(0));
 
   fd = open("pic.ppm", O_CREAT | O_TRUNC | O_WRONLY, 0666);
   
@@ -34,6 +35,12 @@ void main()
     g += random() % 21;
     b -= 10;
     b += random() % 21;
+    r %= maxc;
+    if(r < 0){r = 0;}
+    g %= maxc;
+    if(g < 0){g = 0;}
+    b %= maxc;
+    if(b < 0){b = 0;}
     for(y = 0; y < yres; y++)
     {
       sprintf(line, "%d %d %d ", r, g, b);
