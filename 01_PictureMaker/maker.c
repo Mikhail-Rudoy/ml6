@@ -6,9 +6,9 @@
 void main()
 {
   int fd;
-  int r;
-  int g;
-  int b;
+  int r = 0;
+  int g = 0;
+  int b = 0;
   int x;
   int y;
   int xres = 400;
@@ -24,8 +24,6 @@ void main()
   sprintf(line, "P3 \n%d %d %d \n", xres, yres, maxc);
 
   write(fd, line, strlen(line));
-
-  r = g = b = 0;
 
   for(x = 0; x < xres; x++)
   {
