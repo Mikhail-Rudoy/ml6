@@ -16,7 +16,7 @@ int main()
   double x = 20;
   double y = 250;
   double x2, y2;
-  double i = 2;
+  double i = .1;
 
   srand(time(0));
 
@@ -33,7 +33,8 @@ int main()
   }
   while(!(x < 20.1 && x > 19.9 && y < 250.1 && y > 249.9));
   
-  display(s); 
+  display(s);
+  save_extension(s, "pic.ppm");
 }
 
 void randomizeColor(color* c)
