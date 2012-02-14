@@ -16,7 +16,7 @@ int main()
   double x = 20;
   double y = 250;
   double x2, y2;
-  double i = 2;
+  double i = 1;
 
   srand(time(0));
 
@@ -28,8 +28,6 @@ int main()
     y2 = 250 + (sin(i) * (x - 250) + cos(i) * (y - 250));
     
     draw_line((int)x, (int)y, (int)x2, (int)y2, s, c);
-    
-    printf("%f\n", x2);
 
     x = x2;
     y = y2;
