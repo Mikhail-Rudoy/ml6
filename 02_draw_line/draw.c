@@ -18,28 +18,28 @@ void draw_line(int x0, int y0, int x1, int y1, screen s, color c)
   
   if(dx == 0)//vertical line
   {
-    for(y = (dy > 0) ? y0 : y1; y <= y1 && y <= y0; y++)
+    for(y = (dy > 0) ? y0 : y1; y <= y1 || y <= y0; y++)
     {
       plot(s, c, x0, y);
     }
   }
   else if(dy == 0)//horizontal line
   {
-    for(x = (dx > 0) ? x0 : x1; x <= x1 && x <= x0; x++)
+    for(x = (dx > 0) ? x0 : x1; x <= x1 || x <= x0; x++)
     {
       plot(s, c, x, y0);
     }
   }
   else if(dy == dx)//diagonal top-left/bottom-right
   {
-    for(x = (dx > 0) ? x0 : x1, y = (dy > 0) ? y0 : y1; x <= x1 && x <= x0; x++, y++)
+    for(x = (dx > 0) ? x0 : x1, y = (dy > 0) ? y0 : y1; x <= x1 || x <= x0; x++, y++)
     {
       plot(s, c, x, y);
     }
   }
   else if(dy + dx == 0)//diagonal top-right/bottom-left
   {
-    for(x = (dx > 0) ? x0 : x1, y = (dy < 0) ? y0 : y1; x <= x1 && x <= x0; x++, y--)
+    for(x = (dx > 0) ? x0 : x1, y = (dy < 0) ? y0 : y1; x <= x1 || x <= x0; x++, y--)
     {
       plot(s, c, x, y);
     }
@@ -66,7 +66,7 @@ void draw_line(int x0, int y0, int x1, int y1, screen s, color c)
       for(x = x0, y = y0; x <= x1; x++)
       {
 	plot(s, c, x, y);
-	if(d < 0)
+	if(d > 0)
 	{
 	  y--;
 	  d = d - dx;
@@ -80,7 +80,7 @@ void draw_line(int x0, int y0, int x1, int y1, screen s, color c)
       for(y = y0, x = x0; y <= y1; y++)
       {
 	plot(s, c, x, y);
-	if(d < 0)
+	if(d > 0)
 	{
 	  x--;
 	  d = d - dy;
@@ -94,7 +94,7 @@ void draw_line(int x0, int y0, int x1, int y1, screen s, color c)
       for(x = x0, y = y0; x <= x1; x++)
       {
 	plot(s, c, x, y);
-	if(d > 0)
+	if(d < 0)
 	{
 	  y++;
 	  d = d + dx;
@@ -108,7 +108,7 @@ void draw_line(int x0, int y0, int x1, int y1, screen s, color c)
       for(x = x0, y = y0; y <= y1; y++)
       {
 	plot(s, c, x, y);
-	if(d > 0)
+	if(d < 0)
 	{
 	  x++;
 	  d = d + dy;
