@@ -71,7 +71,6 @@ void draw_line(int x0, int y0, int x1, int y1, screen s, color c)
 	  y--;
 	  d = d - dx;
 	}
-	x++;
 	d = d - dy;
       }
     }
@@ -85,7 +84,6 @@ void draw_line(int x0, int y0, int x1, int y1, screen s, color c)
 	  x--;
 	  d = d - dy;
 	}
-	y++;
 	d = d - dx;
       }
     }
@@ -99,7 +97,6 @@ void draw_line(int x0, int y0, int x1, int y1, screen s, color c)
 	  y++;
 	  d = d + dx;
 	}
-	x++;
 	d = d - dy;
       }
     }
@@ -113,10 +110,9 @@ void draw_line(int x0, int y0, int x1, int y1, screen s, color c)
 	  x++;
 	  d = d + dy;
 	}
-	y++;
 	d = d - dx;
       }
-    } 
+    }
   }
 }
 
