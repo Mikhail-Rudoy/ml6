@@ -9,11 +9,11 @@
 void draw_line(int x0, int y0, int x1, int y1, screen s, color c)
 {
   int dx, dy;
-  int x, y, s;
+  int x, y, d;
 
   dx = x1-x0;
   dy = y1-y0;
-
+  /*
   if(dx == 0)//vertical line
   {
     for(y = (dy > 0) ? y0 : y1; y <= y1 && y <= y0; y++)
@@ -72,13 +72,13 @@ void draw_line(int x0, int y0, int x1, int y1, screen s, color c)
       for(x = x0, y = y0; x <= x1; x++)
       {
 	plot(s, c, x, y);
-	if(s > 0)
+	if(d > 0)
 	{
 	  y++;
-	  s = s + dx;
+	  d = d + dx;
 	}
 	x++;
-	s = s - dy;
+	d = d - dy;
       }
     }
     else//octant 2
@@ -86,5 +86,6 @@ void draw_line(int x0, int y0, int x1, int y1, screen s, color c)
 
     } 
   }
+  */
 }
 
