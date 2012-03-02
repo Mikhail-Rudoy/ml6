@@ -107,33 +107,68 @@ Returns:
 
 turns m in to an identity matrix
 */
-void ident(struct matrix *m) {
+void ident(struct matrix *m)
+{
+  int x,y;
+  for(x = 0; x < m->cols; x++)
+  {
+    for(y = 0; y < m->rows; y++)
+    {
+      m->m[x][y] = (x == y);
+    }
+  }
 }
 
 
 /*-------------- void scalar_mult() --------------
-Inputs:  double x
+Inputs:  double n
          struct matrix *m 
 Returns: 
 
-multiply each element of m by x
+multiply each element of m by n
 */
-void scalar_mult(double x, struct matrix *m) {
+void scalar_mult(double n, struct matrix *m)
+{
+  int x,y;
+  for(x = 0; x < m->cols; x++)
+  {
+    for(y = 0; y < m->rows; y++)
+    {
+      m->m[x][y] *= n;
+    }
+  }
 }
 
 
 /*-------------- void matrix_mult() --------------
 Inputs:  struct matrix *a
          struct matrix *b 
+	 struct matrix *m
 Returns: 
 
-a*b -> b
 */
-void matrix_mult(struct matrix *a, struct matrix *b) {
+void matrix_mult(struct matrix *a, struct matrix *b, struct matrix *m)
+{
+  int x,y;
+  int i;
+  for(x = 0; x < m->cols; x++)
+  {
+    for(y = 0; y < m->rows; y++)
+    {
+      m->m[x][y] = 0;
+      for(i = 0; i < a->cols && i < b->rows; i++)
+      {
+	m->m[x][y] += ((a->m[x][i]) * (b->m[i][y]));
+      }
+    }
+  }
 }
 
-int main(){
+int main()
+{
   struct matrix* mat = new_matrix(4, 4);
+  print_matrix(mat);
+  ident(mat);
   print_matrix(mat);
   return 1;
 }
