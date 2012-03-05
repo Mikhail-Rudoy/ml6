@@ -93,10 +93,10 @@ Returns:
 print the matrix
 */
 void print_matrix(struct matrix *m) {
-  int i, j;
-  for(i = 0; i < (*m).cols; i++){
-    for(j = 0; j < (*m).rows; j++)
-      printf("%lf ", (*m).m[i][j]);
+  int r, c;
+  for(r = 0; r < m->rows; r++){
+    for(c = 0; c < m->cols; c++)
+      printf("%lf ", m->m[r][c]);
     printf("\n");
   }
   printf("\n");
@@ -110,12 +110,12 @@ turns m in to an identity matrix
 */
 void ident(struct matrix *m)
 {
-  int x,y;
-  for(x = 0; x < m->cols; x++)
+  int r,c;
+  for(c = 0; c < m->cols; c++)
   {
-    for(y = 0; y < m->rows; y++)
+    for(r = 0; r < m->rows; r++)
     {
-      m->m[x][y] = (x == y);
+      m->m[r][c] = (r == c);
     }
   }
 }
@@ -130,12 +130,12 @@ multiply each element of m by n
 */
 void scalar_mult(double n, struct matrix *m)
 {
-  int x,y;
-  for(x = 0; x < m->cols; x++)
+  int r,c;
+  for(c = 0; c < m->cols; c++)
   {
-    for(y = 0; y < m->rows; y++)
+    for(r = 0; r < m->rows; r++)
     {
-      m->m[x][y] *= n;
+      m->m[r][c] *= n;
     }
   }
 }
@@ -148,19 +148,21 @@ Inputs:  struct matrix *a
 Returns: 
 
 */
-void matrix_mult(struct matrix *a, struct matrix *b, struct matrix *m)
+void matrix_mult(struct matrix *a, struct matrix *b)
 {
-  int x,y;
+  int r,c;
   int i;
-  for(x = 0; x < m->cols; x++)
+  struct matrix* m = new_matrix(a->rows, b->cols);
+  for(c = 0; c < m->cols; c++)
   {
-    for(y = 0; y < m->rows; y++)
+    for(r = 0; r < m->rows; r++)
     {
-      m->m[x][y] = 0;
+      m->m[r][c] = 0;
       for(i = 0; i < a->cols && i < b->rows; i++)
       {
-	m->m[x][y] += ((a->m[x][i]) * (b->m[i][y]));
+	m->m[r][c] += ((a->m[r][i]) * (b->m[i][c]));
       }
     }
   }
+  unfinished
 }
