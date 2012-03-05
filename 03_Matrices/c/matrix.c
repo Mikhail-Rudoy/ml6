@@ -99,6 +99,7 @@ void print_matrix(struct matrix *m) {
       printf("%lf ", (*m).m[i][j]);
     printf("\n");
   }
+  printf("\n");
 }
 
 /*-------------- void ident() --------------
@@ -167,8 +168,33 @@ void matrix_mult(struct matrix *a, struct matrix *b, struct matrix *m)
 int main()
 {
   struct matrix* mat = new_matrix(4, 4);
+  struct matrix* m2 = new_matrix(4, 4);
+  struct matrix* m3 = new_matrix(4, 4);
+  int i, j;
   print_matrix(mat);
   ident(mat);
+  print_matrix(mat);
+  mat->m[1][2]=5;
+  mat->m[1][3]=7;
+  print_matrix(mat);
+  scalar_mult(2, mat);
+  print_matrix(mat);
+  scalar_mult(-3, mat);
+  print_matrix(mat);
+  ident(m2);
+  matrix_mult(mat, m2, m3);
+  print_matrix(m3);
+  matrix_mult(m2, mat, m3);
+  print_matrix(m3);
+  for(i = 0; i < 4; i++)
+  {
+    for(j = 0; j < 4; j++)
+    {
+      m2->m[i][j] = i * j + 3 + j * j + i;
+    }
+  }
+  print_matrix(m2);
+  matrix_mult(m3, m2, mat);
   print_matrix(mat);
   return 1;
 }
