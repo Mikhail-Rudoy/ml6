@@ -3,7 +3,7 @@ CFLAGS= -Wall
 CC= gcc
 
 all: $(OBJECTS)
-	$(CC) -o main $(OBJECTS)
+	$(CC) -o main.exe $(OBJECTS)
 
 main.o: main.c display.h draw.h ml6.h matrix.h
 	$(CC) -c main.c
