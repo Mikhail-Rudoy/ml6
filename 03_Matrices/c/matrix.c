@@ -148,7 +148,7 @@ Inputs:  struct matrix *a
 Returns: 
 
 */
-void matrix_mult(struct matrix *a, struct matrix *b)
+struct matrix* matrix_mult(struct matrix *a, struct matrix *b)
 {
   int r,c;
   int i;
@@ -164,5 +164,5 @@ void matrix_mult(struct matrix *a, struct matrix *b)
       }
     }
   }
-  unfinished
+  return m;
 }
