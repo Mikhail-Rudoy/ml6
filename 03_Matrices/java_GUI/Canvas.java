@@ -36,7 +36,9 @@ public class Canvas extends JPanel {
     public void setDrawing(int x0, int y0, int x1, int y1)
     {
 	drawing = true;
+	tmpline.clear();
 	tmpline.addEdge(x0, y0, 0, x1, y1, 0);
+	this.update(this.getGraphics());
     }
 
     
