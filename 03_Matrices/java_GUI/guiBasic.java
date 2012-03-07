@@ -129,7 +129,7 @@ public class guiBasic implements ActionListener,MouseListener, MouseMotionListen
 	if (e.getSource()==quit) {
 	    System.exit(0);
 	}
-				  
+	
 	else if (e.getSource()==save) {
 	    // save
 	    System.out.println("Saving: "+ fnamefield.getText() );
@@ -186,6 +186,7 @@ public class guiBasic implements ActionListener,MouseListener, MouseMotionListen
         E.scalarMult(2);
         System.out.println("2*E=");
         System.out.println(E);
+	
 	guiBasic g = new guiBasic();
     }
 }
