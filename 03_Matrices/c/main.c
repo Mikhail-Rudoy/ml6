@@ -10,7 +10,6 @@
 int main() 
 {
   struct matrix* edges = new_matrix(4, 4);
-  ident(edges);
   add_edge(edges, 100, 200, 0, 200, 200, 0);
   add_edge(edges, 200, 200, 0, 200, 100, 0);
   add_edge(edges, 200, 100, 0, 100, 100, 0);
