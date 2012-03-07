@@ -28,15 +28,15 @@ public class EdgeMatrix extends Matrix
       ====================*/
     public void addPoint(int x, int y, int z)
     {
-	if(lastcol == m[0].length)
+	if(lastCol == m[0].length)
 	{
 	    grow();
 	}
-	m[0][lastcol] = x;
-	m[1][lastcol] = y;
-	m[2][lastcol] = z;
-	m[3][lastcol] = 1;
-	lsatcol++;
+	m[0][lastCol] = x;
+	m[1][lastCol] = y;
+	m[2][lastCol] = z;
+	m[3][lastCol] = 1;
+	lastCol++;
     }
 
     /*======== public void addEdge() ==========

@@ -26,7 +26,7 @@ public class Matrix {
 	m = new double[DEFAULT_SIZE][c];
     }
     
-    public Matrix(int r, int c);
+    public Matrix(int r, int c)
     {
 	m = new double[r][c];
     }
@@ -148,7 +148,7 @@ public class Matrix {
 	{
 	    for (int j = 0; j < m[i].length; j++)
 	    {
-		result = result + m[i][j];
+		result = result + m[i][j] + " ";
 	    }
 	    result = result + "\n";
 	}

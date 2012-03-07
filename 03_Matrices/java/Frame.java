@@ -43,7 +43,7 @@ public class Frame
     {
 	for(int i = 0; i < em.getLastCol() / 2; i++)
 	{
-	    drawLine(em.getX(2*i), em.getY(2*i), em.getZ(2*i), em.getX(2*i+1), em.getY(2*i+1), em.getZ(2*+1), c);
+	    drawLine(em.getX(2*i), em.getY(2*i), em.getX(2*i+1), em.getY(2*i+1), c);
 	}
     }
     
@@ -75,7 +75,7 @@ public class Frame
 	try
 	{
 	    File fn = new File(filename);
-	    ImageIO.write(bi, fn.substring(fn.lastIndexOf('.') + 1), fn);
+	    ImageIO.write(bi, filename.substring(filename.lastIndexOf('.') + 1), fn);
 	}
 	catch (IOException e)
 	{
@@ -84,7 +84,7 @@ public class Frame
 		File fn = new File(filename);
 		ImageIO.write(bi,"png",fn);
 	    }
-	    catch (IOException e)
+	    catch (IOException e2)
 	    {
 		
 	    }
