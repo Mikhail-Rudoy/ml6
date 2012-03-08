@@ -22,3 +22,6 @@ def save_screen(screen, filename):
         lines[i] = lines[i] + "\n"
     FILE.writelines(lines)
     FILE.close()
+
+def draw_pixel(screen, x, y, c):
+    screen[x][-1-y] = c
