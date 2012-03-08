@@ -14,5 +14,4 @@ for x in range(256):
             tmp[2] = tmp[2] + 128 - y
         draw_pixel(sc, x, y, tmp)
 
-draw_pixel(sc, 50, 50, [0,0,0])        
 save_screen(sc, "pic.ppm")
