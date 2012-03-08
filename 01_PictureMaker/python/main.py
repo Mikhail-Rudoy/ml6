@@ -15,4 +15,6 @@ for x in range(256):
         else:
             sc[x][y][2] = sc[x][y][2] + 128 - y
 
+sc[50][50] = [0, 0, 0]
+
 save_screen(sc, "pic.ppm")
