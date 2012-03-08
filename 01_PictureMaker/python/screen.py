@@ -24,4 +24,4 @@ def save_screen(screen, filename):
     FILE.close()
 
 def draw_pixel(screen, x, y, c):
-    screen[x][-1-y] = c
+    screen[-1-y][x] = c
