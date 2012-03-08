@@ -58,9 +58,9 @@ def draw_line(screen, x0, y0, x1, y1, c):
         y = y0
         while x <= x1:
             draw_pixel(screen, x, y, c)
-            if d < 0:
+            if d > 0:
                 y = y - 1
-                d = d + dx
+                d = d - dx
             x = x + 1
             d = d - dy
     elif dx < 0:
@@ -69,9 +69,9 @@ def draw_line(screen, x0, y0, x1, y1, c):
         y = y0
         while y <= y1:
             draw_pixel(screen, x, y, c)
-            if d < 0:
+            if d > 0:
                 x = x - 1
-                d = d + dy
+                d = d - dy
             y = y + 1
             d = d - dx
     elif dx > 0:
