@@ -11,7 +11,7 @@ edges = add_edge_to_matrix(edges, 100, 100, 0, 100, 200, 0)
 edges = add_edge_to_matrix(edges, 500, 500, 0, 400, 400, 0)
 edges = add_edge_to_matrix(edges, 400, 500, 0, 500, 400, 0)
 
-draw_edge_matrix(edges, sc, [0, 255, 0])
+draw_edge_matrix(edges, sc, [255, 0, 0])
 
 A = new_ident_matrix(4)
 B = new_matrix(4, 4)
