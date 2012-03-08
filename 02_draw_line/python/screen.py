@@ -85,7 +85,7 @@ def draw_line(screen, x0, y0, x1, y1, c):
                 d = d - dx
             x = x + 1
             d = d + dy
-    elif dy > 0:
+    else:
         d = 0
         x = x0
         y = y0
