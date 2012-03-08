@@ -7,7 +7,7 @@
 #include "draw.h"
 #include "matrix.h"
 
-int main() 
+int main()
 {
   struct matrix* edges = new_matrix(4, 4);
   add_edge(edges, 100, 200, 0, 200, 200, 0);
@@ -22,7 +22,7 @@ int main()
   c.blue = 0;
   c.green = 0;
   draw_lines(edges, s, c);
-  display(s);
+  save_ppm(s, "pic.ppm");
 
   struct matrix* A = new_matrix(4, 4);
   struct matrix* B = new_matrix(4, 4);
@@ -67,4 +67,5 @@ int main()
   scalar_mult(2, E);
   printf("2*E=\n");
   print_matrix(E);
+  return 0;
 }  
