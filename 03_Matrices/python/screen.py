@@ -24,10 +24,10 @@ def save_screen(screen, filename):
     FILE.close()
 
 def draw_pixel(screen, x, y, c):
-    screen[-1-y][x] = c
+    screen[y][x] = c
 
 def get_pixel(screen, x, y):
-    return screen[-1-y][x]
+    return screen[y][x]
 
 def draw_line(screen, x0, y0, x1, y1, c):
     dx = x1 - x0
