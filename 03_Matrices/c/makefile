@@ -17,5 +17,8 @@ dsiplay.o: display.c display.h ml6.h matrix.h
 matrix.o: matrix.c matrix.h
 	$(CC) $(CFLAGS) -c matrix.c
 
+run: all
+	./main.exe
+
 clean:
 	rm *.o *~
