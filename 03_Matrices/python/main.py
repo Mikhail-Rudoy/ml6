@@ -1,8 +1,10 @@
+from matrix import *
 from screen import *
 
-sc = new_screen(600, 600)
-for x in range(75):
-    for y in range(75):
-        draw_line(sc, 300, 300, 4 + 8 * x, 4 + 8 * y, [255, 0, 0])
+sc = new_screen(500, 500)
+
+edges = []
+edges = add_edge_to_matrix(edges, 100, 200, 0, 200, 200, 0)
+draw_edge_matrix(edges, sc, [0, 255, 0])
 
 save_screen(sc, "pic.ppm")

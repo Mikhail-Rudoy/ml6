@@ -65,7 +65,8 @@ def matrix_multiply(A, B):
     return C
 
 def add_point_to_matrix(matrix, x, y, z):
-    return matrix.append([x, y, z, 1])
+    matrix.append([x, y, z, 1])
+    return matrix
 
 def add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1):
     return add_point_to_matrix(add_point_to_matrix(matrix, x0, y0, z0), x1, y1, z1)
