@@ -34,7 +34,7 @@ int main()
   }
   while(!(x < 20.1 && x > 19.9 && y < 250.1 && y > 249.9));
   
-  display(s);
+  //display(s);
   save_extension(s, "pic.png");
 }
 
