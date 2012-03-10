@@ -30,8 +30,10 @@ pixel 0, 0 located at the lower left corner of the screen
 jdyrlandweaver
 ====================*/
 void plot( screen s, color c, int x, int y) {
-  int newy = YRES - 1 - y;
-  s[x][newy] = c;
+  if(x < s.length && y < s[0].length && x >= 0 && y >= 0)
+  {
+    s[x][y] = c;
+  }
 }
 
 /*======== void clear_screen() ==========
