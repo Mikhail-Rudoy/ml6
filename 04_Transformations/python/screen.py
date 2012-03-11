@@ -1,3 +1,5 @@
+import math
+
 def new_screen(w, h):
     black = [0, 0, 0]
     result = []
@@ -24,11 +26,15 @@ def save_screen(screen, filename):
     FILE.close()
 
 def draw_pixel(screen, x, y, c):
+    x, y = int(x), int(y)
     if x < len(screen) and x >= 0 and y >= 0 and y < len(screen[x]):
         screen[y][x] = c
 
 def get_pixel(screen, x, y):
     return screen[y][x]
+
+def get_default_dimensions():
+    return 600, 600
 
 def draw_line(screen, x0, y0, x1, y1, c):
     dx = x1 - x0

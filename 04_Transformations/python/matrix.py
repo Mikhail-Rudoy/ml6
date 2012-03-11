@@ -40,9 +40,9 @@ def new_ident_matrix(d):
         result.append([])
         for j in range(d):
             if i == j:
-                result[i].append(1)
+                result[i].append(1.0)
             else:
-                result[i].append(0)
+                result[i].append(0.0)
     return result
 
 def scalar_multiply(matrix, n):
@@ -53,7 +53,7 @@ def scalar_multiply(matrix, n):
     return matrix
 
 def matrix_multiply(A, B):
-    C = new_matrix(get_height(A), get_width(B))
+    C = new_matrix(get_width(B), get_height(A))
     for r in range(get_height(C)):
         for c in range(get_width(C)):
             v = 0
@@ -82,20 +82,20 @@ def draw_edge_matrix(matrix, screen, c):
         i = i + 2
 
 def new_translation_matrix(a, b, c):
-    return [[1, 0, 0, a], [0, 1, 0, b], [0, 0, 1, c], [0, 0, 0, 1]]
+    return [[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], [a, b, c, 1.0]]
 
 def new_scale_matrix(a, b, c):
-    return [[a, 0, 0, 0], [0, b, 0, 0], [0, 0, c, 0], [0, 0, 0, 1]]
+    return [[a, 0.0, 0.0, 0.0], [0.0, b, 0.0, 0.0], [0.0, 0.0, c, 0.0], [0.0, 0.0, 0.0, 1.0]]
 
-def new_rtationX_matrix(theta):
+def new_rotationX_matrix(theta):
     r = theta * 3.14159265358979323 / 180
-    return [[1, 0, 0, 0], [0, math.cos(r), 0 - math.sin(r), 0], [0, math.sin(r), math.cos(r), 0], [0, 0, 0, 1]]
+    return [[1.0, 0.0, 0.0, 0.0], [0.0, math.cos(r), math.sin(r), 0.0], [0.0, 0.0 - math.sin(r), math.cos(r), 0.0], [0.0, 0.0, 0.0, 1.0]]
 
-def new_rtationY_matrix(theta):
+def new_rotationY_matrix(theta):
     r = theta * 3.14159265358979323 / 180
-    return [[math.cos(r), 0, 0 - math.sin(r), 0], [0, 1, 0, 0], [math.sin(r), 0, math.cos(r), 0], [0, 0, 0, 1]]
+    return [[math.cos(r), 0.0, math.sin(r), 0.0], [0.0, 1.0, 0.0, 0.0], [0.0 - math.sin(r), 0.0, math.cos(r), 0.0], [0.0, 0.0, 0.0, 1.0]]
 
-def new_rtationZ_matrix(theta):
+def new_rotationZ_matrix(theta):
     r = theta * 3.14159265358979323 / 180
-    return [[math.cos(r), 0 - math.sin(r), 0, 0], [math.sin(r), math.cos(r), 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+    return [[math.cos(r), math.sin(r), 0.0, 0.0], [0.0 - math.sin(r), math.cos(r), 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 1.0]]
 
