@@ -80,3 +80,22 @@ def draw_edge_matrix(matrix, screen, c):
         y1 = get_element(matrix, 1, i + 1)
         draw_line(screen, x0, y0, x1, y1, c)
         i = i + 2
+
+def new_translation_matrix(a, b, c):
+    return [[1, 0, 0, a], [0, 1, 0, b], [0, 0, 1, c], [0, 0, 0, 1]]
+
+def new_scale_matrix(a, b, c):
+    return [[a, 0, 0, 0], [0, b, 0, 0], [0, 0, c, 0], [0, 0, 0, 1]]
+
+def new_rtationX_matrix(theta):
+    r = theta * 3.14159265358979323 / 180
+    return [[1, 0, 0, 0], [0, math.cos(r), 0 - math.sin(r), 0], [0, math.sin(r), math.cos(r), 0], [0, 0, 0, 1]]
+
+def new_rtationY_matrix(theta):
+    r = theta * 3.14159265358979323 / 180
+    return [[math.cos(r), 0, 0 - math.sin(r), 0], [0, 1, 0, 0], [math.sin(r), 0, math.cos(r), 0], [0, 0, 0, 1]]
+
+def new_rtationZ_matrix(theta):
+    r = theta * 3.14159265358979323 / 180
+    return [[math.cos(r), 0 - math.sin(r), 0, 0], [math.sin(r), math.cos(r), 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+
