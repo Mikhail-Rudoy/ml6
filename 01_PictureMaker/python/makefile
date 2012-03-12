@@ -1,4 +1,7 @@
-run:
+all:
+	
+
+run: main.py screen.py
 	python main.py
 
 clean:
