@@ -13,7 +13,7 @@ a pixel as a color triple
 
 #define XRES 500
 #define YRES 500
-#define MAX_COLOR 255
+#define MAX_COLOR 256
 
 /*
   Every point has an individual int for

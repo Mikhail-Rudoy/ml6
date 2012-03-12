@@ -19,3 +19,6 @@ run: all
 
 clean:
 	rm *.o *~
+
+view: all
+	./main.exe -d

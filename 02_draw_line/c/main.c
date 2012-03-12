@@ -9,7 +9,7 @@
 
 void randomizeColor(color*);
 
-int main()
+int main(int argc, char** argv)
 {
   screen s;
   color c;
@@ -34,7 +34,14 @@ int main()
   }
   while(!(x < 20.1 && x > 19.9 && y < 250.1 && y > 249.9));
   
-  save_extension(s, "pic.png");
+  if(argc > 1 && !strcmp(argv[1], "-d"))
+  {
+    display(s);
+  }
+  else
+  {
+    save_extension(s, "pic.png");
+  }
 }
 
 void randomizeColor(color* c)
