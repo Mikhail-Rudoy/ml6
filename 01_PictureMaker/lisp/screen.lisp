@@ -11,7 +11,7 @@
 		                                     :if-exists :supersede)
     (format fd "P3~%~A ~A ~A~%" (array-dimension screen 0)
 	                         (array-dimension screen 1)
-				 255)
+				 256)
     (dotimes (r (array-dimension screen 1) nil)
       (dotimes (c (array-dimension screen 0) nil)
 	(format fd "~A ~A ~A  " (color-r (get-pixel screen c r))
