@@ -10,7 +10,7 @@ def new_screen(w, h):
 def save_screen(screen, filename):
     FILE = open(filename, "w")
     lines = ["P3"]
-    lines.append("" + str(len(screen)) + " " + str(len(screen[0])) + " 255")
+    lines.append("" + str(len(screen)) + " " + str(len(screen[0])) + " 256")
     for x in range(len(screen)):
         next = ""
         for y in range(len(screen[x])):
