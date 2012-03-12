@@ -27,8 +27,8 @@ int main(int argc, char** argv)
     x2 = 250 + (cos(i) * (x - 250) - sin(i) * (y - 250));
     y2 = 250 + (sin(i) * (x - 250) + cos(i) * (y - 250));
     
-    draw_line((int)x, (int)y, (int)x2, (int)y2, s, c);
-
+    //draw_line((int)x, (int)y, (int)x2, (int)y2, s, c);
+    
     x = x2;
     y = y2;
   }
@@ -40,7 +40,7 @@ int main(int argc, char** argv)
   }
   else
   {
-    save_extension(s, "pic.png");
+    save_ppm(s, "pic.ppm");
   }
 }
 

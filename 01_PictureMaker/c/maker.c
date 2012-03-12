@@ -25,7 +25,7 @@ void main()
 
   write(fd, line, strlen(line));
 
-  for(x = 0; x < xres; x++)
+  for(y = 0; y < yres; y++)
   {
     r -= 10;
     r += random() % 21;
@@ -39,7 +39,7 @@ void main()
     if(g < 0){g = 0;}
     b %= maxc;
     if(b < 0){b = 0;}
-    for(y = 0; y < yres; y++)
+    for(x = 0; x < xres; x++)
     {
       sprintf(line, "%d %d %d ", r, g, b);
       write(fd, line, strlen(line));

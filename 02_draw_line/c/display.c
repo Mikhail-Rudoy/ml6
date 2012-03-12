@@ -74,7 +74,7 @@ void save_ppm( screen s, char *file) {
   FILE *f;
   
   f = fopen(file, "w");
-  fprintf(f, "P3\n%d %d\n%d\n", XRES, YRES, MAX_COLOR);
+  fprintf(f, "P3\n%d %d %d\n", XRES, YRES, MAX_COLOR);
   for ( y=0; y < YRES; y++ ) {
     for ( x=0; x < XRES; x++) 
       
