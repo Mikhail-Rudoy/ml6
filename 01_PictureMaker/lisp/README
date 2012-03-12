@@ -1,0 +1,3 @@
+Use "make run" to run and "make clean" to remove compiled files and tilda files.
+
+Use "make view" to only display the resulting image.
