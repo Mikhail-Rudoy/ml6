@@ -7,13 +7,13 @@
   (make-array (list w h) :initial-element bgcolor))
 
 (defun save-screen (screen filename)
-  (with-open-file (fd (make-pathmane :name filename) :direction :output
-		                                     :if-exists :upersede)
+  (with-open-file (fd (make-pathname :name filename) :direction :output
+		                                     :if-exists :supersede)
     (format fd "P3~%~A ~A ~A~%" (array-dimension screen 0)
 	                         (array-dimension screen 1)
 				 255)
-    (dotimes (r (array-dimension screen 1))
-      (dotimes (c (array-dimension screen 0))
+    (dotimes (r (array-dimension screen 1) nil)
+      (dotimes (c (array-dimension screen 0) nil)
 	(if (typep (aref screen r c) 'color)
 	    (format fd "~A ~A ~A  " (color-r (aref screen r c))
 		                    (color-g (aref screen r c))
@@ -29,7 +29,7 @@
 	     (< x (array-dimension screen 0))
 	     (< y (array-dimension screen 1)))
       (setf (aref screen x y) c))
-  nil)
+  screen)
 
 (defun get-pixel (screen x y)
   (if (and (>= x 0)
