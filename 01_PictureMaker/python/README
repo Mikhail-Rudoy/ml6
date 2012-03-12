@@ -1,3 +1,7 @@
-Use "make run" to run and "make clean" to remove compiled files and tilda files.
+"make" to do nothing
+"make run" to run
+"make clean" to remove compiled files and tilda files
+"make view" to display the resulting image instead of saving
 
-Use "make view" to only display the resulting image.
+suggested uses:
+"make run clean" or "make view clean"

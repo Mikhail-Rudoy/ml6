@@ -6,3 +6,10 @@ run: main.exe
 
 clean:
 	rm main.exe
+
+pic.ppm: run
+	
+
+view: pic.ppm
+	display pic.ppm
+	rm pic.ppm
