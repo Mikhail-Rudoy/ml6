@@ -5,7 +5,7 @@ run: main.lisp screen.lisp
 	clisp main.lisp
 
 clean:
-	rm *~ *.lib *.fas pic.ppm
+	rm *~ *.lib *.fas
 
 clear:
 	rm *~ *.lib *.fas

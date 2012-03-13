@@ -2,7 +2,7 @@
 "make run" to compile and run
 "make clean" to remove tilda files
 "make clear" to remove tilda files and main.exe
-"make view" to display the resulting image instead of saving
+"make view" to run and display the resulting image instead of saving
 
 suggested uses:
 "make run clear"
