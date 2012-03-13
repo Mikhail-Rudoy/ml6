@@ -17,5 +17,13 @@ test.class: test.java Frame.java Matrix.java EdgeMatrix.java
 run: test.class
 	java test
 
+view: test.class
+	java test
+	display pic.png
+	rm pic.png
+
 clean:
+	rm *~ *.class
+
+clear:
 	rm *~ *.class

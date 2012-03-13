@@ -7,7 +7,7 @@
 #include "draw.h"
 #include "matrix.h"
 
-int main()
+int main(int argc, char** argv)
 {
   struct matrix* edges = new_matrix(4, 4);
   add_edge(edges, 100, 200, 0, 200, 200, 0);
@@ -18,11 +18,19 @@ int main()
   add_edge(edges, 500, 400, 0, 400, 500, 0);
   screen s;
   color c;
+  clear_screen(s);
   c.red = 255;
   c.blue = 0;
   c.green = 0;
   draw_lines(edges, s, c);
-  save_ppm(s, "pic.ppm");
+  if(argc > 1 && !strcmp(argv[1], "-d"))
+  {
+    display(s);
+  }
+  else
+  {
+    save_ppm(s, "pic.ppm");
+  }
 
   struct matrix* A = new_matrix(4, 4);
   struct matrix* B = new_matrix(4, 4);

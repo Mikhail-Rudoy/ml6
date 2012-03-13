@@ -19,3 +19,6 @@ run: guiBasic.class
 
 clean:
 	rm *~ *.class
+
+clear:
+	rm *~ *.class
