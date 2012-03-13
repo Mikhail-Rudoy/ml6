@@ -36,3 +36,6 @@
 	   (< y (array-dimension screen 1)))
       (aref screen x y)
       (make-color)))
+
+(defun (setf get-pixel) (val screen x y)
+  (draw-pixel screen x y val))
