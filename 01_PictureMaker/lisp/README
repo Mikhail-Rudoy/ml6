@@ -1,7 +1,10 @@
-"make" to do nothing
+"make" to compile screen.lisp (optional)
 "make run" to run
-"make clean" to remove compiled files and tilda files
+"make clean" or "make clear" to remove tilda files and compiled files
 "make view" to display the resulting image instead of saving
 
 suggested uses:
-"make run clean" or "make view clean"
+"make run clean"
+"make view clean"
+"make run clear"
+"make view clear"
