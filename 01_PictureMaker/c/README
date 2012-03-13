@@ -1,4 +1,4 @@
-"make" to compile maine.exe
+"make" to compile main.exe
 "make run" to compile and run
 "make clean" to remove tilda files
 "make clear" to remove tilda files and main.exe
