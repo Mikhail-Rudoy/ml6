@@ -1,5 +1,5 @@
 "make" to compile maine.exe
-"make run" to run
+"make run" to compile and run
 "make clean" to remove tilda files
 "make clear" to remove tilda files and main.exe
 "make view" to display the resulting image instead of saving
