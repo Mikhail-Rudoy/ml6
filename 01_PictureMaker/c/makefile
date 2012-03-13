@@ -5,10 +5,12 @@ run: main.exe
 	./main.exe
 
 clean:
-	rm main.exe
+	rm *~
+
+clear:
+	rm main.exe *~
 
 pic.ppm: run
-	
 
 view: pic.ppm
 	display pic.ppm
