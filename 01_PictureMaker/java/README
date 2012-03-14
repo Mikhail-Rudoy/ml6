@@ -1,7 +1,6 @@
 "make" to compile .class files
 "make run" to compile and run
-"make clean" to remove tilda and class files
-"make clear" to remove tilda and class files
+"make clean" or "make clear" to remove tilda and class files
 "make view" to run and display the resulting image instead of saving
 
 suggested uses:
