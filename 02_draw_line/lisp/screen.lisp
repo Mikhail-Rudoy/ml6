@@ -29,6 +29,8 @@
       (setf (aref screen x y) c))
   screen)
 
+
+
 (defun get-pixel (screen x y)
   (if (and (>= x 0)
 	   (>= y 0)

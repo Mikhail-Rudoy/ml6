@@ -1,4 +1,4 @@
-compile:
+compile: screen.lisp
 	clisp -q -c screen.lisp
 
 run: main.lisp screen.lisp
