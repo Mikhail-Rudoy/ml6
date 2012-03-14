@@ -1,7 +1,7 @@
-compile: screen.lisp io.lisp
-	clisp -q -c screen.lisp io.lisp
+compile: screen.lisp io.lisp curves.lisp
+	clisp -q -c screen.lisp io.lisp curves.lisp
 
-run: main.lisp screen.lisp io.lisp
+run: main.lisp screen.lisp io.lisp curves.lisp
 	clisp main.lisp
 
 clean:

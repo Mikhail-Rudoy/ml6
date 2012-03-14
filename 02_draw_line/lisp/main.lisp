@@ -1,5 +1,6 @@
 (load "screen.lisp")
 (load "io.lisp")
+(load "curves.lisp")
 
 (defparameter screen (make-screen 600 600))
 
