@@ -53,7 +53,7 @@ def scalar_multiply(matrix, n):
     return matrix
 
 def matrix_multiply(A, B):
-    C = new_matrix(get_height(A), get_width(B))
+    C = new_matrix(get_width(B), get_height(A))
     for r in range(get_height(C)):
         for c in range(get_width(C)):
             v = 0
