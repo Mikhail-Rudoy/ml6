@@ -125,21 +125,21 @@ public class Parser {
 		line = in.readLine();
 		args = line.split(" ");
 		Matrix rx = new Matrix(4, 4);
-		rx.makeRotX(Double.parseDouble(args[0]));
+		rx.makeRotX(Double.parseDouble(args[0]) * 3.141592653 / 180.0);
 		transform.matrixMult(rx);
 		break;
 	    case 'y':
 		line = in.readLine();
 		args = line.split(" ");
 		Matrix ry = new Matrix(4, 4);
-		ry.makeRotY(Double.parseDouble(args[0]));
+		ry.makeRotY(Double.parseDouble(args[0]) * 3.141592653 / 180.0);
 		transform.matrixMult(ry);
 		break;
 	    case 'z':
 		line = in.readLine();
 		args = line.split(" ");
 		Matrix rz = new Matrix(4, 4);
-		rz.makeRotZ(Double.parseDouble(args[0]));
+		rz.makeRotZ(Double.parseDouble(args[0]) * 3.141592653 / 180.0);
 		transform.matrixMult(rz);
 		break;
 	    case 'a':
