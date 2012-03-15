@@ -7,8 +7,6 @@ clean:
 clear:
 	rm *.pyc *~
 
-pic.ppm: run
-
 example: all
 	python main.py example.txt
 	display pic1.ppm
