@@ -3,6 +3,7 @@
 "make clean" or "make clear" to remove compiled files and tilda files
 
 suggested uses:
+"python main.py <arguments>" (see below)
 "make example clean"
 "make example clear"
 

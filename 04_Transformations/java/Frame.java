@@ -13,8 +13,8 @@ import javax.imageio.*;
 
 public class Frame
 {
-    public static final int XRES = 500;
-    public static final int YRES = 500;
+    public static final int XRES = 600;
+    public static final int YRES = 600;
     public static final int COLOR_VALUE = 255;
     
     private int maxx, maxy, maxcolor;

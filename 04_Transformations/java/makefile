@@ -17,8 +17,11 @@ Frame.class: Frame.java EdgeMatrix.java
 test.class: test.java Frame.java Matrix.java EdgeMatrix.java Parser.java
 	javac test.java
 
-example: test.class
-	java test example.txt
+example1: test.class
+	java test example1.txt
+
+example2: test.class
+	java test example2.txt
 
 clean:
 	rm *~ *.class
