@@ -19,9 +19,20 @@ test.class: test.java Frame.java Matrix.java EdgeMatrix.java Parser.java
 
 example1: test.class
 	java test example1.txt
+	display pic1.png
+	display pic2.png
+	display pic3.png
+	display pic4.png
+	display pic5.png
+	rm pic1.png pic2.png pic3.png pic4.png pic5.png
 
 example2: test.class
 	java test example2.txt
+	display pic1.png
+	display pic2.png
+	display pic3.png
+	display pic3big.png
+	rm pic1.png pic2.png pic3.png pic3big.png
 
 clean:
 	rm *~ *.class
