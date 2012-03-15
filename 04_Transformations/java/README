@@ -1,0 +1,10 @@
+"make" to compile .class files
+"make clean" or "make clear" to remove .class files and tilda files
+"make example" to run the example script
+
+suggested uses:
+"make" and "java test <filename>" (see below)
+"make example clean"
+"make example clear"
+
+The test takes one command line argument: the filename of the graphics script.
