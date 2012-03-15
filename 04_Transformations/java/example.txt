@@ -23,18 +23,18 @@ l
 l
 100 0 0 100 0 100
 g
-pic1
+pic1.png
 i
 s
 1.5 1.5 1.5
 a
 g
-pic2
+pic2.png
 t
 100 100 0
 a
 g
-pic3
+pic3.png
 i
 z
 20
@@ -44,10 +44,10 @@ y
 20
 a
 g
-pic4
+pic4.png
 i
 y
 20
 a
 g
-pic5
+pic5.png

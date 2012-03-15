@@ -75,19 +75,11 @@ public class Frame
 	try
 	{
 	    File fn = new File(filename);
-	    ImageIO.write(bi, filename.substring(filename.lastIndexOf('.') + 1), fn);
+	    ImageIO.write(bi,"png",fn);
 	}
-	catch (IOException e)
+	catch (IOException e2)
 	{
-	    try
-	    {
-		File fn = new File(filename);
-		ImageIO.write(bi,"png",fn);
-	    }
-	    catch (IOException e2)
-	    {
-		
-	    }
+	    
 	}
     }
 }
