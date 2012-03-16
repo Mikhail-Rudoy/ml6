@@ -1,0 +1,7 @@
+"make" to compile .class files
+"make run" to run
+"make clean" or "make clear" to remove .class files and tilda files
+
+suggested uses:
+"make run clean"
+"make run clear"
