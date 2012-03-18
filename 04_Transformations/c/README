@@ -1,4 +1,4 @@
-"make" to compile files
+"make" to compile main.exe
 "make run" to run
 "make clean" to remove .o files and tilda files
 "make clear" to remove .o files, tilda files, and main.exe
