@@ -83,7 +83,7 @@ void copy_matrix(struct matrix *a, struct matrix *b)
   { 
     for (c=0; c < b->cols; c++)
     {
-      b->m[r][c] = (r < a->rows && c < b->rows) ? a->m[r][c] : 0;
+      b->m[r][c] = (r < a->rows && c < a->cols) ? a->m[r][c] : 0;
     }
   }
 }
@@ -99,9 +99,10 @@ print the matrix
 */
 void print_matrix(struct matrix *m) {
   int r, c;
+  
   for(r = 0; r < m->rows; r++){
-    for(c = 0; c < m->cols; c++)
-      printf("%lf ", m->m[r][c]);
+    for(c = 0; c < m->lastcol; c++)
+      printf("%.2lf ", m->m[r][c]);
     printf("\n");
   }
   printf("\n");

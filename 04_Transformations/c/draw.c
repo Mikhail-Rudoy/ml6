@@ -56,14 +56,13 @@ void draw_lines( struct matrix * points, screen s, color c)
   int i;
   for(i = 0; i < (points->lastcol / 2); i++)
   {
-    draw_line(points->m[0][2*i], points->m[1][2*i], points->m[0][2*i+1], points->m[1][2*i+1], s, c);
+    draw_line((int)(points->m[0][2*i]), (int)(points->m[1][2*i]), (int)(points->m[0][2*i+1]), (int)(points->m[1][2*i+1]), s, c);
   }
 } 
 
 
 
 void draw_line(int x0, int y0, int x1, int y1, screen s, color c) {
- 
   int x, y, d, dx, dy;
 
   x = x0;
