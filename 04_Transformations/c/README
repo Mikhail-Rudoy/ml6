@@ -1,11 +1,14 @@
-"make" to compile main.exe
-"make run" to run
+"make" to compile files
+"make example1" to run example1 script
+"make example2" to run example2 script
 "make clean" to remove .o files and tilda files
 "make clear" to remove .o files, tilda files, and main.exe
-"make view" to run and display the resulting image instead of saving
 
 suggested uses:
-"make run clean"
-"make view clean"
-"make run clear"
-"make view clear"
+"./main.exe <filename>" (see below)
+"make example1 clean"
+"make example2 clean"
+"make example1 clear"
+"make example2 clear"
+
+main.exe expects the filename of the script as an argument

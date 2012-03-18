@@ -166,3 +166,60 @@ struct matrix* matrix_mult(struct matrix *a, struct matrix *b)
   }
   return m;
 }
+
+/*======== struct matrix * make_translate() ==========
+Inputs:  int x
+         int y
+         int z 
+Returns: The translation matrix created using x, y and z 
+as the translation offsets.
+====================*/
+struct matrix * make_translate(double x, double y, double z)
+{
+  
+}
+
+/*======== struct matrix * make_scale() ==========
+Inputs:  int x
+         int y
+         int z 
+Returns: The translation matrix creates using x, y and z
+as the scale factors
+====================*/
+struct matrix * make_scale(double x, double y, double z)
+{
+  
+}
+
+/*======== struct matrix * make_rotX() ==========
+Inputs:  double theta
+
+Returns: The rotation matrix created using theta as the 
+angle of rotation and X as the axis of rotation.
+====================*/
+struct matrix * make_rotX(double theta)
+{
+  
+}
+
+/*======== struct matrix * make_rotY() ==========
+Inputs:  double theta
+
+Returns: The rotation matrix created using theta as the 
+angle of rotation and Y as the axis of rotation.
+====================*/
+struct matrix * make_rotY(double theta)
+{
+  
+}
+
+/*======== struct matrix * make_rotZ() ==========
+Inputs:  double theta
+
+Returns: The rotation matrix created using theta as the 
+angle of rotation and Z as the axis of rotation.
+====================*/
+struct matrix * make_rotZ(double theta)
+{
+  
+}
