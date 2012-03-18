@@ -79,7 +79,6 @@ void parse_file ( char * filename,
       if(!strcmp(line, "i\n"))
       {
 	ident(transform);
-	print_matrix(transform);
       }
       else if(!strcmp(line, "a\n"))
       {
@@ -101,7 +100,8 @@ void parse_file ( char * filename,
 	       &args[3], &args[4], &args[5]);
 	add_edge(pm, args[0], args[1], args[2], 
 	       args[3], args[4], args[5]);
-	print_matrix(pm);
+	printf("%lf %lf %lf %lf %lf %lf\n", args[0], args[1], args[2],
+               args[3], args[4], args[5]);
       }
       else if(!strcmp(line, "s\n"))
       {
@@ -110,7 +110,7 @@ void parse_file ( char * filename,
 	tmp = make_scale(args[0], args[1], args[2]);
 	matrix_mult(tmp, transform);
 	free_matrix(tmp);
-	print_matrix(transform);
+	printf("%lf %lf %lf\n", args[0], args[1], args[2]);
       }
       else if(!strcmp(line, "t\n"))
       {
@@ -119,7 +119,7 @@ void parse_file ( char * filename,
 	tmp = make_translate(args[0], args[1], args[2]);
 	matrix_mult(tmp, transform);
 	free_matrix(tmp);
-	print_matrix(transform);
+	printf("%lf %lf %lf\n", args[0], args[1], args[2]);
       }
       else if(!strcmp(line, "x\n"))
       {
@@ -128,7 +128,7 @@ void parse_file ( char * filename,
 	tmp = make_rotX(args[0] * 3.14159265358979323846264338327950 / 180.0);
 	matrix_mult(tmp, transform);
 	free_matrix(tmp);
-	print_matrix(transform);
+	printf("%lf\n", args[0]);
       }
       else if(!strcmp(line, "y\n"))
       {
@@ -137,6 +137,7 @@ void parse_file ( char * filename,
 	tmp = make_rotY(args[0] * 3.14159265358979323846264338327950 / 180.0);
 	matrix_mult(tmp, transform);
 	free_matrix(tmp);
+	printf("%lf\n", args[0]);
       }
       else if(!strcmp(line, "z\n"))
       {
@@ -145,17 +146,19 @@ void parse_file ( char * filename,
 	tmp = make_rotZ(args[0] * 3.14159265358979323846264338327950 / 180.0);
 	matrix_mult(tmp, transform);
 	free_matrix(tmp);
-	print_matrix(transform);
+	printf("%lf\n", args[0]);
       }
       else if(!strcmp(line, "g\n"))
       {
 	fgets(line, 512, file);
+	strtok(line, "\n");
 	c.red = 0;
 	c.green = 0;
 	c.blue = 255;
 	clear_screen(s);
 	draw_lines(pm, s, c);
 	save_extension(s, line);
+	printf("%s\n", line);
       }
     }
   }
