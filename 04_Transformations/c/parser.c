@@ -6,7 +6,7 @@
 #include "ml6.h"
 #include "display.h"
 #include "draw.h"
-#inlcude "matrix.h"
+#include "matrix.h"
 #include "parser.h"
 
 
@@ -63,8 +63,95 @@ jdyrlandweaver
 void parse_file ( char * filename, 
                   struct matrix * transform, 
                   struct matrix * pm,
-                  screen s) {
+                  screen s)
+{
+  char line[512];
+  color c;
+  double args[6];
+  struct matrix* tmp;
+  FILE* file = fopen(filename, "r");
+  if(file)
+  {
+    for(fgets(line, 512, file); strcmp(line, "q"); fgets(line, 512, file))
+    {
+      if(!strcmp(line, "i"))
+      {
+	ident(transform);
+      }
+      else if(!strcmp(line, "a"))
+      {
+	matrix_mult(transform, pm);
+      }
+      else if(!strcmp(line, "v"))
+      {
+	c.red = 0;
+	c.green = 0;
+	c.blue = 255;
+	clear_screen(s);
+	draw_lines(pm, s, c);
+	display(s);
+      }
+      else
+      {
+	fgets(line, 512, file);
 
+	if(!strcmp(line, "l"))
+	{
+	  sscanf(line, "%lf %lf %lf %lf %lf %lf", &args[0], &args[1], &args[2], 
+		 &args[3], &args[4], &args[5]);
+	  add_edge(pm, args[0], args[1], args[2], 
+		 args[3], args[4], args[5]);
+	}
+	else if(!strcmp(line, "s"))
+	{
+	  sscanf(line, "%lf %lf %lf", &args[0], &args[1], &args[2]);
+	  tmp = make_translate(args[0], args[1], args[2]);
+	  matrix_mult(tmp, transform);
+	  free_matrix(tmp);
+	}
+	else if(!strcmp(line, "t"))
+	{
+	  sscanf(line, "%lf %lf %lf", &args[0], &args[1], &args[2]);
+	  tmp = make_scale(args[0], args[1], args[2]);
+	  matrix_mult(tmp, transform);
+	  free_matrix(tmp);
+	}
+	else if(!strcmp(line, "x"))
+	{
+	  sscanf(line, "%lf", &args[0]);
+	  tmp = make_rotX(args[0] * 3.14159265358979323846264338327950 / 180.0);
+	  matrix_mult(tmp, transform);
+	  free_matrix(tmp);
+	}
+	else if(!strcmp(line, "y"))
+	{
+	  sscanf(line, "%lf", &args[0]);
+	  tmp = make_rotY(args[0] * 3.14159265358979323846264338327950 / 180.0);
+	  matrix_mult(tmp, transform);
+	  free_matrix(tmp);
+	}
+	else if(!strcmp(line, "z"))
+	{
+	  sscanf(line, "%lf", &args[0]);
+	  tmp = make_rotZ(args[0] * 3.14159265358979323846264338327950 / 180.0);
+	  matrix_mult(tmp, transform);
+	  free_matrix(tmp);
+	}
+	else if(!strcmp(line, "g"))
+	{
+	  c.red = 0;
+	  c.green = 0;
+	  c.blue = 255;
+	  clear_screen(s);
+	  draw_lines(pm, s, c);
+	  save_extension(s, line);
+	}
+      }
+    }
+  }
+  else
+  {
+    printf("Invalid filename passed: %s", filename);
+  }
+  fclose(file);
 }
-
-  
