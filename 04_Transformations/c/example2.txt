@@ -64,7 +64,7 @@ s
 a
 i
 g
-pic3big.png 1200 1200
+pic4.png
 q
 g
-pic4.png
+pic5.png
