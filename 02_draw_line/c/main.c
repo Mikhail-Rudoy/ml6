@@ -21,7 +21,7 @@ int main(int argc, char** argv)
   srand(time(0));
   
   clear_screen(s);
-  
+  /*  
   do
   {
     randomizeColor(&c);
