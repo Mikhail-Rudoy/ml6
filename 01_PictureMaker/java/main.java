@@ -15,6 +15,6 @@ public class main
 		s.setPixel(x, y, new Color(r%256, g%256, b%256));
 	    }
 	}
-	saveScreen("pic.ppm");
+	s.saveScreen("pic.ppm");
     }
 }
