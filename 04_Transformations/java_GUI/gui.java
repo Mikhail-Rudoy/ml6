@@ -9,30 +9,44 @@ import java.util.*;
 
 public class gui implements ActionListener,MouseListener, MouseMotionListener
 {
+    public static final Color IMAGE_BACKGROUND = Color.BLACK;
+    public static final Color INTERFACE_BACKGROUND = Color.WHITE;
+
     JFrame frame;
     Canvas canvas;
     JPanel iface;
+    JPanel sidebar;
 
     JButton clear;
     JButton save;
     JButton quit;
     JLabel fnamelabel;
+    JLabel transformlabel;
     JTextField fnamefield;
+    JComboBox transformation;
+    JTextField xarg;
+    JTextField yarg;
+    JTextField zarg;
+    JLabel xlab;
+    JLabel ylab;
+    JLabel zlab;
+    JButton apply;
 
     int clickcount=0;
     int[] xes = new int[10];
     int[] ys = new int[10];
 
-    public guiBasic() {
-
+    public gui()
+    {
 	frame = new JFrame();
 	canvas = new Canvas();
 	canvas.addMouseListener(this);
 	canvas.addMouseMotionListener(this);
-
+	
 	//set window defaults
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	frame.getContentPane().setLayout(new FlowLayout());
+	frame.setBackground(IMAGE_BACKGROUND);
 
 	//add canvas
 	frame.getContentPane().add(canvas);
@@ -40,78 +54,78 @@ public class gui implements ActionListener,MouseListener, MouseMotionListener
 	//set up the interface area
 	iface = new JPanel();
 	iface.setLayout(new GridLayout(10,1));
+	iface.setBackground(INTERFACE_BACKGROUND);
+	
+	//add each interface element
+        transformation = new JComboBox();
+        transformation.addItem("translate");
+        transformation.addItem("scale");
+        transformation.addItem("x rotation");
+        transformation.addItem("y rotation");
+        transformation.addItem("z rotation");
+	
+	transformlabel = new JLabel("Transformation:");
+        iface.add( transformlabel );
+        iface.add(transformation);
+	
+	xlab = new JLabel("X: ");
+        ylab = new JLabel("Y: ");
+        zlab = new JLabel("Z: ");
+        xarg = new JTextField();
+        yarg = new JTextField();
+        zarg = new JTextField();
+	
+	iface.add(xlab);
+        iface.add(xarg);
+        iface.add(ylab);
+        iface.add(yarg);
+        iface.add(zlab);
+        iface.add(zarg);
 
-	fnamelabel = new JLabel("Filename");
-	fnamefield = new JTextField(4);
-	iface.add(fnamelabel);
-	iface.add(fnamefield);
+        fnamelabel = new JLabel("Filename");
+        fnamefield = new JTextField(4);
+        iface.add(fnamelabel);
+        iface.add(fnamefield);
 
-	quit = new JButton("Quit");
-	clear = new JButton("Clear");
-	save = new JButton("Save");
-
-	quit.addActionListener(this);
-	clear.addActionListener(this);
-	save.addActionListener(this);
-	iface.add(clear);
-	iface.add(save);
-	iface.add(quit);
-
+        apply = new JButton("Apply");
+        quit = new JButton("Quit");
+        clear = new JButton("Clear");
+        save = new JButton("Save");
+	
+	apply.addActionListener(this);
+        quit.addActionListener(this);
+        clear.addActionListener(this);
+        save.addActionListener(this);
+        iface.add(apply);
+        iface.add(clear);
+        iface.add(save);
+        iface.add(quit);
+	
+	sidebar = new JPanel();
+        sidebar.setPreferredSize(new Dimension(250, 800));
+        sidebar.setBackground(INTERFACE_BACKGROUND);
+        sidebar.add(iface);
+	
 	//add interface
 	frame.getContentPane().add(iface);
 
 	frame.pack();
 	frame.setVisible(true);
     }
-
-    /*======== public void mousePressed() ==========
-      
-      mousePressed is triggered when the left mouse button 
-      is initially pressed down. 
-
-      The current x and y coordiantes of the mouse should
-      be stored in the first index of xes and ys, respectively.
-      
-      No drawing occurs when the mouse is initially pressed.
-
-      e.getX() and e.getY() will return the current x and
-      y coordinates.
-      ====================*/
+    
     public void mousePressed(MouseEvent e)
     {
 	xes[0] = e.getX();
 	ys[0] = e.getY();
     }	
-
     
-    /*======== public void mouseDragged() ==========
-
-      mouseDragged is triggered when the left mouse button
-      is being held down and the mouse is moving.
-      
-      When the mouse is being dragged, the temporary line in 
-      canvas should be updated to draw the line from the (x, y)
-      position when the mouse was initially clicked (stored in 
-      xes and ys) and the current (x,y) position
-
-      You should use the setDrawing() method in canvas
-      Make sure that you only draw one temporary line at
-      a time.
-      ====================*/
     public void mouseDragged(MouseEvent e)
     {
 	canvas.setDrawing(xes[0], ys[0], e.getX(), e.getY());
+	canvas.paintComponent(canvas.getGraphics());
+	canvas.clearTmp();
     }
     
-    /*======== public void mouseReleased() ==========
-
-      mouseReleased is triggered when the left mouse button
-      is released. This should signal the end of the temporary
-      line drawing and add the line to the canvas' permanant
-      edge matrix.
-
-      You should use addLine and stopDrawing
-      ====================*/
     public void mouseReleased(MouseEvent e)
     {
 	canvas.addLine(xes[0], ys[0], 0, e.getX(), e.getY(), 0);
@@ -126,68 +140,57 @@ public class gui implements ActionListener,MouseListener, MouseMotionListener
     public void mouseClicked(MouseEvent e) {}
 
 
-    public void actionPerformed(ActionEvent e) {
-	if (e.getSource()==quit) {
+    public void actionPerformed(ActionEvent e)
+    {
+	if(e.getSource() == quit)
+	{
 	    System.exit(0);
 	}
-	
-	else if (e.getSource()==save) {
+	else if(e.getSource() == save)
+	{
 	    // save
-	    System.out.println("Saving: "+ fnamefield.getText() );
+	    System.out.println("Saving: " + fnamefield.getText());
 	    BufferedImage bi = canvas.getBufferedImage();
-	    try {
+	    try
+	    {
 		File fn = new File(fnamefield.getText());
 		ImageIO.write(bi,"png",fn);
 	    }
 	    catch (IOException ex) { }
 	}
-	else if (e.getSource()==clear) {
+	else if(e.getSource() == clear)
+	{
 	    canvas.clearPoints();
+	}
+	else if(e.getSource() == apply)
+	{
+	    switch(((String)transformation.getSelectedItem()).charAt(0))
+	    {
+	    case 't':
+	        canvas.translate(Double.parseDouble(xarg.getText()), 
+				 Double.parseDouble(yarg.getText()),
+				 Double.parseDouble(zarg.getText()));
+		break;
+	    case 's':
+	        canvas.scale(Double.parseDouble(xarg.getText()),
+			     Double.parseDouble(yarg.getText()),
+			     Double.parseDouble(zarg.getText()));
+		break;
+	    case 'x':
+	        canvas.rotX(Double.parseDouble(xarg.getText()) * 0.0174532925);
+		break;
+	    case 'y':
+	        canvas.rotY(Double.parseDouble(yarg.getText()) * 0.0174532925);
+		break;
+	    case 'z':
+	        canvas.rotZ(Double.parseDouble(zarg.getText()) * 0.0174532925);
+		break;
+	    }
 	}
     }
 
     public static void main(String[] args)
     {
-	
-        Matrix A = new Matrix(4, 4);
-        Matrix B = new Matrix(4, 4);
-        Matrix C = new Matrix(4, 4);
-        Matrix D = new Matrix(4, 4);
-        Matrix E = new Matrix(4, 4);
-        for(int i = 0; i < 4; i++)
-	    {
-		for(int j = 0; j < 4; j++)
-		    {
-			B.m[i][j] = (i - 2.5) * (i - 2.5) * (3 * j * j * j - 1);
-			C.m[i][j] = i + j + 3;
-			D.m[i][j] = 100 - i * j / 0.3;
-			E.m[i][j] = 4 * i + j;
-		    }
-	    }
-        A.ident();
-        System.out.println("Matrix A set by ident method");
-        System.out.println(A);
-        System.out.println("Matrix B set by hand");
-        System.out.println(B);
-        B.matrixMult(A);
-        System.out.println("A*B=");
-        System.out.println(B);
-        A.matrixMult(B);
-        System.out.println("B*A=");
-        System.out.println(A);
-        System.out.println("Matrix C set by hand");
-        System.out.println(C);
-        System.out.println("Matrix D set by hand");
-        System.out.println(D);
-        D.matrixMult(C);
-        System.out.println("C*D=");
-        System.out.println(D);
-        System.out.println("Matrix E set by hand");
-        System.out.println(E);
-        E.scalarMult(2);
-        System.out.println("2*E=");
-        System.out.println(E);
-	
-	guiBasic g = new guiBasic();
+	gui g = new gui();
     }
 }

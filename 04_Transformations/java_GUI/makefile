@@ -1,4 +1,4 @@
-OBJECTS: Matrix.class EdgeMatrix.class Canvas.class guiBasic.class
+OBJECTS: Matrix.class EdgeMatrix.class Canvas.class gui.class
 
 all: $(OBJECTS)
 
@@ -11,11 +11,11 @@ EdgeMatrix.class: Matrix.java EdgeMatrix.java
 Canvas.class: Canvas.java EdgeMatrix.java
 	javac Canvas.java
 
-guiBasic.class: guiBasic.java Canvas.java Matrix.java EdgeMatrix.java
-	javac guiBasic.java
+gui.class: gui.java Canvas.java Matrix.java EdgeMatrix.java
+	javac gui.java
 
 run: guiBasic.class
-	java guiBasic
+	java gui
 
 clean:
 	rm *~ *.class
