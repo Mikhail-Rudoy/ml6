@@ -90,15 +90,17 @@ def new_rotationZ_matrix(theta):
     r = theta * 3.14159265358979323 / 180
     return [[math.cos(r), math.sin(r), 0.0, 0.0], [0.0 - math.sin(r), math.cos(r), 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 1.0]]
 
-def add_circle_to_matrix(matrix, cx, cy, r, STEPS = 80):
+def add_circle_to_matrix(matrix, cx, cy, r, STEPS = 20):
+    l = []
     for n in range(STEPS + 1):
         t0 = (1.0 * n) / STEPS
-        t1 = (n + 1.0) / STEPS
         x0 = cx + r * math.cos(math.pi * 2 * t0)
         y0 = cy + r * math.sin(math.pi * 2 * t0)
-        x1 = cx + r * math.cos(math.pi * 2 * t1)
-        y1 = cy + r * math.sin(math.pi * 2 * t1)
-        add_edge_to_matrix(matrix, x0, y0, 0, x1, y1, 0)
+        l.append([[x0], [y0], [0]])
+    for i in range(STEPS):
+        [[x0], [y0], [z0]] = l[i]
+        [[x1], [y1], [z1]] = l[i + 1]
+        add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)
 
 def add_hermite_curve_to_matrix(matrix, x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y3, z3, STEPS = 80):
     C = matrix_multiply([[2, -3, 0, 1], [-2, 3, 0, 0], [1, -2, 1, 0], [1, -1, 0, 0]], [[x0, x2, x1 - x0, x3 - x2], [y0, y2, y1 - y0, y3 - y2], [z0, z2, z1 - z0, z3 - z2]])

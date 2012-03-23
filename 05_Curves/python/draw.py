@@ -76,5 +76,5 @@ def draw_edge_matrix(matrix, screen, c):
         y0 = get_element(matrix, 1, i)
         x1 = get_element(matrix, 0, i + 1)
         y1 = get_element(matrix, 1, i + 1)
-        draw_line(screen, x0, y0, x1, y1, c)
+        draw_line(screen, int(x0), int(y0), int(x1), int(y1), c)
         i = i + 2
