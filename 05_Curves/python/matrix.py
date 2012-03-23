@@ -101,27 +101,23 @@ def add_circle_to_matrix(matrix, cx, cy, r, STEPS = 80):
         add_edge_to_matrix(matrix, x0, y0, 0, x1, y1, 0)
 
 def add_hermite_curve_to_matrix(matrix, x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y3, z3, STEPS = 80):
-    [[dx, cx, bx, ax], [dy, cy, by, ay], [dz, cz, bz, az]] = matrix_multiply([[3, -2, 0, 1], [-2, 3, 0, 0], [1, -2, 1, 0], [1, 1, 0, 0]], [[x0, x2, x1 - x0, x3 - x2], [y0, y2, y1 - y0, y3 - y2], [z0, z2, z1 - z0, z3 - z2]])
-    for n in range(STEPS):
-        t0 = (n * 1.0) / STEPS
-        t1 = (n + 1.0) / STEPS
-        x0 = ax * t0 * t0 * t0 + bx * t0 * t0 + cx * t0 + dx
-        y0 = ay * t0 * t0 * t0 + by * t0 * t0 + cy * t0 + dy
-        z0 = az * t0 * t0 * t0 + bz * t0 * t0 + cz * t0 + dz
-        x1 = ax * t1 * t1 * t1 + bx * t1 * t1 + cx * t1 + dx
-        y1 = ay * t1 * t1 * t1 + by * t1 * t1 + cy * t1 + dy
-        z1 = az * t1 * t1 * t1 + bz * t1 * t1 + cz * t1 + dz
+    C = matrix_multiply([[2, -3, 0, 1], [-2, 3, 0, 0], [1, -2, 1, 0], [1, -1, 0, 0]], [[x0, x2, x1 - x0, x3 - x2], [y0, y2, y1 - y0, y3 - y2], [z0, z2, z1 - z0, z3 - z2]])
+    l = []
+    for n in range(STEPS + 1):
+        t = (n * 1.0) / STEPS
+        l.append(matrix_multiply([[t * t * t], [t * t], [t], [1]], C))
+    for i in range(STEPS):
+        [[x0], [y0], [z0]] = l[i]
+        [[x1], [y1], [z1]] = l[i + 1]
         add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)
 
 def add_bezier_curve_to_matrix(matrix, x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y3, z3, STEPS = 80):
-    [[dx, cx, bx, ax], [dy, cy, by, ay], [dz, cz, bz, az]] = matrix_multiply([[1, -3, 3, -1], [0, 3, -6, 3], [0, 0, 3, -3], [0, 0, 0, 1]], [[x0, x1, x2, x3], [y0, y1, y2, y3], [z0, z1, z2, z3]])
-    for n in range(STEPS):
-        t0 = (n * 1.0) / STEPS
-        t1 = (n + 1.0) / STEPS
-        x0 = ax * t0 * t0 * t0 + bx * t0 * t0 + cx * t0 + dx
-        y0 = ay * t0 * t0 * t0 + by * t0 * t0 + cy * t0 + dy
-        z0 = az * t0 * t0 * t0 + bz * t0 * t0 + cz * t0 + dz
-        x1 = ax * t1 * t1 * t1 + bx * t1 * t1 + cx * t1 + dx
-        y1 = ay * t1 * t1 * t1 + by * t1 * t1 + cy * t1 + dy
-        z1 = az * t1 * t1 * t1 + bz * t1 * t1 + cz * t1 + dz
+    C = matrix_multiply([[1, -3, 3, -1], [0, 3, -6, 3], [0, 0, 3, -3], [0, 0, 0, 1]], [[x0, x1, x2, x3], [y0, y1, y2, y3], [z0, z1, z2, z3]])
+    l = []
+    for n in range(STEPS + 1):
+        t = (n * 1.0) / STEPS
+        l.append(matrix_multiply([[1], [t], [t * t], [t * t * t]], C))
+    for i in range(STEPS):
+        [[x0], [y0], [z0]] = l[i]
+        [[x1], [y1], [z1]] = l[i + 1]
         add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)

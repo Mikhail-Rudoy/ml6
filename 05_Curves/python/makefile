@@ -1,4 +1,4 @@
-all: main.py matrix.py screen.py script.py draw.py
+compile: main.py matrix.py screen.py script.py draw.py
 	python main.py
 
 clean:

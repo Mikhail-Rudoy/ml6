@@ -1,4 +1,4 @@
-"make" to compile files
+"make" or "make compile" to compile files
 "make example" to run example script
 "make clean" or "make clear" to remove compiled files and tilda files
 
