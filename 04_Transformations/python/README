@@ -11,5 +11,3 @@ suggested uses:
 "make example2 clear"
 
 In order to run this program, you need to run the command "python main.py <arguments>" where <arguments> is a list of filenames of our graphics scripts. The edge and master transformation matrices carry over between the files if the command q is not used. If it is used, the two matrices are restarted and the code skips to the next filename in the list.
-
-The command "make example" runs (among other things) "python main.py example.txt"
