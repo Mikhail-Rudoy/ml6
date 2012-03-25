@@ -90,7 +90,7 @@ def new_rotationZ_matrix(theta):
     r = theta * 3.14159265358979323 / 180
     return [[math.cos(r), math.sin(r), 0.0, 0.0], [0.0 - math.sin(r), math.cos(r), 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 1.0]]
 
-def add_circle_to_matrix(matrix, cx, cy, r, STEPS = 20):
+def add_circle_to_matrix(matrix, cx, cy, r, STEPS = 80):
     l = []
     for n in range(STEPS + 1):
         t0 = (1.0 * n) / STEPS
