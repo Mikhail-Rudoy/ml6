@@ -123,3 +123,34 @@ def add_bezier_curve_to_matrix(matrix, x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y
         [[x0], [y0], [z0]] = l[i]
         [[x1], [y1], [z1]] = l[i + 1]
         add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)
+
+def add_sphere_mesh_to_matrix(matrix, cx, cy, r, STEPS = [20, 20]):
+    # x = sin(phi)sin(theta)
+    # y = cos(phi)
+    # z = sin(phi)cos(theta)
+    costheta = []
+    sintheta = []
+    cosphi = []
+    sinphi = []
+    for n in range(STEPS[0] + 1):
+        theta = (2 * n * 3.1415926535899793238462643383279) / STEPS[0]
+        costheta.append(math.cos(theta))
+        sintheta.append(math.cos(theta))
+    for n in range(STEPS[1] + 1):
+        phi = (n * 3.1415926535899793238462643383279) / STEPS[0]
+        cosphi.append(math.cos(theta))
+        sinphi.append(math.cos(theta))
+    points = []
+    for r in range(STEPS[1] + 1):
+        tmp = []
+        for c in range(STEPS[0] + 1):
+            tmp.append([sinphi[r] * sintheta[c], cosphi[r], sinphi[r] * costheta[c]])
+        points.append(tmp)
+    for r in range(STEPS[1]):
+        for c in range(STEPS[0]):
+            [x0, y0, z0] = points[r][c]
+            [x1, y1, z1] = points[r + 1][c + 1]
+            add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)
+            [x0, y0, z0] = points[r][c + 1]
+            [x1, y1, z1] = points[r + 1][c]
+            add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)

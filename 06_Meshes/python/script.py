@@ -62,6 +62,8 @@ def run_scripts(filenames):
             else:
                 if commands[0] == "i":
                     transformations = new_ident_matrix(4)
+                elif commands[0] == "w":
+                    edges = []
                 elif commands[0] == "a":
                     edges = matrix_multiply(transformations, edges)
                 commands = commands[1:]
