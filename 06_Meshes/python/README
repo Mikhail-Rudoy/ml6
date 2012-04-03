@@ -1,0 +1,12 @@
+"make" or "make compile" to compile files
+"make example" to run example script
+"make clean" or "make clear" to remove compiled files and tilda files
+
+suggested uses:
+"python main.py <arguments>" (see below)
+"make example clean"
+"make example clear"
+
+In order to run this program, you need to run the command "python main.py <arguments>" where <arguments> is a list of filenames of our graphics scripts. The edge and master transformation matrices carry over between the files if the command q is not used. If it is used, the two matrices are restarted and the code skips to the next filename in the list.
+
+The command "make example" runs (among other things) "python main.py example.txt"
