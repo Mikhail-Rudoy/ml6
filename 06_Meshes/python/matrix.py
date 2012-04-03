@@ -124,10 +124,12 @@ def add_bezier_curve_to_matrix(matrix, x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y
         [[x1], [y1], [z1]] = l[i + 1]
         add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)
 
-def add_sphere_mesh_to_matrix(matrix, cx, cy, cz, r, STEPS = [20, 20]):
+def add_sphere_mesh_to_matrix(matrix, cx, cy, cz, r, STEPS = None):
     # x = sin(phi)sin(theta)
     # y = cos(phi)
     # z = sin(phi)cos(theta)
+    if STEPS == None:
+        STEPS = [int(r / 5), int(r / 5)]
     costheta = []
     sintheta = []
     cosphi = []
@@ -135,22 +137,29 @@ def add_sphere_mesh_to_matrix(matrix, cx, cy, cz, r, STEPS = [20, 20]):
     for n in range(STEPS[0] + 1):
         theta = (2 * n * 3.1415926535899793238462643383279) / STEPS[0]
         costheta.append(math.cos(theta))
-        sintheta.append(math.cos(theta))
+        sintheta.append(math.sin(theta))
     for n in range(STEPS[1] + 1):
-        phi = (n * 3.1415926535899793238462643383279) / STEPS[0]
-        cosphi.append(math.cos(theta))
-        sinphi.append(math.cos(theta))
+        phi = (n * 3.1415926535899793238462643383279) / STEPS[1]
+        cosphi.append(math.cos(phi))
+        sinphi.append(math.sin(phi))
     points = []
-    for r in range(STEPS[1] + 1):
+    for row in range(STEPS[1] + 1):
         tmp = []
-        for c in range(STEPS[0] + 1):
-            tmp.append([r * sinphi[r] * sintheta[c] + cx, r * cosphi[r] + cy, r * sinphi[r] * costheta[c] + cz])
+        for col in range(STEPS[0] + 1):
+            tmp.append([r * sinphi[row] * sintheta[col] + cx, r * cosphi[row] + cy, r * sinphi[row] * costheta[col] + cz])
         points.append(tmp)
-    for r in range(STEPS[1]):
-        for c in range(STEPS[0]):
-            [x0, y0, z0] = points[r][c]
-            [x1, y1, z1] = points[r + 1][c + 1]
+    for row in range(STEPS[1]):
+        for col in range(STEPS[0]):
+            [x0, y0, z0] = points[row][col]
+            [x1, y1, z1] = points[row + 1][col + 1]
             add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)
-            [x0, y0, z0] = points[r][c + 1]
-            [x1, y1, z1] = points[r + 1][c]
+            [x0, y0, z0] = points[row][col + 1]
+            [x1, y1, z1] = points[row + 1][col]
             add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)
+
+def add_box_mesh_to_matrix(matrix, cx, cy, cz, w, h, d, STEPS = None):
+    if STEPS == None:
+        STEPS = 5
+    for n in range(STEPS + 1):
+        t = (1.0 * n) / STEPS
+        

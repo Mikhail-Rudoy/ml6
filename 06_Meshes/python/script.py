@@ -11,7 +11,7 @@ def run_scripts(filenames):
             commands[i] = commands[i].strip()
         filenames = filenames[1:]
         while commands:
-            if commands[0] in "lstxyzgchb":
+            if commands[0] in "lstxyzgchbd":
                 args = commands[1].split(" ")
                 if commands[0] == "l":
                     add_edge_to_matrix(edges, float(args[0]), float(args[1]), float(args[2]), float(args[3]), float(args[4]), float(args[5]))
@@ -54,6 +54,8 @@ def run_scripts(filenames):
                         add_bezier_curve_to_matrix(edges, float(args[0]), float(args[1]), 0, float(args[2]), float(args[3]), 0, float(args[4]), float(args[5]), 0, float(args[6]), float(args[7]), 0,  int(args[8]))
                     else:
                         add_bezier_curve_to_matrix(edges, float(args[0]), float(args[1]), 0, float(args[2]), float(args[3]), 0, float(args[4]), float(args[5]), 0, float(args[6]), float(args[7]), 0)
+                elif commands[0] == "d":
+                    add_sphere_mesh_to_matrix(edges, float(args[0]), float(args[1]), float(args[2]), float(args[3]))
                 commands = commands[2:]
             elif commands[0] == "q":
                 edges = []
