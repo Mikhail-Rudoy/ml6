@@ -124,7 +124,7 @@ def add_bezier_curve_to_matrix(matrix, x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y
         [[x1], [y1], [z1]] = l[i + 1]
         add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)
 
-def add_sphere_mesh_to_matrix(matrix, cx, cy, cz, r, STEPS = None):
+def add_sphere_mesh_to_matrix(matrix, cx, cy, cz, r, whichlines = "d", STEPS = None):
     # x = sin(phi)sin(theta)
     # y = cos(phi)
     # z = sin(phi)cos(theta)
@@ -150,16 +150,81 @@ def add_sphere_mesh_to_matrix(matrix, cx, cy, cz, r, STEPS = None):
         points.append(tmp)
     for row in range(STEPS[1]):
         for col in range(STEPS[0]):
-            [x0, y0, z0] = points[row][col]
-            [x1, y1, z1] = points[row + 1][col + 1]
-            add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)
-            [x0, y0, z0] = points[row][col + 1]
-            [x1, y1, z1] = points[row + 1][col]
-            add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)
+            if whichlines in "bd":
+                [x0, y0, z0] = points[row][col]
+                [x1, y1, z1] = points[row + 1][col + 1]
+                add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)
+                [x0, y0, z0] = points[row][col + 1]
+                [x1, y1, z1] = points[row + 1][col]
+                add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)
+            if whichlines in "bl":
+                [x0, y0, z0] = points[row][col]
+                [x1, y1, z1] = points[row][col + 1]
+                add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)
+                [x0, y0, z0] = points[row][col]
+                [x1, y1, z1] = points[row + 1][col]
+                add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)
 
-def add_box_mesh_to_matrix(matrix, cx, cy, cz, w, h, d, STEPS = None):
+def add_box_mesh_to_matrix(matrix, x0, y0, z0, x1, y1, z1, STEPS = [7, 5, 3]):
+    for n in range(STEPS[0] + 1):
+        t = (1.0 * n) / STEPS[0]
+        xmid = t * x0 + (1 - t) * x1
+        add_edge_to_matrix(matrix, xmid, y0, z0, xmid, y0, z1)
+        add_edge_to_matrix(matrix, xmid, y1, z0, xmid, y1, z1)
+        add_edge_to_matrix(matrix, xmid, y0, z0, xmid, y1, z0)
+        add_edge_to_matrix(matrix, xmid, y0, z1, xmid, y1, z1)
+    for n in range(STEPS[1] + 1):
+        t = (1.0 * n) / STEPS[1]
+        ymid = t * y0 + (1 - t) * y1
+        add_edge_to_matrix(matrix, x0, ymid, z0, x0, ymid, z1)
+        add_edge_to_matrix(matrix, x1, ymid, z0, x1, ymid, z1)
+        add_edge_to_matrix(matrix, x0, ymid, z0, x1, ymid, z0)
+        add_edge_to_matrix(matrix, x0, ymid, z1, x1, ymid, z1)
+    for n in range(STEPS[2] + 1):
+        t = (1.0 * n) / STEPS[2]
+        zmid = t * z0 + (1 - t) * z1
+        add_edge_to_matrix(matrix, x0, y0, zmid, x1, y0, zmid)
+        add_edge_to_matrix(matrix, x0, y1, zmid, x1, y1, zmid)
+        add_edge_to_matrix(matrix, x0, y0, zmid, x0, y1, zmid)
+        add_edge_to_matrix(matrix, x1, y0, zmid, x1, y1, zmid)
+
+def add_torus_mesh_to_matrix(matrix, cx, cy, cz, r, R, whichlines = "d", STEPS = None):
+    # x = (r * sin(phi) + R)sin(theta)
+    # y = r * cos(phi)
+    # z = (r * sin(phi) + R)cos(theta)
     if STEPS == None:
-        STEPS = 5
-    for n in range(STEPS + 1):
-        t = (1.0 * n) / STEPS
-        
+        STEPS = [int(R / 3), int(r / 3)]
+    costheta = []
+    sintheta = []
+    cosphi = []
+    sinphi = []
+    for n in range(STEPS[0] + 1):
+        theta = (2 * n * 3.1415926535899793238462643383279) / STEPS[0]
+        costheta.append(math.cos(theta))
+        sintheta.append(math.sin(theta))
+    for n in range(STEPS[1] + 1):
+        phi = (2 * n * 3.1415926535899793238462643383279) / STEPS[1]
+        cosphi.append(math.cos(phi))
+        sinphi.append(math.sin(phi))
+    points = []
+    for row in range(STEPS[1] + 1):
+        tmp = []
+        for col in range(STEPS[0] + 1):
+            tmp.append([(r * sinphi[row] + R) * sintheta[col] + cx, r * cosphi[row] + cy, (r * sinphi[row] + R) * costheta[col] + cz])
+        points.append(tmp)
+    for row in range(STEPS[1]):
+        for col in range(STEPS[0]):
+            if whichlines in "bd":
+                [x0, y0, z0] = points[row][col]
+                [x1, y1, z1] = points[row + 1][col + 1]
+                add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)
+                [x0, y0, z0] = points[row][col + 1]
+                [x1, y1, z1] = points[row + 1][col]
+                add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)
+            if whichlines in "bl":
+                [x0, y0, z0] = points[row][col]
+                [x1, y1, z1] = points[row][col + 1]
+                add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)
+                [x0, y0, z0] = points[row][col]
+                [x1, y1, z1] = points[row + 1][col]
+                add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)

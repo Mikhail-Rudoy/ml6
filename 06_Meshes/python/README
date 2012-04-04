@@ -1,3 +1,5 @@
+//\\//\\------use------//\\//\\
+
 "make" or "make compile" to compile files
 "make example" to run example script
 "make clean" or "make clear" to remove compiled files and tilda files
@@ -10,3 +12,72 @@ suggested uses:
 In order to run this program, you need to run the command "python main.py <arguments>" where <arguments> is a list of filenames of our graphics scripts. The edge and master transformation matrices carry over between the files if the command q is not used. If it is used, the two matrices are restarted and the code skips to the next filename in the list.
 
 The command "make example" runs (among other things) "python main.py example.txt"
+
+//\\//\\----diSCRIPTion----//\\//\\
+- the script files are simple text files following a particular format
+- every command is a seperate line
+- any arguments necessary for a command are found on the next line seperated by spaces
+- any unrecognized command is ignored and all commands are single letter words, so comments can be easily included
+the following is a list of commands and their uses
+
+q (quit) --0 arguments--
+>>> end script
+
+i (identity) --0 argumets--
+>>> convert the transformation matrix into an identity matrix
+
+w (wipe) --0 arguments--
+>>> remove all edges from the edge matrix
+
+a (apply) --0 arguments--
+>>> apply the transformation matrix to the edge matrix
+
+l (line) --6 arguments--
+>>> adds a line segment to the edge matrix
+00> x coordinate of first endpoint
+01> y coordinate of first endpoint
+02> z coordinate of first endpoint
+03> x coordinate of second endpoint
+04> y coordinate of second endpoint
+
+s (scale) --3 arguments--
+>>> applies a scale matrix to the transformation matrix
+00> factor to scale by in the x direction
+01> factor to scale by in the y direction
+02> factor to scale by in the z direction
+
+t (translate) --3 arguments--
+>>> applies a translation matrix to the transformation matrix
+00> amount to translate by in the x direction
+01> amount to translate by in the y direction
+02> amount to translate by in the z direction
+
+x (x-axis rotation) --1 argument--
+>>> applies an x-axis rotation matrix to the transformation matrix
+00> degree measure of rotation angle
+
+y (y-axis rotation) --1 argument--
+>>> applies a y-axis rotation matrix to the transformation matrix
+00> degree measure of rotation angle
+
+z (z-axis rotation) --1 argument--
+>>> applies a z-axis rotation matrix to the transformation matrix
+00> degree measure of rotation angle
+
+g (generate) --1 argument--
+>>> generates a ppm format image file
+00> filename to save image under
+
+g (generate) --3 arguments--
+>>> generates a ppm format image file
+00> filename to save image under
+01> width of image
+02> height of image
+
+
+
+
+
+
+
+
