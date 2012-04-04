@@ -165,7 +165,7 @@ def add_sphere_mesh_to_matrix(matrix, cx, cy, cz, r, whichlines = "d", STEPS = N
                 [x1, y1, z1] = points[row + 1][col]
                 add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)
 
-def add_box_mesh_to_matrix(matrix, x0, y0, z0, x1, y1, z1, STEPS = [7, 5, 3]):
+def add_box_mesh_to_matrix(matrix, x0, y0, z0, x1, y1, z1, STEPS = [1, 1, 1]):
     for n in range(STEPS[0] + 1):
         t = (1.0 * n) / STEPS[0]
         xmid = t * x0 + (1 - t) * x1
