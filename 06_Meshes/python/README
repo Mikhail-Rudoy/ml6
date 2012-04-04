@@ -2,7 +2,8 @@
 
 "make" or "make compile" to compile files
 "make example" to run example script
-"make clean" or "make clear" to remove compiled files and tilda files
+"make clean" to remove tilda files
+"make clear" to remove compiled files and tilda files
 
 suggested uses:
 "python main.py <arguments>" (see below)
