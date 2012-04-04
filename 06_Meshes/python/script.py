@@ -60,15 +60,19 @@ def run_scripts(filenames):
                 elif commands[0] == "m":
                     if len(args) == 4:
                         add_sphere_mesh_to_matrix(edges, float(args[0]), float(args[1]), float(args[2]), float(args[3]))
+                    elif len(args) == 5:
+                        add_sphere_mesh_to_matrix(edges, float(args[0]), float(args[1]), float(args[2]), float(args[3]), args[4])
                     elif len(args) == 6:
-                        add_sphere_mesh_to_matrix(edges, float(args[0]), float(args[1]), float(args[2]), float(args[3]), [int(args[4]), int(args[5])])
+                        add_sphere_mesh_to_matrix(edges, float(args[0]), float(args[1]), float(args[2]), float(args[3]), "d", [int(args[4]), int(args[5])])
                     else:
                         add_sphere_mesh_to_matrix(edges, float(args[0]), float(args[1]), float(args[2]), float(args[3]), args[4], [int(args[5]), int(args[6])])
                 elif commands[0] == "d":
                     if len(args) == 5:
                         add_torus_mesh_to_matrix(edges, float(args[0]), float(args[1]), float(args[2]), float(args[3]), float(args[4]))
+                    elif len(args) == 6:
+                        add_torus_mesh_to_matrix(edges, float(args[0]), float(args[1]), float(args[2]), float(args[3]), float(args[4]), args[5])
                     elif len(args) == 7:
-                        add_torus_mesh_to_matrix(edges, float(args[0]), float(args[1]), float(args[2]), float(args[3]), float(args[4]), [int(args[5]), int(args[6])])
+                        add_torus_mesh_to_matrix(edges, float(args[0]), float(args[1]), float(args[2]), float(args[3]), float(args[4]), "d", [int(args[5]), int(args[6])])
                     else:
                         add_torus_mesh_to_matrix(edges, float(args[0]), float(args[1]), float(args[2]), float(args[3]), float(args[4]), args[5], [int(args[6]), int(args[7])])
                 elif commands[0] == "p":

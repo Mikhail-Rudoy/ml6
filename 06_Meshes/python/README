@@ -203,6 +203,18 @@ d (donut) --5 arguments--
 03> the length of the outer radius
 04> the length of the inner radius
 
+d (donut) --6 arguments--
+>>> adds a torus wireframe mesh with inner radius perpendicular to the y direction to the edge matrix
+00> x coordinate of the center point
+01> y coordinate of the center point
+02> z coordinate of the center point
+03> the length of the outer radius
+04> the length of the inner radius
+05> the types of lines to be drawn
+    	d for diagonal lines
+	l for lateral lines
+	b for both sets of lines
+
 d (donut) --7 arguments--
 >>> adds a torus wireframe mesh with inner radius perpendicular to the y direction to the edge matrix
 00> x coordinate of the center point
@@ -220,12 +232,12 @@ d (donut) --8 arguments--
 02> z coordinate of the center point
 03> the length of the outer radius
 04> the length of the inner radius
-05> the number of pieces each vertical cross section will be cut into
-06> the number of pieces each horizontal cross section will be cut into
-07> the types of lines to be drawn
+05> the types of lines to be drawn
     	d for diagonal lines
 	l for lateral lines
 	b for both sets of lines
+06> the number of pieces each vertical cross section will be cut into
+07> the number of pieces each horizontal cross section will be cut into
 
 m (munchkin) --4 arguments--
 >>> adds a sphere wireframe mesh to the edge matrix
@@ -234,14 +246,16 @@ m (munchkin) --4 arguments--
 02> z coordinate of the center point
 03> the length of the radius
 
-m (munchkin) --6 arguments--
+m (munchkin) --5 arguments--
 >>> adds a sphere wireframe mesh to the edge matrix
 00> x coordinate of the center point
 01> y coordinate of the center point
 02> z coordinate of the center point
 03> the length of the radius
-04> the number of pieces each latitude curve will be cut into
-05> the number of pieces each longitude curve will be cut into
+04> the types of lines to be drawn
+    	d for diagonal lines
+	l for latitude and longitude lines
+	b for both sets of lines
 
 m (munchkin) --6 arguments--
 >>> adds a sphere wireframe mesh to the edge matrix
@@ -251,10 +265,19 @@ m (munchkin) --6 arguments--
 03> the length of the radius
 04> the number of pieces each latitude curve will be cut into
 05> the number of pieces each longitude curve will be cut into
-07> the types of lines to be drawn
+
+m (munchkin) --7 arguments--
+>>> adds a sphere wireframe mesh to the edge matrix
+00> x coordinate of the center point
+01> y coordinate of the center point
+02> z coordinate of the center point
+03> the length of the radius
+04> the types of lines to be drawn
     	d for diagonal lines
 	l for latitude and longitude lines
 	b for both sets of lines
+05> the number of pieces each latitude curve will be cut into
+06> the number of pieces each longitude curve will be cut into
 
 p (prism) --6 arguments--
 >>> adds a wireframe mesh of a rectangular prism with sides parallel to the axes
