@@ -13,7 +13,7 @@ In order to run this program, you need to run the command "python main.py <argum
 
 The command "make example" runs (among other things) "python main.py example.txt"
 
-//\\//\\----diSCRIPTion----//\\//\\
+//\\//\\----deSCRIPTion----//\\//\\
 - the script files are simple text files following a particular format
 - every command is a seperate line
 - any arguments necessary for a command are found on the next line seperated by spaces
