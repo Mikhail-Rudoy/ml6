@@ -241,3 +241,16 @@ def add_torus_mesh_to_matrix(matrix, cx, cy, cz, r, R, whichlines = "d", STEPS =
                 [x0, y0, z0] = points[row][col]
                 [x1, y1, z1] = points[row + 1][col]
                 add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1)
+
+def add_polygon_box_to_matrix(matrix, x0, y0, z0, x1, y1, z1):
+    [x0, x1] = sorted([x0, x1])
+    [y0, y1] = sorted([y0, y1])
+    [z0, z1] = sorted([z0, z1])
+    add_face_to_matrix(matrix, x0, y0, z0, x0, y1, z0, x1, y1, z0)
+    add_face_to_matrix(matrix, x0, y0, z0, x1, y1, z0, x1, y0, z0)
+    add_face_to_matrix(matrix, x1, y0, z0, x1, y1, z0, x1, y1, z1)
+    add_face_to_matrix(matrix, x1, y0, z0, x1, y1, z1, x1, y0, z1)
+    add_face_to_matrix(matrix, x1, y0, z1, x1, y1, z1, x0, y1, z1)
+    add_face_to_matrix(matrix, x1, y0, z1, x0, y1, z1, x0, y0, z1)
+    add_face_to_matrix(matrix, x0, y0, z1, x0, y1, z1, x0, y1, z0)
+    add_face_to_matrix(matrix, x0, y0, z1, x0, y1, z0, x0, y0, z0)

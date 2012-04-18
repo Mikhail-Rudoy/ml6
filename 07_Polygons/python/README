@@ -69,11 +69,31 @@ g (generate) --1 argument--
 >>> generates a ppm format image file
 00> filename to save image under
 
+g (generate) --2 argument--
+>>> generates a ppm format image file
+00> filename to save image under
+01> what to draw:
+    	e for edges
+	f for faces
+	ef for faces over edges
+	fe for edges over faces
+
 g (generate) --3 arguments--
 >>> generates a ppm format image file
 00> filename to save image under
 01> width of image
 02> height of image
+
+g (generate) --4 arguments--
+>>> generates a ppm format image file
+00> filename to save image under
+01> width of image
+02> height of image
+03> what to draw:
+    	e for edges
+	f for faces
+	ef for faces over edges
+	fe for edges over faces
 
 c (circle) --3 arguments--
 >>> adds a circle in the z=0 plane to the edge matrix
