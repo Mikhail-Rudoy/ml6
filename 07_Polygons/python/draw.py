@@ -78,3 +78,18 @@ def draw_edge_matrix(matrix, screen, c):
         y1 = get_element(matrix, 1, i + 1)
         draw_line(screen, int(x0), int(y0), int(x1), int(y1), c)
         i = i + 2
+
+
+def draw_face_matrix(matrix, screen, c):
+    i = 0
+    while i < get_width(matrix) - 2:
+        x0 = get_element(matrix, 0, i)
+        y0 = get_element(matrix, 1, i)
+        x1 = get_element(matrix, 0, i + 1)
+        y1 = get_element(matrix, 1, i + 1)
+        x2 = get_element(matrix, 0, i + 2)
+        y2 = get_element(matrix, 1, i + 2)
+        draw_line(screen, int(x0), int(y0), int(x1), int(y1), c)
+        draw_line(screen, int(x0), int(y0), int(x2), int(y2), c)
+        draw_line(screen, int(x2), int(y2), int(x1), int(y1), c)
+        i = i + 3

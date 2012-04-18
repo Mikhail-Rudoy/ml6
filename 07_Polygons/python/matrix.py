@@ -70,7 +70,20 @@ def add_point_to_matrix(matrix, x, y, z):
     return matrix
 
 def add_edge_to_matrix(matrix, x0, y0, z0, x1, y1, z1):
-    return add_point_to_matrix(add_point_to_matrix(matrix, x0, y0, z0), x1, y1, z1)
+    matrix.append([x0, y0, z0, 1])
+    matrix.append([x1, y1, z1, 1])
+    return matrix
+
+def add_face_to_matrix(matrix, x0, y0, z0, x1, y1, z1, x2, y2, z2):
+    matrix.append([x0, y0, z0, 1])
+    matrix.append([x1, y1, z1, 1])
+    matrix.append([x2, y2, z2, 1])
+    return matrix
+
+def add_points_to_matrix(matrix, *points):
+    for P in points:
+        matrix.append(P + [1])
+    return matrix
 
 def new_translation_matrix(a, b, c):
     return [[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], [a, b, c, 1.0]]
