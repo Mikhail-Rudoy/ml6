@@ -101,6 +101,11 @@ def run_scripts(filenames):
                         add_polygon_sphere_to_matrix(faces, float(args[0]), float(args[1]), float(args[2]), float(args[3]))
                     else:
                         add_polygon_sphere_to_matrix(faces, float(args[0]), float(args[1]), float(args[2]), float(args[3]), [int(args[4]), int(args[5])])
+                elif commands[i] == "D":
+                    if len(args) == 5:
+                        add_polygon_torus_to_matrix(faces, float(args[0]), float(args[1]), float(args[2]), float(args[3]), float(args[4]))
+                    else:
+                        add_polygon_torus_to_matrix(faces, float(args[0]), float(args[1]), float(args[2]), float(args[3]), float(args[4]), [int(args[5]), int(args[6])])
                 i = i + 2
             elif commands[i] == "q":
                 edges = []
