@@ -43,7 +43,7 @@ def run_scripts(filenames):
                         if c == "e" and not facesDone:
                             draw_face_matrix(faces, sc, [255, 255, 255])
                             facesDone = True
-                        if c == "f" and not edgesDone;
+                        if c == "f" and not edgesDone:
                             draw_edge_matrix(edges, sc, [255, 255, 255])
                             edgesDone = True
                     save_screen(sc, args[0])
@@ -95,7 +95,12 @@ def run_scripts(filenames):
                     else:
                         add_box_mesh_to_matrix(edges, float(args[0]), float(args[1]), float(args[2]), float(args[3]), float(args[4]), float(args[5]), [int(args[6]), int(args[7]), int(args[8])])
                 elif commands[i] == "P":
-                    add polygon_box_to_matrix(faces, float(args[0]), float(args[1]), float(args[2]), float(args[3]), float(args[4]), float(args[5]))
+                    add_polygon_box_to_matrix(faces, float(args[0]), float(args[1]), float(args[2]), float(args[3]), float(args[4]), float(args[5]))
+                elif commands[i] == "M":
+                    if len(args) == 4:
+                        add_polygon_sphere_to_matrix(faces, float(args[0]), float(args[1]), float(args[2]), float(args[3]))
+                    else:
+                        add_polygon_sphere_to_matrix(faces, float(args[0]), float(args[1]), float(args[2]), float(args[3]), [int(args[4]), int(args[5])])
                 i = i + 2
             elif commands[i] == "q":
                 edges = []

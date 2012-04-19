@@ -7,5 +7,5 @@ clean:
 clear:
 	rm *.pyc *~
 
-#example: compile example.txt
-#	python main.py example.txt
+example: compile example.txt
+	python main.py example.txt
