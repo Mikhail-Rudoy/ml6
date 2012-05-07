@@ -1,6 +1,6 @@
 import lex
 
-tokens = ("ID", "DOUBLE", "COMMENT", "LIGHT", "CONSTANTS", "SAVE_COORDS", "CAMERA", "AMBIENT", "TORUS", "SPHERE", "BOX", "LINE", "MESH", "TEXTURE", "SET", "MOVE", "SCALE", "ROTATE", "BASENAME", "SAVE_KNOBS", "TWEEN", "FRAMES", "VARY", "PUSH", "POP", "SAVE", "GENERATE_RAYFILES", "SHADING", "SHADING_TYPE", "SET_KNOBS", "FOCAL", "WEB", "STRING")
+tokens = ("STRING", "ID", "DOUBLE", "COMMENT", "LIGHT", "CONSTANTS", "SAVE_COORDS", "CAMERA", "AMBIENT", "TORUS", "SPHERE", "BOX", "LINE", "MESH", "TEXTURE", "SET", "MOVE", "SCALE", "ROTATE", "BASENAME", "SAVE_KNOBS", "TWEEN", "FRAMES", "VARY", "PUSH", "POP", "SAVE", "GENERATE_RAYFILES", "SHADING", "SHADING_TYPE", "SET_KNOBS", "FOCAL", "WEB")
 
 reserved = {
     "light" : "LIGHT",
@@ -40,7 +40,9 @@ reserved = {
 
 t_ignore = " \t"
 
-t_STRING = r"[a-zA-Z_][a-zA-Z_0-9]*\.[a-zA-Z_0-9]*"
+def t_STRING(t):
+    r"[a-zA-Z_][a-zA-Z_0-9]*\.[a-zA-Z_0-9]*"
+    return t
 
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
@@ -53,10 +55,12 @@ def t_DOUBLE(t):
     t.value = float(t.value)
     return t
 
-t_COMMENT = r"'//'.*"
+def t_COMMENT(t):
+    r"//.*"
+    return t
 
 lex.lex()
-lex.input("ground flat focal thing.ppm //more blah blah")
+lex.input(r"mesh generate_rayfiles thing.ppm //the rest is a comment")
 while 1:
     tok = lex.token()
     if not tok:
