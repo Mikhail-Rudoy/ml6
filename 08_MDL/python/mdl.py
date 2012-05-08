@@ -1,6 +1,6 @@
 import lex
 
-tokens = ("STRING", "ID", "DOUBLE", "COMMENT", "LIGHT", "CONSTANTS", "SAVE_COORDS", "CAMERA", "AMBIENT", "TORUS", "SPHERE", "BOX", "LINE", "MESH", "TEXTURE", "SET", "MOVE", "SCALE", "ROTATE", "BASENAME", "SAVE_KNOBS", "TWEEN", "FRAMES", "VARY", "PUSH", "POP", "SAVE", "GENERATE_RAYFILES", "SHADING", "SHADING_TYPE", "SET_KNOBS", "FOCAL", "WEB")
+tokens = ("STRING", "ID", "DOUBLE", "COMMENT", "LIGHT", "CONSTANTS", "SAVE_COORDS", "CAMERA", "AMBIENT", "TORUS", "SPHERE", "BOX", "LINE", "MESH", "TEXTURE", "SET", "MOVE", "SCALE", "ROTATE", "BASENAME", "SAVE_KNOBS", "TWEEN", "FRAMES", "VARY", "PUSH", "POP", "SAVE", "GENERATE_RAYFILES", "SHADING", "SHADING_TYPE", "SET_KNOBS", "FOCAL", "WEB", "CO")
 
 reserved = {
     "light" : "LIGHT",
@@ -51,12 +51,16 @@ def t_ID(t):
     return t
 
 def t_DOUBLE(t):
-    r"\-?\d+|\-?\d*\.\d*"
+    r"\-?\d+\.?\d*|\-?\.\d*"
     t.value = float(t.value)
     return t
 
 def t_COMMENT(t):
     r"//.*"
+    return t
+
+def t_CO(t):
+    r":"
     return t
 
 lex.lex()
@@ -66,3 +70,4 @@ while 1:
     if not tok:
         break
     print tok
+
