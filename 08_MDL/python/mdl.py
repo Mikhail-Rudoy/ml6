@@ -1,7 +1,6 @@
 import lex, yacc
 
 tokens = (
-    "FILENAME", 
     "STRING", 
     "ID", 
     "DOUBLE", 
@@ -78,19 +77,14 @@ reserved = {
 
 t_ignore = " \t"
 
-def t_FILENAME(t):
-    r"[a-zA-Z_0-9]*\.[a-zA-Z_0-9]*"
-    return t
-
-def t_STRING(t):
-    r"\'[a-zA-Z_0-9]*\'|\"[a-zA-Z_0-9]*\""
-    t.value = t.value[1:-1]
-    return t
-
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
     if reserved.has_key(t.value):
         t.type = reserved.get(t.value)
+    return t
+
+def t_STRING(t):
+    r"[a-zA-Z_0-9\.]+"
     return t
 
 def t_INT(t):
@@ -119,12 +113,17 @@ symbols = {}
 
 def p_line_all(p):
     """line : 
-            | line command
-            | command"""
+            | statement line
+            | statement"""
     pass
 
-def p_number_both(p):
-    """number : DOUBLE
+def p_symbol(p):
+    """SYMBOL : STRING
+              | ID"""
+    p[0] = p[1]
+
+def p_number(p):
+    """NUMBER : DOUBLE
               | INT"""
     p[0] = p[1]
 
@@ -144,6 +143,11 @@ def p_satement_save(p):
         commands.append((p[1], p[2], 500, 500))
     else:
         commands.append((p[1], p[2], p[3], p[4]))
+
+def p_statement_show(p):
+    "statement : DISPLAY SYMBOL"
+    commands.append((p[1], p[2]))
+
 
 yacc.yacc()
 
