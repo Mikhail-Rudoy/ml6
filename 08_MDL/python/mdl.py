@@ -5,6 +5,7 @@ tokens = (
     "STRING", 
     "ID", 
     "DOUBLE", 
+    "INT", 
     "COMMENT", 
     "LIGHT", 
     "CONSTANTS", 
@@ -34,6 +35,7 @@ tokens = (
     "SHADING_TYPE", 
     "SET_KNOBS", 
     "FOCAL", 
+    "DISPLAY", 
     "WEB"
 )
 
@@ -70,13 +72,14 @@ reserved = {
     "wireframe" : "SHADING_TYPE", 
     "set_knobs" : "SET_KNOBS", 
     "focal" : "FOCAL", 
+    "display" : "DISPLAY", 
     "web" : "WEB"
 }
 
 t_ignore = " \t"
 
 def t_FILENAME(t):
-    r"[a-zA-Z_][a-zA-Z_0-9]*\.[a-zA-Z_0-9]*"
+    r"[a-zA-Z_0-9]*\.[a-zA-Z_0-9]*"
     return t
 
 def t_STRING(t):
@@ -90,6 +93,10 @@ def t_ID(t):
         t.type = reserved.get(t.value)
     return t
 
+def t_INT(t):
+    r"\-?\d+"
+    t.value = int(t.value)
+
 def t_DOUBLE(t):
     r"\-?\d+\.?\d*|\-?\.\d*"
     t.value = float(t.value)
@@ -99,11 +106,16 @@ def t_COMMENT(t):
     r"//.*"
     return t
 
+def t_CO(t):
+    r":"
+    return t
+
 lex.lex()
 
 #----------------------------------------------------------
 
-
+commands = []
+symbols = {}
 
 def p_line_all(p):
     """line : 
@@ -111,11 +123,27 @@ def p_line_all(p):
             | command"""
     pass
 
+def p_number_both(p):
+    """number : DOUBLE
+              | INT"""
+    p[0] = p[1]
+
 def p_statement_comment(p):
     'statement : COMMENT'
     pass
 
+def p_statement_stack(p):
+    """statement : POP
+                 | PUSH"""
+    commmands.append((p[1]))
 
+def p_satement_save(p):
+    """statement : SAVE FILENAME
+                 | SAVE FILENAME INT INT"""
+    if len(p) == 3:
+        commands.append((p[1], p[2], 500, 500))
+    else:
+        commands.append((p[1], p[2], p[3], p[4]))
 
 yacc.yacc()
 

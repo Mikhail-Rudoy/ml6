@@ -320,3 +320,47 @@ p (prism) --9 arguments--
 06> amount of pieces to cut the faces allong the x direction into
 07> amount of pieces to cut the faces allong the y direction into
 08> amount of pieces to cut the faces allong the z direction into
+
+D (Donut) --5 arguments--
+>>> Adds a torus modeled with polygons
+00> x coordinate of the center point
+01> y coordinate of the center point
+02> z coordinate of the center point
+03> the length of the outer radius
+04> the length of the inner radius
+
+D (Donut) --7 arguments--
+>>> Adds a torus modeled with polygons
+00> x coordinate of the center point
+01> y coordinate of the center point
+02> z coordinate of the center point
+03> the length of the outer radius
+04> the length of the inner radius
+05> the number of pieces each vertical cross section will be cut into
+06> the number of pieces each horizontal cross section will be cut into
+
+M (Munchkin) --4 arguments--
+>>> adds a sphere modeled with polygons
+00> x coordinate of the center point
+01> y coordinate of the center point
+02> z coordinate of the center point
+03> the length of the radius
+
+M (Munchkin) --6 arguments--
+>>> adds a sphere modeled with polygons
+00> x coordinate of the center point
+01> y coordinate of the center point
+02> z coordinate of the center point
+03> the length of the radius
+04> the number of pieces each latitude curve will be cut into
+05> the number of pieces each longitude curve will be cut into
+
+P (Prism) --6 arguments--
+>>> adds a prism with 2 triangles representing each face
+00> x coordinate of a vertex
+01> y coordinate of the same vertex
+02> z coordinate of the same vertex
+03> x coordinate of the opposite vertex
+04> y coordinate of the opposite vertex
+05> z coordinate of the opposite vertex
+
