@@ -1,4 +1,4 @@
-import math
+import math, os
 
 def new_screen(w, h):
     black = [0, 0, 0]
@@ -24,6 +24,13 @@ def save_screen(screen, filename):
         lines[i] = lines[i] + "\n"
     FILE.writelines(lines)
     FILE.close()
+
+def show_file(filename):
+    if os.fork():
+        os.wait()
+    else:
+        os.system("display " + filename)
+        exit()
 
 def draw_pixel(screen, x, y, c):
     x, y = int(x), int(y)
