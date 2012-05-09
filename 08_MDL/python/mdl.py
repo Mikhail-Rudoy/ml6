@@ -1,6 +1,41 @@
-import lex
+import lex, yacc
 
-tokens = ("STRING", "ID", "DOUBLE", "COMMENT", "LIGHT", "CONSTANTS", "SAVE_COORDS", "CAMERA", "AMBIENT", "TORUS", "SPHERE", "BOX", "LINE", "MESH", "TEXTURE", "SET", "MOVE", "SCALE", "ROTATE", "BASENAME", "SAVE_KNOBS", "TWEEN", "FRAMES", "VARY", "PUSH", "POP", "SAVE", "GENERATE_RAYFILES", "SHADING", "SHADING_TYPE", "SET_KNOBS", "FOCAL", "WEB")
+tokens = (
+    "FILENAME", 
+    "STRING", 
+    "ID", 
+    "DOUBLE", 
+    "COMMENT", 
+    "LIGHT", 
+    "CONSTANTS", 
+    "SAVE_COORDS", 
+    "CAMERA", 
+    "AMBIENT", 
+    "TORUS", 
+    "SPHERE", 
+    "BOX", 
+    "LINE", 
+    "MESH", 
+    "TEXTURE", 
+    "SET", 
+    "MOVE", 
+    "SCALE", 
+    "ROTATE", 
+    "BASENAME", 
+    "SAVE_KNOBS", 
+    "TWEEN", 
+    "FRAMES", 
+    "VARY", 
+    "PUSH", 
+    "POP", 
+    "SAVE", 
+    "GENERATE_RAYFILES", 
+    "SHADING", 
+    "SHADING_TYPE", 
+    "SET_KNOBS", 
+    "FOCAL", 
+    "WEB"
+)
 
 reserved = {
     "light" : "LIGHT",
@@ -40,8 +75,13 @@ reserved = {
 
 t_ignore = " \t"
 
-def t_STRING(t):
+def t_FILENAME(t):
     r"[a-zA-Z_][a-zA-Z_0-9]*\.[a-zA-Z_0-9]*"
+    return t
+
+def t_STRING(t):
+    r"\'[a-zA-Z_0-9]*\'|\"[a-zA-Z_0-9]*\""
+    t.value = t.value[1:-1]
     return t
 
 def t_ID(t):
@@ -51,7 +91,7 @@ def t_ID(t):
     return t
 
 def t_DOUBLE(t):
-    r"\-?\d+|\-?\d*\.\d*"
+    r"\-?\d+\.?\d*|\-?\.\d*"
     t.value = float(t.value)
     return t
 
@@ -60,9 +100,30 @@ def t_COMMENT(t):
     return t
 
 lex.lex()
-lex.input(r"mesh generate_rayfiles thing.ppm //the rest is a comment")
-while 1:
-    tok = lex.token()
-    if not tok:
-        break
-    print tok
+
+#----------------------------------------------------------
+
+
+
+def p_line_all(p):
+    """line : 
+            | line command
+            | command"""
+    pass
+
+def p_statement_comment(p):
+    'statement : COMMENT'
+    pass
+
+
+
+yacc.yacc()
+
+def parseFile(filename):
+    try:
+        f = open(filename, "r")
+        for line in f.readlines():
+            yacc.parse(line)
+        f.close()
+    except IOError:
+        return -1
