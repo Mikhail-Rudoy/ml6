@@ -1,4 +1,3 @@
-from screen import *
 import math
 
 class Matrix():
@@ -15,18 +14,11 @@ class Matrix():
         if len(args) == 2:
             w, h = args
             self.matrix = [[[0.0] * h] for c in range(w)]
-        elif len(args) = 1:
+        elif len(args) == 1:
             self.matrix = [col[:] for col in args[0]]
         else:
             return NotImplemented
     
-    def identity_matrix(d):
-        """
-        This function returns a new identity matrix of dimensions 
-        d by d.
-        """
-        m = Matrix(0, 0)
-        m.matrix = [[float(i == j) for i in range(d)] for j in range(d)]
 
     def get(self, r, c):
         """
@@ -120,7 +112,8 @@ class Matrix():
         else:
             return NotImplemented
     
-    def __imul__(self, other):"""
+    def __imul__(self, other):
+        """
         Overloading the *= operator to also signify scalar multiplication
         and matrix multiplication.
         """
@@ -142,63 +135,58 @@ class Matrix():
         else:
             return NotImplemented
 
-
-class Transformation():
+def ident(d = 4):
     """
-    This is a simple utility class for generating transformation.
-    matrices.
+    This function returns a new identity matrix dith dimensions d by d.
     """
-    
-    def ident():
-        """
-        This function returns a new identity transformation matrix.
-        """
-        return Matrix.identity_matrix(4)
+    m = Matrix(0, 0)
+    m.matrix = [[float(i == j) for i in range(d)] for j in range(d)]
+    return m
 
-    def move(a, b, c):
-        """
-        This function returns a new translation matrix.
-        """
-        result = Matrix(0, 0)
+def move(a, b, c):
+    """
+    This function returns a new translation matrix.
+    """
+    result = Matrix(0, 0)
+    result.matrix = [[1.0, 0.0, 0.0, 0.0], \
+                     [0.0, 1.0, 0.0, 0.0], \
+                     [0.0, 0.0, 1.0, 0.0], \
+                     [a, b, c, 1.0]]
+
+def scale(a, b, c):
+    """
+    This function returns a new scaling matrix.
+    """
+    result = Matrix(0, 0)
+    result.matrix = [[a, 0.0, 0.0, 0.0], \
+                     [0.0, b, 0.0, 0.0], \
+                     [0.0, 0.0, c, 0.0], \
+                     [0.0, 0.0, 0.0, 1.0]]
+
+def rotate(axis, theta):
+    """
+    This function returns a new rotation matrix.
+    """
+    result = Matrix(0, 0)
+    r = theta * 3.14159265358979323 / 180
+    if axis == "x":
         result.matrix = [[1.0, 0.0, 0.0, 0.0], \
-                         [0.0, 1.0, 0.0, 0.0], \
-                         [0.0, 0.0, 1.0, 0.0], \
-                         [a, b, c, 1.0]]
-    
-    def scale(a, b, c):
-        """
-        This function returns a new scaling matrix.
-        """
-        result = Matrix(0, 0)
-        result.matrix = [[a, 0.0, 0.0, 0.0], \
-                         [0.0, b, 0.0, 0.0], \
-                         [0.0, 0.0, c, 0.0], \
+                         [0.0, math.cos(r), math.sin(r), 0.0], \
+                         [0.0, 0.0 - math.sin(r), math.cos(r), 0.0], \
                          [0.0, 0.0, 0.0, 1.0]]
-    
-    def rotate(axis, theta):
-        """
-        This function returns a new rotation matrix.
-        """
-        result = Matrix(0, 0)
-        r = theta * 3.14159265358979323 / 180
-        if axis == "x":
-            result.matrix = [[1.0, 0.0, 0.0, 0.0], \
-                             [0.0, math.cos(r), math.sin(r), 0.0], \
-                             [0.0, 0.0 - math.sin(r), math.cos(r), 0.0], \
-                             [0.0, 0.0, 0.0, 1.0]]
-        elif axis == "y":
-            result.matrix = [[math.cos(r), 0.0, math.sin(r), 0.0], \
-                             [0.0, 1.0, 0.0, 0.0], \
-                             [0.0 - math.sin(r), 0.0, math.cos(r), 0.0], \
-                             [0.0, 0.0, 0.0, 1.0]]
-        elif axis == "z":
-            result.matrix = [[math.cos(r), math.sin(r), 0.0, 0.0], \
-                             [0.0 - math.sin(r), math.cos(r), 0.0, 0.0], \
-                             [0.0, 0.0, 1.0, 0.0], \
-                             [0.0, 0.0, 0.0, 1.0]]
-        else:
-            return NotImplemented
-        return result
+    elif axis == "y":
+        result.matrix = [[math.cos(r), 0.0, math.sin(r), 0.0], \
+                         [0.0, 1.0, 0.0, 0.0], \
+                         [0.0 - math.sin(r), 0.0, math.cos(r), 0.0], \
+                         [0.0, 0.0, 0.0, 1.0]]
+    elif axis == "z":
+        result.matrix = [[math.cos(r), math.sin(r), 0.0, 0.0], \
+                         [0.0 - math.sin(r), math.cos(r), 0.0, 0.0], \
+                         [0.0, 0.0, 1.0, 0.0], \
+                         [0.0, 0.0, 0.0, 1.0]]
+    else:
+        return NotImplemented
+    return result
 
 class PointMatrix(Matrix):
     """
@@ -223,6 +211,29 @@ class PointMatrix(Matrix):
         """
         for p in points:
             self.matrix.append(p + [1.0])
+    
+    def __imul__(self, other):
+        """
+        Overloading the *= operator to also signify scalar multiplication
+        and matrix multiplication.
+        """
+        if isinstance(other, Number):
+            for r in range(self.height()):
+                for c in range(self.width()):
+                    self.set(r, c, self.get(r, c) * other)
+            return self
+        elif isinstance(other, matrix):
+            if 4 != other.width() or 4 != other.height():
+                return NotImplemented
+            result = [[0.0] * 4 for c in range(self.width())]
+            for r in range(4):
+                for c in range(self.width()):
+                    for i in range(4):
+                        result[c][r] += other.get(r, i) * self.get(i, c)
+            self.matrix = result
+            return self
+        else:
+            return NotImplemented
 
 class EdgeMatrix(PointMatrix):
     """
@@ -400,6 +411,14 @@ class EdgeMatrix(PointMatrix):
             self.add_edge(x0, y1, zmid, x1, y1, zmid)
             self.add_edge(x0, y0, zmid, x0, y1, zmid)
             self.add_edge(x1, y0, zmid, x1, y1, zmid)
+    
+    def clone(self):
+        """
+        This method returns an exact copy of the matrix
+        """
+        copy = EdgeMatrix()
+        copy.matrix = [col[:] for col in self.matrix]
+        return copy
 
 class FaceMatrix(PointMatrix):
     """
@@ -509,3 +528,11 @@ class FaceMatrix(PointMatrix):
         self.add_face(x0, y0, z1, x1, y0, z0, x1, y0, z1)
         self.add_face(x0, y1, z0, x0, y1, z1, x1, y1, z1)
         self.add_face(x0, y1, z0, x1, y1, z1, x1, y1, z0)
+    
+    def clone(self):
+        """
+        This method returns an exact copy of the matrix
+        """
+        copy = FaceMatrix()
+        copy.matrix = [col[:] for col in self.matrix]
+        return copy

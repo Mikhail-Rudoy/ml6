@@ -1,4 +1,4 @@
-import math, os
+import math, os, vector, matrix
 
 class Screen():
     """
@@ -44,27 +44,6 @@ class Screen():
             lines[i] = lines[i] + "\n"
         FILE.writelines(lines)
         FILE.close()
-    
-    def display(source = None):
-        """
-        This function displays the given image file on screen.
-        If the function is called with a screen or as a method, 
-        the file used is the last file that screen was saved to.
-        If a filename is specified, that file is displayed.
-        """
-        if isinstance(source, basestring):
-            filename = source
-        elif isinstance(source, Screen):
-            filename = source.__filename__
-        else:
-            filename = None
-        if filename == None:
-            raise TypeError("no file specified")
-        if os.fork():
-            os.wait()
-        else:
-            os.system("display " + filename)
-            exit()
     
     def set(self, x, y, col):
         """
@@ -151,3 +130,58 @@ class Screen():
                     d = d - dy
                 y = y + 1
                 d = d + dx
+    
+    def draw_EdgeMatrix(self, m, col):
+        """
+        This method draws the edges contained in an EdgeMatrix.
+        """
+        i = 0
+        while i < m.width() - 1:
+            x0 = m.get(0, i)
+            y0 = m.get(1, i)
+            x1 = m.get(0, i + 1)
+            y1 = m.get(1, i + 1)
+            self.draw_line(int(x0), int(y0), int(x1), int(y1), col)
+            i = i + 2
+    
+    def draw_FaceMatrix(self, m, col, view = [0, 0, -1]):
+        """
+        This method draws the faces contained in a FaceMatrix.
+        """
+        i = 0
+        while i < m.width() - 2:
+            x0 = m.get(0, i)
+            y0 = m.get(1, i)
+            z0 = m.get(2, i)
+            x1 = m.get(0, i + 1)
+            y1 = m.get(1, i + 1)
+            z1 = m.get(2, i + 1)
+            x2 = m.get(0, i + 2)
+            y2 = m.get(1, i + 2)
+            z2 = m.get(2, i + 2)
+            if vector.Vector([x1 - x0, y1 - y0, z1 - z0]).cross(vector.Vector([x2 - x0, y2 - y0, z2 - z0])).dot(view) > 0:
+                self.draw_line(screen, int(x0), int(y0), int(x1), int(y1), col)
+                self.draw_line(screen, int(x0), int(y0), int(x2), int(y2), col)
+                self.draw_line(screen, int(x2), int(y2), int(x1), int(y1), col)
+            i = i + 3
+
+def display(source = None):
+    """
+    This function displays the given image file on screen.
+    If the function is called with a screen, the file used 
+    is the last file that screen was saved to.
+    If a filename is specified, that file is displayed.
+    """
+    if isinstance(source, basestring):
+        filename = source
+    elif isinstance(source, Screen):
+        filename = source.__filename__
+    else:
+        filename = None
+    if filename == None:
+        raise TypeError("no file specified")
+    if os.fork():
+        os.wait()
+    else:
+        os.system("display " + filename)
+        exit()
