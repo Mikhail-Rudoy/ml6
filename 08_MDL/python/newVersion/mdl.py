@@ -232,7 +232,7 @@ yacc.yacc()
 
 def parseFile(filename):
     """
-    Use this method to get a tuple containing a list of opcodes
+    This funstion returns a tuple containing a list of opcodes
     and a dictionary of symbols.
     Every opcode is a tuple of the form 
     (commandname, parameter, parameter, ...).
