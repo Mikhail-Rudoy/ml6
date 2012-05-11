@@ -2,8 +2,8 @@ from script import run
 import sys
 
 if len(sys.argv) == 2:
-    run_scripts(sys.argv[1])
+    run(sys.argv[1])
 elif len(sys.argv) == 1:
-    run_scripts(raw_input("please enter the filename of an mdl script file: \n"))
+    run(raw_input("please enter the filename of an mdl script file: \n"))
 else:
     print "Too many arguments."
