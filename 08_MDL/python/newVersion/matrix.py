@@ -70,9 +70,10 @@ class Matrix():
         """
         Overloading the * operator to also signify scalar multiplication
         and matrix multiplication.
+        Returns self * other.
         """
         if isinstance(other, Number):
-            result = matrix(0, 0)
+            result = Matrix(0, 0)
             result.matrix = [[val * other for val in col] for col in self.matrix]
             return result
         elif isinstance(other, matrix):
@@ -89,40 +90,34 @@ class Matrix():
         else:
             return NotImplemented
     
-    def __rmul__(self, other):
-        """
-        Overloading the * operator to also signify scalar multiplication
-        and matrix multiplication.
-        """
-        if isinstance(other, Number):
-            result = matrix(0, 0)
-            result.matrix = [[val * other for val in col] for col in self.matrix]
-            return result
-        elif isinstance(other, matrix):
-            if self.height() != other.width():
-                return NotImplemented
-            result = Matrix(self.width(), other.height())
-            for r in range(result.height()):
-                for c in range(result.width()):
-                    v = 0
-                    for i in range(other.width()):
-                        v += other.get(r, i) * self.get(i, c)
-                    result.set(r, c, v)
-            return result
-        else:
-            return NotImplemented
-    
     def __imul__(self, other):
         """
         Overloading the *= operator to also signify scalar multiplication
         and matrix multiplication.
+        This method changes self to equal self * other.
         """
         if isinstance(other, Number):
-            for r in range(self.height()):
-                for c in range(self.width()):
-                    self.set(r, c, self.get(r, c) * other)
+            self.matrix = [[val * other for val in col] for col in self.matrix]
             return self
         elif isinstance(other, matrix):
+            if other.height() != self.width():
+                return NotImplemented
+            result = [[0.0] * self.height() for c in range(other.width())]
+            for r in range(len(result) and len(result[0])):
+                for c in range(len(result)):
+                    v = 0
+                    for i in range(self.width()):
+                        result[c][r] += self.get(r, i) * other.get(i, c)
+            self.matrix = result
+            return self
+        else:
+            return NotImplemented
+    
+    def apply(self, other):
+        """
+        This method changes self to equal other * self.
+        """
+        if isinstance(other, matrix):
             if self.height() != other.width():
                 return NotImplemented
             result = [[0.0] * other.height() for c in range(self.width())]
@@ -131,13 +126,13 @@ class Matrix():
                     for i in range(other.width()):
                         result[c][r] += other.get(r, i) * self.get(i, c)
             self.matrix = result
-            return self
+            return
         else:
             return NotImplemented
 
 def ident(d = 4):
     """
-    This function returns a new identity matrix dith dimensions d by d.
+    This function returns a new identity matrix with dimensions d by d.
     """
     m = Matrix(0, 0)
     m.matrix = [[float(i == j) for i in range(d)] for j in range(d)]
@@ -212,17 +207,11 @@ class PointMatrix(Matrix):
         for p in points:
             self.matrix.append(p + [1.0])
     
-    def __imul__(self, other):
+    def apply(self, other):
         """
-        Overloading the *= operator to also signify scalar multiplication
-        and matrix multiplication.
+        This method changes self to equal other * self.
         """
-        if isinstance(other, Number):
-            for r in range(self.height()):
-                for c in range(self.width()):
-                    self.set(r, c, self.get(r, c) * other)
-            return self
-        elif isinstance(other, matrix):
+        if isinstance(other, matrix):
             if 4 != other.width() or 4 != other.height():
                 return NotImplemented
             result = [[0.0] * 4 for c in range(self.width())]
@@ -231,9 +220,19 @@ class PointMatrix(Matrix):
                     for i in range(4):
                         result[c][r] += other.get(r, i) * self.get(i, c)
             self.matrix = result
-            return self
+            return
         else:
             return NotImplemented
+    
+    def __imul__(self, other):
+        """
+        This method overloads *= to change self to other * self.
+        """
+        if isinstance(other, matrix):
+            self.apply(other)
+            return self
+        else:
+            self.super().__imul__(other)
 
 class EdgeMatrix(PointMatrix):
     """

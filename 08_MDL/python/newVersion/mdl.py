@@ -39,6 +39,7 @@ tokens = (
     "SET_KNOBS", 
     "FOCAL", 
     "DISPLAY", 
+    "SCREEN", 
     "WEB", 
     "CO"
 )
@@ -47,6 +48,7 @@ reserved = {
     "x" : "XYZ", 
     "y" : "XYZ", 
     "z" : "XYZ", 
+    "screen" : "SCREEN", 
     "light" : "LIGHT",
     "constants" : "CONSTANTS",
     "save_coord_system" : "SAVE_COORDS", 
@@ -121,7 +123,7 @@ lex.lex()
 #----------------------------------------------------------
 
 commands = []
-symbols = {}
+symbols = []
 
 def p_line(p):
     """line : 
@@ -137,24 +139,33 @@ def p_statement_stack(p):
                  | PUSH"""
     commands.append((p[1],))
 
-def p_satement_save(p):
-    """statement : SAVE TEXT INT INT
-                 | SAVE TEXT"""
-    if len(p) == 3:
-        commands.append((p[1], p[2], 500, 500))
+def p_statement_screen(p):
+    """satement : SCREEN INT INT
+                | SCREEN"""
+    if len(p) == 2:
+        commands.append((p[1], 500, 500))
     else:
-        commands.append((p[1], p[2], p[3], p[4]))
+        commands.append((p[1], p[2], p[3]))
 
+def p_satement_save(p):
+    """statement : SAVE TEXT
+                 | SAVE"""
+    if len(p) == 3:
+        commands.append(tuple(p[1:]))
+    else:
+        commands.append((p[1], None))
+    
 def p_statement_show(p):
-    "statement : DISPLAY TEXT"
-    commands.append((p[1], p[2]))
+    "statement : DISPLAY TEXT
+               | DISPLAY"
+    commands.append(tuple(p[1:]))
 
 def p_statement_knobs(p):
     """statement : SET SYMBOL NUMBER
                  | SET_KNOBS NUMBER"""
     commands.append(tuple(p[1:]))
     if p[1] == "set":
-        symbols[p[2]] = ("knob", 0.0)
+        symbols.append(("knob", p[2]))
 
 def p_statement_sphere(p):
     """statement : SPHERE NUMBER NUMBER NUMBER NUMBER INT INT
@@ -208,7 +219,7 @@ def p_statement_move(p):
         commands.append(tuple(p[1:] + [None]))
     else:
         commands.append(tuple(p[1:]))
-        symbols[p[5]] = ("knob", 0.0)
+        symbols.append(("knob", p[5]))
 
 def p_statement_scale(p):
     """statement : SCALE NUMBER NUMBER NUMBER SYMBOL
@@ -217,7 +228,7 @@ def p_statement_scale(p):
         commands.append(tuple(p[1:] + [None]))
     else:
         commands.append(tuple(p[1:]))
-        symbols[p[5]] = ("knob", 0.0)
+        symbols.append(("knob", p[5]))
 
 def p_statement_rotate(p):
     """statement : ROTATE XYZ NUMBER SYMBOL
@@ -226,7 +237,7 @@ def p_statement_rotate(p):
         commands.append(tuple(p[1:] + [None]))
     else:
         commands.append(tuple(p[1:]))
-        symbols[p[4]] = ("knob", 0.0)
+        symbols.append(("knob", p[4]))
 
 def p_SYMBOL(p):
     """SYMBOL : XYZ
@@ -248,15 +259,15 @@ yacc.yacc()
 def parseFile(filename):
     """
     This funstion returns a tuple containing a list of opcodes
-    and a dictionary of symbols.
+    and a list of symbols.
     Every opcode is a tuple of the form 
     (commandname, parameter, parameter, ...).
-    Every symbol has a value of the form (type, value).
+    Every symbol is a tuple of the form (type, name).
     """
     global commands
     global symbols
     commands = []
-    symbols = {}
+    symbols = []
     try:
         f = open(filename, "r")
         for line in f.readlines():
@@ -265,7 +276,7 @@ def parseFile(filename):
         f.close()
         result = (commands[:], symbols.copy())
         commands = []
-        symbols = {}
+        symbols = []
         return result
     except IOError:
         return ()
