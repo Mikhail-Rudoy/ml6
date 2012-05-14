@@ -4,12 +4,20 @@ save pic1.ppm
 display
 //ignore this
 push
+set_knobs 1
 move 200 200 0 my_knob
 push
 rotate x 50
 rotate y 40
 sphere 0 0 0 100
 pop
+save
+display
+push
+move 100 100 20
+rotate z 45
+rotate x 25
+torus 0 0 0 50 150
 pop
 save
 display

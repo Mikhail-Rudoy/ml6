@@ -84,10 +84,9 @@ def run(filename):
             if command[0] == "move":
                 if command[4]:
                     val = knobs[command[4]]
-                    print matrix.move(command[1] * val, command[2] * val, command[3] * val)
                 else:
                     val = 1
-                    stack[-1] *= matrix.move(command[1] * val, command[2] * val, command[3] * val)
+                stack[-1] *= matrix.move(command[1] * val, command[2] * val, command[3] * val)
             if command[0] == "scale":
                 if command[4]:
                     val = knobs[command[4]]
@@ -100,6 +99,15 @@ def run(filename):
                 else:
                     val = 1
                 stack[-1] *= matrix.rotate(command[1], command[2] * val)
+        while 1:
+            text = raw_input("Continue?\n> ")
+            if not text in ["yes", "no", "n", "y"]:
+                print "I don't understand."
+            elif text in ["yes", "y"]:
+                print
+                break
+            else:
+                return
         knobs = getKnobValues(knobs)
 
 def getKnobValues(knobs):
