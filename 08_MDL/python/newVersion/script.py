@@ -35,10 +35,10 @@ def run(filename):
                 else:
                     screen.display(view)
             if command[0] == "set":
-                knobs[command[1]] = command[2]
+                knobs[command[1]] = float(command[2])
             if command[0] == "set_knobs":
                 for name in knobs.keys():
-                    knobs[name] = command[1]
+                    knobs[name] = float(command[1])
             if command[0] == "sphere":
                 m = matrix.FaceMatrix()
                 m.add_sphere(*command[1:])
@@ -83,21 +83,21 @@ def run(filename):
                 view.draw_EdgeMatrix(m, [255, 255, 255])
             if command[0] == "move":
                 if command[4]:
-                    val = knobs[command[4]]
+                    val = float(knobs[command[4]])
                 else:
-                    val = 1
+                    val = 1.0
                 stack[-1] *= matrix.move(command[1] * val, command[2] * val, command[3] * val)
             if command[0] == "scale":
                 if command[4]:
-                    val = knobs[command[4]]
+                    val = float(knobs[command[4]])
                 else:
-                    val = 1
+                    val = 1.0
                 stack[-1] *= matrix.scale(command[1] * val, command[2] * val, command[3] * val)
             if command[0] == "rotate":
                 if command[3]:
-                    val = knobs[command[3]]
+                    val = float(knobs[command[3]])
                 else:
-                    val = 1
+                    val = 1.0
                 stack[-1] *= matrix.rotate(command[1], command[2] * val)
         while 1:
             text = raw_input("Continue?\n> ")

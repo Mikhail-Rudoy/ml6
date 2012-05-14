@@ -102,14 +102,14 @@ def t_ID(t):
         t.type = reserved.get(t.value)
     return t
 
-def t_INT(t):
-    r"\-?[0-9]+"
-    t.value = int(t.value)
-    return t
-
 def t_DOUBLE(t):
     r"\-?\d+\.\d*|\-?\.\d+"
     t.value = float(t.value)
+    return t
+
+def t_INT(t):
+    r"\-?[0-9]+"
+    t.value = int(t.value)
     return t
 
 def t_COMMENT(t):
@@ -143,7 +143,7 @@ def p_statement_stack(p):
 
 def p_statement_screen(p):
     """statement : SCREEN INT INT
-                | SCREEN"""
+                 | SCREEN"""
     if len(p) == 2:
         commands.append((p[1], 500, 500))
     else:
