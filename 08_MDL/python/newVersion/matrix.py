@@ -72,11 +72,11 @@ class Matrix():
         and matrix multiplication.
         Returns self * other.
         """
-        if isinstance(other, Number):
+        if isinstance(other, (int, long, float)):
             result = Matrix(0, 0)
             result.matrix = [[val * other for val in col] for col in self.matrix]
             return result
-        elif isinstance(other, matrix):
+        elif isinstance(other, Matrix):
             if other.height() != self.width():
                 return NotImplemented
             result = Matrix(other.width(), self.height())
@@ -96,10 +96,10 @@ class Matrix():
         and matrix multiplication.
         This method changes self to equal self * other.
         """
-        if isinstance(other, Number):
+        if isinstance(other, (int, long, float)):
             self.matrix = [[val * other for val in col] for col in self.matrix]
             return self
-        elif isinstance(other, matrix):
+        elif isinstance(other, Matrix):
             if other.height() != self.width():
                 return NotImplemented
             result = [[0.0] * self.height() for c in range(other.width())]
@@ -117,7 +117,7 @@ class Matrix():
         """
         This method changes self to equal other * self.
         """
-        if isinstance(other, matrix):
+        if isinstance(other, Matrix):
             if self.height() != other.width():
                 return NotImplemented
             result = [[0.0] * other.height() for c in range(self.width())]
@@ -147,6 +147,7 @@ def move(a, b, c):
                      [0.0, 1.0, 0.0, 0.0], \
                      [0.0, 0.0, 1.0, 0.0], \
                      [a, b, c, 1.0]]
+    return result
 
 def scale(a, b, c):
     """
@@ -157,6 +158,7 @@ def scale(a, b, c):
                      [0.0, b, 0.0, 0.0], \
                      [0.0, 0.0, c, 0.0], \
                      [0.0, 0.0, 0.0, 1.0]]
+    return result
 
 def rotate(axis, theta):
     """
@@ -211,7 +213,7 @@ class PointMatrix(Matrix):
         """
         This method changes self to equal other * self.
         """
-        if isinstance(other, matrix):
+        if isinstance(other, Matrix):
             if 4 != other.width() or 4 != other.height():
                 return NotImplemented
             result = [[0.0] * 4 for c in range(self.width())]
@@ -228,7 +230,7 @@ class PointMatrix(Matrix):
         """
         This method overloads *= to change self to other * self.
         """
-        if isinstance(other, matrix):
+        if isinstance(other, Matrix):
             self.apply(other)
             return self
         else:
@@ -434,9 +436,9 @@ class FaceMatrix(PointMatrix):
         """
         This method adds a face to the matrix.
         """
-        matrix.append([x0, y0, z0, 1])
-        matrix.append([x1, y1, z1, 1])
-        matrix.append([x2, y2, z2, 1])
+        self.matrix.append([x0, y0, z0, 1])
+        self.matrix.append([x1, y1, z1, 1])
+        self.matrix.append([x2, y2, z2, 1])
     
     def add_sphere(self, cx, cy, cz, r, STEPS = None):
         """

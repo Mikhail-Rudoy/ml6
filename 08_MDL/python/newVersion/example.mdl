@@ -1,30 +1,15 @@
-// a comment
-pop
+screen
+line 50 50 100 50 100 100
+save pic1.ppm
+display
+//ignore this
 push
-save filename 600 700
-save filename
-display filename
-set my_knob 8
-set_knobs 1
-sphere 0 0 0 -1
-sphere 1 -2.7 100 29 80 70
-torus 1 0 0 0 -1
-torus 3.0 1 -2.7 100 29 80 70
-box 1 2 3 4 5 6
-line 0 0 0 1 1 1.0
-bezier 1 2 3 4 5 6 7 8 9 10 11 12
-bezier 1 2 3 4 5 6 7 8 9 10 11 12 25
-hermite 1 2 3 4 5 6 7 8 9 10 11 12
-hermite 1 2 3 4 5 6 7 8 9 10 11 12 25
-circle 0 0 0 1 1 1 2
-circle 0 0 0 1 1 1 4 50
-move 3 4 5.0
-scale 2.0 2.0 2.0
-rotate x 45
-rotate y 45
-rotate z 90
-move 0 0 100 move_knob
-scale 50 50 50 scale_knob
-rotate x 10 rotate_knob
-rotate y 20 rotate_knob
-rotate z 30.4 rotate_knob
+move 200 200 0 my_knob
+push
+rotate x 50
+rotate y 40
+sphere 0 0 0 100
+pop
+pop
+save
+display

@@ -25,10 +25,10 @@ class Screen():
         by the screen object is used.
         """
         if filename == None:
-            filename = self.__filename__
+            filename = self._filename
             if filename == None:
                 raise TypeError("no file specified")
-        self.__filename__ = filename
+        self._filename = filename
         FILE = open(filename, "w")
         lines = ["P3"]
         lines.append(str(len(self.__pixels__[0])) + " ")
@@ -159,10 +159,10 @@ class Screen():
             x2 = m.get(0, i + 2)
             y2 = m.get(1, i + 2)
             z2 = m.get(2, i + 2)
-            if vector.Vector([x1 - x0, y1 - y0, z1 - z0]).cross(vector.Vector([x2 - x0, y2 - y0, z2 - z0])).dot(view) > 0:
-                self.draw_line(screen, int(x0), int(y0), int(x1), int(y1), col)
-                self.draw_line(screen, int(x0), int(y0), int(x2), int(y2), col)
-                self.draw_line(screen, int(x2), int(y2), int(x1), int(y1), col)
+            if (vector.Vector(x1 - x0, y1 - y0, z1 - z0)).cross(vector.Vector(x2 - x0, y2 - y0, z2 - z0)).dot(vector.Vector(*view)) > 0:
+                self.draw_line(int(x0), int(y0), int(x1), int(y1), col)
+                self.draw_line(int(x0), int(y0), int(x2), int(y2), col)
+                self.draw_line(int(x2), int(y2), int(x1), int(y1), col)
             i = i + 3
 
 def display(source = None):
@@ -175,7 +175,7 @@ def display(source = None):
     if isinstance(source, basestring):
         filename = source
     elif isinstance(source, Screen):
-        filename = source.__filename__
+        filename = source._filename
     else:
         filename = None
     if filename == None:

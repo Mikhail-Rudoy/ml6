@@ -26,4 +26,4 @@ class Vector():
         """
         [x0, y0, z0] = self.vals
         [x1, y1, z1] = other.vals
-        return [y0 * z1 - y1 * z0, x1 * z0 - x0 * z1, x0 * y1 - x1 * y0]
+        return Vector(y0 * z1 - y1 * z0, x1 * z0 - x0 * z1, x0 * y1 - x1 * y0)

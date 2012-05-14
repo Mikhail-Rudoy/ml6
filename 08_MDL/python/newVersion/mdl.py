@@ -90,15 +90,16 @@ reserved = {
 
 t_ignore = " \t"
 
+
+def t_STRING(t):
+    r"""\.[a-zA-Z_0-9]*[a-zA-Z_][a-zA-Z_0-9]*|
+        [a-zA-Z_][a-zA-Z_0-9\.]*\.[a-zA-Z_0-9\.]*"""
+    return t
+
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
     if reserved.has_key(t.value):
         t.type = reserved.get(t.value)
-    return t
-
-def t_DOUBLE(t):
-    r"\-?\d+\.\d*|\-?\.\d*"
-    t.value = float(t.value)
     return t
 
 def t_INT(t):
@@ -106,8 +107,9 @@ def t_INT(t):
     t.value = int(t.value)
     return t
 
-def t_STRING(t):
-    r"[a-zA-Z_0-9\.]+"
+def t_DOUBLE(t):
+    r"\-?\d+\.\d*|\-?\.\d+"
+    t.value = float(t.value)
     return t
 
 def t_COMMENT(t):
@@ -125,9 +127,9 @@ lex.lex()
 commands = []
 symbols = []
 
-def p_line(p):
-    """line : 
-            | statement line"""
+def p_stuff(p):
+    """stuff : 
+            | statement stuff"""
     pass
 
 def p_statement_comment(p):
@@ -140,24 +142,24 @@ def p_statement_stack(p):
     commands.append((p[1],))
 
 def p_statement_screen(p):
-    """satement : SCREEN INT INT
+    """statement : SCREEN INT INT
                 | SCREEN"""
     if len(p) == 2:
         commands.append((p[1], 500, 500))
     else:
         commands.append((p[1], p[2], p[3]))
 
-def p_satement_save(p):
-    """statement : SAVE TEXT
-                 | SAVE"""
+def p_statement_save(p):
+    """statement : SAVE
+                 | SAVE TEXT"""
     if len(p) == 3:
         commands.append(tuple(p[1:]))
     else:
         commands.append((p[1], None))
     
 def p_statement_show(p):
-    "statement : DISPLAY TEXT
-               | DISPLAY"
+    """statement : DISPLAY TEXT
+                 | DISPLAY"""
     commands.append(tuple(p[1:]))
 
 def p_statement_knobs(p):
@@ -274,7 +276,7 @@ def parseFile(filename):
             line = line.strip()
             yacc.parse(line)
         f.close()
-        result = (commands[:], symbols.copy())
+        result = (commands[:], symbols[:])
         commands = []
         symbols = []
         return result
