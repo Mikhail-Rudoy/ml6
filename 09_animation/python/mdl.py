@@ -48,7 +48,7 @@ tokens = (
 reserved = {
     "x" : "XYZ", 
     "y" : "XYZ", 
-    "z" : "XYZ",
+    "z" : "XYZ", 
     "screen" : "SCREEN", 
     "light" : "LIGHT",
     "constants" : "CONSTANTS",
@@ -90,6 +90,7 @@ reserved = {
 }
 
 t_ignore = " \t"
+
 
 def t_FUNCTION(t):
     r"<.*>"
@@ -139,7 +140,7 @@ def p_stuff(p):
 
 def p_statement_comment(p):
     'statement : COMMENT'
-    pass
+    commands.append(("ignore",))
 
 def p_statement_stack(p):
     """statement : POP
@@ -218,6 +219,22 @@ def p_statement_curve(p):
         commands.append(tuple(p[1:] + [80]))
     else:
         commands.append(tuple(p[1:]))
+
+def p_statement_basename(p):
+    """statement : BASENAME TEXT"""
+    commands.append(tuple(p[1:]))
+
+def p_statement_frames(p):
+    """statement : FRAMES INT"""
+    commands.append(tuple(p[1:]))
+
+def p_statement_vary(p):
+    """statement : VARY INT INT NUMBER NUMBER
+                 | VARY INT INT FUNCTION"""
+    if len(p) == 5:
+        commands.append(tuple(p[1:]))
+    else:
+        commands.append(tuple(p[1:4]) + (eval("lambda t : " + str(float(p[4])) + " + t * (" + str(float(p[5] - p[4]) / (p[3] - p[2])) + ")",)))
 
 def p_statement_move(p):
     """statement : MOVE NUMBER NUMBER NUMBER SYMBOL
