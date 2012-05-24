@@ -10,6 +10,9 @@ def run(filename):
     else:
         print "Parsing failed."
         return
+    
+    annimation_commands = set([command for command in commands if command[0] in ["vary", "frames", "basename"]]):
+    
     knobs = {}
     for s in symbols:
         if s[0] == "knob":
