@@ -116,10 +116,9 @@ def run(filename):
     
     print "converting to gif format ...", 
     for name in basenames:
-        if name.find("/") != -1:
-            os.system("mogrify -format gif %s*.ppm" % name)
-            os.system("convert -delay 2.5 %s*.gif %s.gif" % (name, name))
-            os.system("rm %s*.ppm" % name)
+        os.system("mogrify -format gif %s*.ppm" % name)
+        os.system("convert -delay 2.5 %s*.gif %s.gif" % (name, name))
+        os.system("rm %s*.ppm" % name)
     print "DONE"
 
 def getKnobValues(knobs):
