@@ -1,37 +1,13 @@
-screen
-line 50 50 100 50 100 100
-save tmp/pic1.ppm
-display
-//ignore this
+move 300 300 0
 push
-set sphere_location 1.0
-move 200 200 0 sphere_location
+move 100 0 0 move_knob
 push
 rotate x 50
 rotate y 40
-sphere 0 0 0 100
-pop
-save
-display
-push
-move 100 100 20
-rotate z 45
-rotate x 25
-torus 0 0 0 50 150
+rotate z 15
+box -100 -150 -25 100 150 25
 pop
 pop
-save
-display
-screen
-save tmp/pic2.ppm
-display tmp/pic1.ppm
-display
-push
-move 250 250 250
-rotate x 7
-rotate y 99
-scale 1 1 1 box_size
-box -100 -200 -150 100 200 150
-pop
-save
-display
+vary move_knob 10 20 -2 2
+frames 30
+basename bin/image

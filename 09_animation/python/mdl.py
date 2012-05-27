@@ -98,8 +98,8 @@ def t_FUNCTION(t):
     return t
 
 def t_STRING(t):
-    r"""\.[a-zA-Z_0-9]*[a-zA-Z_][a-zA-Z_0-9]*|
-        [a-zA-Z_][a-zA-Z_0-9\.]*\.[a-zA-Z_0-9\.]*"""
+    r"""[\./][a-zA-Z_0-9\./]*[a-zA-Z_][a-zA-Z_0-9\./]*|
+        [a-zA-Z_][a-zA-Z_0-9\./]*[\./][a-zA-Z_0-9\./]*"""
     return t
 
 def t_ID(t):
@@ -229,12 +229,15 @@ def p_statement_frames(p):
     commands.append(p[1:])
 
 def p_statement_vary(p):
-    """statement : VARY INT INT NUMBER NUMBER
-                 | VARY INT INT FUNCTION"""
-    if len(p) == 5:
+    """statement : VARY SYMBOL INT INT NUMBER NUMBER
+                 | VARY SYMBOL INT INT FUNCTION"""
+    if p[3] < 0:
+        p[3] = 0
+    symbols.append(("knob", p[2]))
+    if len(p) == 6:
         commands.append(p[1:])
     else:
-        commands.append([p[1], p[2], p[3], eval("lambda t : " + str(float(p[4])) + " + t * (" + str(float(p[5] - p[4]) / (p[3] - p[2])) + ")")])
+        commands.append([p[1], p[2], p[3], p[4], eval("lambda t : " + str(float(p[5])) + " + t * (" + str(float(p[6] - p[5]) / (p[4] - p[3])) + ")")])
 
 def p_statement_move(p):
     """statement : MOVE NUMBER NUMBER NUMBER SYMBOL

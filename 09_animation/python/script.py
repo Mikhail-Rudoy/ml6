@@ -1,4 +1,4 @@
-import mdl, matrix, screen
+import mdl, matrix, screen, os
 
 def run(filename):
     """
@@ -14,11 +14,13 @@ def run(filename):
     arc = {}
     arc["display"] = []
     arc["save"] = []
+    arc["screen"] = []
+    arc["set"] = []
+    arc["set_knobs"] = []
     arc["vary"] = []
     arc["basename"] = []
     arc["frames"] = []
-    arc["screen"] = []
-
+    
     for command in commands:
         if arc.has_key(command[0]):
             arc[command[0]].append(command)
@@ -26,7 +28,7 @@ def run(filename):
         knobs = {}
         for s in symbols:
             if s[0] == "knob":
-                knobs[s[1]] = 0.0
+                knobs[s[1]] = 1.0
         while 1:
             knobs = getKnobValues(knobs)
             runCommands(commands, knobs)
@@ -39,6 +41,86 @@ def run(filename):
                     break
                 else:
                     return
+    
+    for command in arc["display"]:
+        command[0] = "ignore"
+        
+    for command in arc["save"]:
+        command[0] = "ignore"
+        
+    for command in arc["screen"]:
+        command[0] = "ignore"
+        
+    for command in arc["set"]:
+        command[0] = "ignore"
+        
+    for command in arc["set_knobs"]:
+        command[0] = "ignore"
+    
+    basenames = []
+    for command in arc["basename"]:
+        basenames.append(command[1])
+        command[0] = "ignore"
+    if not basenames:
+        basenames.append("image")
+    
+    frames = 1
+    for command in arc["frames"]:
+        if command[1] > frames:
+            frames = command[1]
+        command[0] = "ignore"
+    for command in arc["vary"]:
+        if command[3] + 1 > frames:
+            frames = command[3] + 1
+    
+    knobs = {}
+    for s in symbols:
+        if s[0] == "knob" and not knobs.has_key(s[1]):
+            knobs[s[1]] = []
+    
+    for command in arc["vary"]:
+        (varyliteral, knobname, start, end, f) = command
+        command[0] = "ignore"
+        i = start
+        if start <= end:
+            if not knobs[knobname]:
+                knobs[knobname] = [None] * frames
+        while i <= end:
+            knobs[knobname][i] = float(f(i - start))
+            i = i + 1
+    
+    for knobname in knobs:
+        if not knobs[knobname]:
+            knobs[knobname] = [1.0] * frames
+        values = knobs[knobname]
+        for i in range(frames):
+            if values[i] != None:
+                val = values[i]
+                break
+        for i in range(frames):
+            if values[i] == None:
+                values[i] = val
+            else:
+                val = values[i]
+    
+    for i in range(frames):
+        print "starting frame %d ..." % i,
+        K = {}
+        for k in knobs:
+            K[k] = knobs[k][i]
+        view = runCommands(commands, K)
+        for name in basenames:
+            name = (name + "%0" + str(len(str(frames - 1))) + "d.ppm") % i
+            view.save(name)
+        print "DONE"
+    
+    print "converting to gif format ...", 
+    for name in basenames:
+        if name.find("/") != -1:
+            os.system("mogrify -format gif %s*.ppm" % name)
+            os.system("convert -delay 2.5 %s*.gif %s.gif" % (name, name))
+            os.system("rm %s*.ppm" % name)
+    print "DONE"
 
 def getKnobValues(knobs):
     """
@@ -157,3 +239,4 @@ def runCommands(commands, knobs):
             else:
                 val = 1.0
             stack[-1] *= matrix.rotate(command[1], command[2] * val)
+    return view
