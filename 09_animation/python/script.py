@@ -11,107 +11,34 @@ def run(filename):
         print "Parsing failed."
         return
     
-    annimation_commands = set([command for command in commands if command[0] in ["vary", "frames", "basename"]]):
-    
-    knobs = {}
-    for s in symbols:
-        if s[0] == "knob":
-            knobs[s[1]] = 0.0
-    knobs = getKnobValues(knobs)
-    while 1:
-        stack = [matrix.ident()]
-        view = screen.Screen()
-        for command in commands:
-            if command[0] == "pop":
-                stack.pop()
-                if not stack:
-                    stack = [matrix.ident()]
-            if command[0] == "push":
-                stack.append(stack[-1].clone())
-            if command[0] == "screen":
-                view = screen.Screen(command[1], command[2])
-            if command[0] == "save":
-                view.save(command[1])
-            if command[0] == "display":
-                if len(command) == 2:
-                    screen.display(command[1])
-                else:
-                    screen.display(view)
-            if command[0] == "set":
-                knobs[command[1]] = float(command[2])
-            if command[0] == "set_knobs":
-                for name in knobs.keys():
-                    knobs[name] = float(command[1])
-            if command[0] == "sphere":
-                m = matrix.FaceMatrix()
-                m.add_sphere(*command[1:])
-                m.apply(stack[-1])
-                view.draw_FaceMatrix(m, [255, 255, 255])
-            if command[0] == "torus":
-                m = matrix.FaceMatrix()
-                m.add_torus(*command[1:])
-                m.apply(stack[-1])
-                view.draw_FaceMatrix(m, [255, 255, 255])
-            if command[0] == "box":
-                m = matrix.FaceMatrix()
-                m.add_box(*command[1:])
-                m.apply(stack[-1])
-                view.draw_FaceMatrix(m, [255, 255, 255])
-            if command[0] == "line":
-                m = matrix.EdgeMatrix()
-                m.add_edge(*command[1:])
-                m.apply(stack[-1])
-                view.draw_EdgeMatrix(m, [255, 255, 255])
-            if command[0] == "bezier":
-                m = matrix.EdgeMatrix()
-                m.add_bezier_curve(*command[1:])
-                m.apply(stack[-1])
-                view.draw_EdgeMatrix(m, [255, 255, 255])
-            if command[0] == "hermite":
-                m = matrix.EdgeMatrix()
-                m.add_hermite_curve(*command[1:])
-                m.apply(stack[-1])
-                view.draw_EdgeMatrix(m, [255, 255, 255])
-            if command[0] == "circle":
-                m = matrix.EdgeMatrix()
-                m.add_circle(command[1], command[2], command[3], command[4])
-                stack.append(stack[-1].clone())
-                #
-                #
-                #
-                #
-                #
-                m.apply(stack[-1])
-                stack.pop()
-                view.draw_EdgeMatrix(m, [255, 255, 255])
-            if command[0] == "move":
-                if command[4]:
-                    val = float(knobs[command[4]])
-                else:
-                    val = 1.0
-                stack[-1] *= matrix.move(command[1] * val, command[2] * val, command[3] * val)
-            if command[0] == "scale":
-                if command[4]:
-                    val = float(knobs[command[4]])
-                else:
-                    val = 1.0
-                stack[-1] *= matrix.scale(command[1] * val, command[2] * val, command[3] * val)
-            if command[0] == "rotate":
-                if command[3]:
-                    val = float(knobs[command[3]])
-                else:
-                    val = 1.0
-                stack[-1] *= matrix.rotate(command[1], command[2] * val)
+    arc = {}
+    arc["display"] = []
+    arc["save"] = []
+    arc["vary"] = []
+    arc["basename"] = []
+    arc["frames"] = []
+    arc["screen"] = []
+
+    for command in commands:
+        if arc.has_key(command[0]):
+            arc[command[0]].append(command)
+    if not arc["basename"] and not arc["vary"] and not arc["frames"]:
+        knobs = {}
+        for s in symbols:
+            if s[0] == "knob":
+                knobs[s[1]] = 0.0
         while 1:
-            text = raw_input("Continue?\n> ")
-            if not text in ["yes", "no", "n", "y"]:
-                print "I don't understand."
-            elif text in ["yes", "y"]:
-                print
-                break
-            else:
-                return
-        knobs = getKnobValues(knobs)
+            knobs = getKnobValues(knobs)
+            runCommands(commands, knobs)
+            while 1:
+                text = raw_input("Continue?\n> ")
+                if not text in ["yes", "no", "n", "y"]:
+                    print "I don't understand."
+                elif text in ["yes", "y"]:
+                    print
+                    break
+                else:
+                    return
 
 def getKnobValues(knobs):
     """
@@ -141,3 +68,92 @@ def getKnobValues(knobs):
             print "No knob of that name found.\n"
     return knobs
 
+def runCommands(commands, knobs):
+    """
+    Runs the given commands and returns the resulting screen
+    """
+    stack = [matrix.ident()]
+    view = screen.Screen()
+    for command in commands:
+        if command[0] == "ignore":
+            pass
+        if command[0] == "pop":
+            stack.pop()
+            if not stack:
+                stack = [matrix.ident()]
+        if command[0] == "push":
+            stack.append(stack[-1].clone())
+        if command[0] == "screen":
+            view = screen.Screen(command[1], command[2])
+        if command[0] == "save":
+            view.save(command[1])
+        if command[0] == "display":
+            if len(command) == 2:
+                screen.display(command[1])
+            else:
+                screen.display(view)
+        if command[0] == "set":
+            knobs[command[1]] = float(command[2])
+        if command[0] == "set_knobs":
+            for name in knobs.keys():
+                knobs[name] = float(command[1])
+        if command[0] == "sphere":
+            m = matrix.FaceMatrix()
+            m.add_sphere(*command[1:])
+            m.apply(stack[-1])
+            view.draw_FaceMatrix(m, [255, 255, 255])
+        if command[0] == "torus":
+            m = matrix.FaceMatrix()
+            m.add_torus(*command[1:])
+            m.apply(stack[-1])
+            view.draw_FaceMatrix(m, [255, 255, 255])
+        if command[0] == "box":
+            m = matrix.FaceMatrix()
+            m.add_box(*command[1:])
+            m.apply(stack[-1])
+            view.draw_FaceMatrix(m, [255, 255, 255])
+        if command[0] == "line":
+            m = matrix.EdgeMatrix()
+            m.add_edge(*command[1:])
+            m.apply(stack[-1])
+            view.draw_EdgeMatrix(m, [255, 255, 255])
+        if command[0] == "bezier":
+            m = matrix.EdgeMatrix()
+            m.add_bezier_curve(*command[1:])
+            m.apply(stack[-1])
+            view.draw_EdgeMatrix(m, [255, 255, 255])
+        if command[0] == "hermite":
+            m = matrix.EdgeMatrix()
+            m.add_hermite_curve(*command[1:])
+            m.apply(stack[-1])
+            view.draw_EdgeMatrix(m, [255, 255, 255])
+        if command[0] == "circle":
+            m = matrix.EdgeMatrix()
+            m.add_circle(command[1], command[2], command[3], command[4])
+            stack.append(stack[-1].clone())
+            #
+            #
+            #
+            #
+            #
+            m.apply(stack[-1])
+            stack.pop()
+            view.draw_EdgeMatrix(m, [255, 255, 255])
+        if command[0] == "move":
+            if command[4]:
+                val = float(knobs[command[4]])
+            else:
+                val = 1.0
+            stack[-1] *= matrix.move(command[1] * val, command[2] * val, command[3] * val)
+        if command[0] == "scale":
+            if command[4]:
+                val = float(knobs[command[4]])
+            else:
+                val = 1.0
+            stack[-1] *= matrix.scale(command[1] * val, command[2] * val, command[3] * val)
+        if command[0] == "rotate":
+            if command[3]:
+                val = float(knobs[command[3]])
+            else:
+                val = 1.0
+            stack[-1] *= matrix.rotate(command[1], command[2] * val)

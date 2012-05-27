@@ -1,6 +1,6 @@
 screen
 line 50 50 100 50 100 100
-save pic1.ppm
+save tmp/pic1.ppm
 display
 //ignore this
 push
@@ -23,8 +23,8 @@ pop
 save
 display
 screen
-save pic2.ppm
-display pic1.ppm
+save tmp/pic2.ppm
+display tmp/pic1.ppm
 display
 push
 move 250 250 250

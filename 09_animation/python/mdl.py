@@ -140,38 +140,38 @@ def p_stuff(p):
 
 def p_statement_comment(p):
     'statement : COMMENT'
-    commands.append(("ignore",))
+    commands.append(["ignore"])
 
 def p_statement_stack(p):
     """statement : POP
                  | PUSH"""
-    commands.append((p[1],))
+    commands.append(p[1:2])
 
 def p_statement_screen(p):
     """statement : SCREEN INT INT
                  | SCREEN"""
     if len(p) == 2:
-        commands.append((p[1], 500, 500))
+        commands.append([p[1], 500, 500])
     else:
-        commands.append((p[1], p[2], p[3]))
+        commands.append([p[1:3]])
 
 def p_statement_save(p):
     """statement : SAVE
                  | SAVE TEXT"""
     if len(p) == 3:
-        commands.append(tuple(p[1:]))
+        commands.append(p[1:])
     else:
-        commands.append((p[1], None))
+        commands.append([p[1], None])
     
 def p_statement_show(p):
     """statement : DISPLAY TEXT
                  | DISPLAY"""
-    commands.append(tuple(p[1:]))
+    commands.append(p[1:])
 
 def p_statement_knobs(p):
     """statement : SET SYMBOL NUMBER
                  | SET_KNOBS NUMBER"""
-    commands.append(tuple(p[1:]))
+    commands.append(p[1:])
     if p[1] == "set":
         symbols.append(("knob", p[2]))
 
@@ -179,36 +179,36 @@ def p_statement_sphere(p):
     """statement : SPHERE NUMBER NUMBER NUMBER NUMBER INT INT
                  | SPHERE NUMBER NUMBER NUMBER NUMBER"""
     if len(p) == 6:
-        commands.append((p[1], p[2], p[3], p[4], p[5], None))
+        commands.append([p[1], p[2], p[3], p[4], p[5], None])
     else:
-        commands.append((p[1], p[2], p[3], p[4], p[5], [p[6], p[7]]))
+        commands.append([p[1], p[2], p[3], p[4], p[5], [p[6], p[7]]])
 
 def p_statement_torus(p):
     """statement : TORUS NUMBER NUMBER NUMBER NUMBER NUMBER INT INT
                  | TORUS NUMBER NUMBER NUMBER NUMBER NUMBER"""
     if len(p) == 7:
-        commands.append((p[1], p[2], p[3], p[4], p[5], p[6], None))
+        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], None])
     else:
-        commands.append((p[1], p[2], p[3], p[4], p[5], p[6], [p[7], p[8]]))
+        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], [p[7], p[8]]])
 
 def p_statement_box(p):
     "statement : BOX NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER"
-    commands.append(tuple(p[1:]))
+    commands.append(p[1:])
 
 def p_statement_line(p):
     "statement : LINE NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER"
-    commands.append(tuple(p[1:]))
+    commands.append(p[1:])
 
 def p_statement_circle(p):
     """statement : CIRCLE NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
                  | CIRCLE NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER INT"""
     if len(p) == 9:
         if p[8] >= 2:
-            commands.append(tuple(p[1:] + [int(p[8]) * 2 + 2]))
+            commands.append(p[1:] + [int(p[8]) * 2 + 2])
         else:
-            commands.append(tuple(p[1:] + [10]))
+            commands.append(p[1:] + [10])
     else:
-        commands.append(tuple(p[1:]))
+        commands.append(p[1:])
 
 def p_statement_curve(p):
     """statement : BEZIER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER INT
@@ -216,51 +216,51 @@ def p_statement_curve(p):
                  | HERMITE NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER INT
                  | HERMITE NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER"""
     if len(p) == 14:
-        commands.append(tuple(p[1:] + [80]))
+        commands.append(p[1:] + [80])
     else:
-        commands.append(tuple(p[1:]))
+        commands.append(p[1:])
 
 def p_statement_basename(p):
     """statement : BASENAME TEXT"""
-    commands.append(tuple(p[1:]))
+    commands.append(p[1:])
 
 def p_statement_frames(p):
     """statement : FRAMES INT"""
-    commands.append(tuple(p[1:]))
+    commands.append(p[1:])
 
 def p_statement_vary(p):
     """statement : VARY INT INT NUMBER NUMBER
                  | VARY INT INT FUNCTION"""
     if len(p) == 5:
-        commands.append(tuple(p[1:]))
+        commands.append(p[1:])
     else:
-        commands.append(tuple(p[1:4]) + (eval("lambda t : " + str(float(p[4])) + " + t * (" + str(float(p[5] - p[4]) / (p[3] - p[2])) + ")",)))
+        commands.append([p[1], p[2], p[3], eval("lambda t : " + str(float(p[4])) + " + t * (" + str(float(p[5] - p[4]) / (p[3] - p[2])) + ")")])
 
 def p_statement_move(p):
     """statement : MOVE NUMBER NUMBER NUMBER SYMBOL
                  | MOVE NUMBER NUMBER NUMBER"""
     if len(p) == 5:
-        commands.append(tuple(p[1:] + [None]))
+        commands.append(p[1:] + [None])
     else:
-        commands.append(tuple(p[1:]))
+        commands.append(p[1:])
         symbols.append(("knob", p[5]))
 
 def p_statement_scale(p):
     """statement : SCALE NUMBER NUMBER NUMBER SYMBOL
                  | SCALE NUMBER NUMBER NUMBER"""
     if len(p) == 5:
-        commands.append(tuple(p[1:] + [None]))
+        commands.append(p[1:] + [None])
     else:
-        commands.append(tuple(p[1:]))
+        commands.append(p[1:])
         symbols.append(("knob", p[5]))
 
 def p_statement_rotate(p):
     """statement : ROTATE XYZ NUMBER SYMBOL
                  | ROTATE XYZ NUMBER"""
     if len(p) == 4:
-        commands.append(tuple(p[1:] + [None]))
+        commands.append(p[1:] + [None])
     else:
-        commands.append(tuple(p[1:]))
+        commands.append(p[1:])
         symbols.append(("knob", p[4]))
 
 def p_SYMBOL(p):
@@ -284,8 +284,8 @@ def parseFile(filename):
     """
     This funstion returns a tuple containing a list of opcodes
     and a list of symbols.
-    Every opcode is a tuple of the form 
-    (commandname, parameter, parameter, ...).
+    Every opcode is a list of the form 
+    [commandname, parameter, parameter, ...].
     Every symbol is a tuple of the form (type, name).
     """
     global commands
@@ -303,4 +303,4 @@ def parseFile(filename):
         symbols = []
         return result
     except IOError:
-        return ()
+        return
