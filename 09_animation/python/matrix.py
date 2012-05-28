@@ -472,8 +472,10 @@ class FaceMatrix(PointMatrix):
                 [x1, y1, z1] = points[row + 1][col]
                 [x2, y2, z2] = points[row + 1][col + 1]
                 [x3, y3, z3] = points[row][col + 1]
-                self.add_face(x0, y0, z0, x1, y1, z1, x2, y2, z2)
-                self.add_face(x0, y0, z0, x2, y2, z2, x3, y3, z3)
+                if row != STEPS[1] - 1:
+                    self.add_face(x0, y0, z0, x1, y1, z1, x2, y2, z2)
+                if row != 0:
+                    self.add_face(x0, y0, z0, x2, y2, z2, x3, y3, z3)
     
     def add_torus(self, cx, cy, cz, r, R, STEPS = None):
         """
@@ -507,8 +509,10 @@ class FaceMatrix(PointMatrix):
                 [x1, y1, z1] = points[row + 1][col]
                 [x2, y2, z2] = points[row + 1][col + 1]
                 [x3, y3, z3] = points[row][col + 1]
-                self.add_face(x0, y0, z0, x1, y1, z1, x2, y2, z2)
-                self.add_face(x0, y0, z0, x2, y2, z2, x3, y3, z3)
+                if row != STEPS[1] - 1:
+                    self.add_face(x0, y0, z0, x1, y1, z1, x2, y2, z2)
+                if row != 0:
+                    self.add_face(x0, y0, z0, x2, y2, z2, x3, y3, z3)
     
     def add_box(self, x0, y0, z0, x1, y1, z1):
         """

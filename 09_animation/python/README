@@ -3,8 +3,9 @@ python main.py
 or
 python main.py <script>
 
+make will run python main
 make example will run the example script
 make clean will clean the directory
-make clear will clean the directory (will also delete ppm files)
+make clear will clean the directory (will also delete ppm and gif files)
 
 The example (together with all the required commands) works. However, I did things a certain way that is slightly different from the norm. I will document my script specs here eventually. For now, stick with the example script.

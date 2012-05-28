@@ -1,4 +1,4 @@
-import lex, yacc
+import lex, yacc, math
 
 tokens = (
     "STRING", 

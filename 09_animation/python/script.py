@@ -1,4 +1,4 @@
-import mdl, matrix, screen, os
+import mdl, matrix, screen, os, sys
 
 def run(filename):
     """
@@ -86,7 +86,7 @@ def run(filename):
             if not knobs[knobname]:
                 knobs[knobname] = [None] * frames
         while i <= end:
-            knobs[knobname][i] = float(f(i - start))
+            knobs[knobname][i] = float(f(float(i - start)))
             i = i + 1
     
     for knobname in knobs:
@@ -105,6 +105,7 @@ def run(filename):
     
     for i in range(frames):
         print "starting frame %d ..." % i,
+        sys.stdout.flush()
         K = {}
         for k in knobs:
             K[k] = knobs[k][i]
@@ -115,9 +116,10 @@ def run(filename):
         print "DONE"
     
     print "converting to gif format ...", 
+    sys.stdout.flush()
     for name in basenames:
         os.system("mogrify -format gif %s*.ppm" % name)
-        os.system("convert -delay 2.5 %s*.gif %s.gif" % (name, name))
+        os.system("convert -delay 2.5 %s[0-9]*.gif %s.gif" % (name, name))
         os.system("rm %s*.ppm" % name)
     print "DONE"
 
