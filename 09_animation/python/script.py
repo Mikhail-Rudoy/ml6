@@ -119,7 +119,7 @@ def run(filename):
     sys.stdout.flush()
     for name in basenames:
         os.system("mogrify -format gif %s*.ppm" % name)
-        os.system("convert -delay 2.5 %s[0-9]*.gif %s.gif" % (name, name))
+        os.system("convert -delay 2.5 -loop 0 %s[0-9]*.gif %s.gif" % (name, name))
         os.system("rm %s*.ppm" % name)
     print "DONE"
 
