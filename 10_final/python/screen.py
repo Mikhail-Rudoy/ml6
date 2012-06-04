@@ -1,4 +1,4 @@
-import math, os, vector, matrix
+import math, os, vector, matrix, random
 
 class Screen():
     """
@@ -160,9 +160,33 @@ class Screen():
             y2 = m.get(1, i + 2)
             z2 = m.get(2, i + 2)
             if (vector.Vector(x1 - x0, y1 - y0, z1 - z0)).cross(vector.Vector(x2 - x0, y2 - y0, z2 - z0)).dot(vector.Vector(*view)) > 0:
-                self.draw_line(int(x0), int(y0), int(x1), int(y1), col)
-                self.draw_line(int(x0), int(y0), int(x2), int(y2), col)
-                self.draw_line(int(x2), int(y2), int(x1), int(y1), col)
+                [x0, y0, x1, y1, x2, y2] = [int(v) for v in [x0, y0, x1, y1, x2, y2]]
+                self.draw_line(x0, y0, x1, y1, col)
+                self.draw_line(x0, y0, x2, y2, col)
+                self.draw_line(x2, y2, x1, y1, col)
+                pts = [(x0, y0, z0), (x1, y1, z1), (x2, y2, z2)]
+                ys = [y0, y1, y2]
+                top = pts[ys.index(max(ys))]
+                pts = [pts[j] for j in range(len(pts)) if j != ys.index(max(ys))]
+                ys = [ys[j] for j in range(len(ys)) if j != ys.index(max(ys))]
+                mid = pts[ys.index(max(ys))]
+                pts = [pts[j] for j in range(len(pts)) if j != ys.index(max(ys))]
+                ys = [ys[j] for j in range(len(ys)) if j != ys.index(max(ys))]
+                bot = pts[0]
+                y = bot[1]
+                x0 = bot[0] * 1.0
+                x1 = bot[0] * 1.0
+                col = [random.randrange(255) for j in range(3)]
+                while y < top[1]:
+                    if y == mid[1]:
+                        x1 = mid[0]
+                    self.draw_line(int(x0), y, int(x1), y, col)
+                    x0 += (top[0] - bot[0]) * 1.0 / (top[1] - bot[1])
+                    if y < mid[1]:
+                        x1 += (mid[0] - bot[0]) * 1.0 / (mid[1] - bot[1])
+                    elif y < top[1]:
+                        x1 += (top[0] - mid[0]) * 1.0 / (top[1] - mid[1])
+                    y = y + 1
             i = i + 3
 
 def display(source = None):
