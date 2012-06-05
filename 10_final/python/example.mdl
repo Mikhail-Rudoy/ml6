@@ -5,12 +5,18 @@ rotate y 90 around_knob
 scale 1 1 1 scale_knob
 box -300 -10 -300 300 0 300
 move 0 -50 0
+push
+move 0 0 130
+torus 0 0 -35 30 100
+pop
 move 1 0 0 x_knob
 move 0 1 0 y_knob
+push
 rotate x 15 rotate_knob
 rotate y 150 rotate_knob
 rotate z 32 rotate_knob
 sphere 0 0 0 50 20 20
+pop
 vary around_knob 0 100 0 1
 vary rotate_knob 0 100 <3 * math.sqrt(1 - ((t - 100) / 100) ** 2)>
 vary x_knob 0 100 <200 - (3.0 / 100) * ((t - 100) ** 2)>
