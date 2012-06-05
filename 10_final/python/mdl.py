@@ -18,7 +18,6 @@ tokens = (
     "LINE", 
     "BEZIER", 
     "HERMITE", 
-    "CIRCLE", 
     "MESH", 
     "TEXTURE", 
     "SET", 
@@ -61,7 +60,6 @@ reserved = {
     "line" : "LINE", 
     "bezier" : "BEZIER", 
     "hermite" : "HERMITE", 
-    "circle" : "CIRCLE", 
     "mesh" : "MESH", 
     "texture" : "TEXTURE", 
     "set" : "SET", 
@@ -198,17 +196,6 @@ def p_statement_box(p):
 def p_statement_line(p):
     "statement : LINE NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER"
     commands.append(p[1:])
-
-def p_statement_circle(p):
-    """statement : CIRCLE NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
-                 | CIRCLE NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER INT"""
-    if len(p) == 9:
-        if p[8] >= 2:
-            commands.append(p[1:] + [int(p[8]) * 2 + 2])
-        else:
-            commands.append(p[1:] + [10])
-    else:
-        commands.append(p[1:])
 
 def p_statement_curve(p):
     """statement : BEZIER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER INT

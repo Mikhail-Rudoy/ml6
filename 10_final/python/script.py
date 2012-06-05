@@ -210,18 +210,6 @@ def runCommands(commands, knobs):
             m.add_hermite_curve(*command[1:])
             m.apply(stack[-1])
             view.draw_EdgeMatrix(m, [255, 255, 255])
-        if command[0] == "circle":
-            m = matrix.EdgeMatrix()
-            m.add_circle(command[1], command[2], command[3], command[4])
-            stack.append(stack[-1].clone())
-            #
-            #
-            #
-            #
-            #
-            m.apply(stack[-1])
-            stack.pop()
-            view.draw_EdgeMatrix(m, [255, 255, 255])
         if command[0] == "move":
             if command[4]:
                 val = float(knobs[command[4]])
