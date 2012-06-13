@@ -90,6 +90,10 @@ reserved = {
 t_ignore = " \t"
 
 
+def t_COMMENT(t):
+    r"//.*"
+    return t
+
 def t_FUNCTION(t):
     r"<.*>"
     t.value = eval("lambda t: " + t.value[1:-1])
@@ -114,10 +118,6 @@ def t_DOUBLE(t):
 def t_INT(t):
     r"\-?[0-9]+"
     t.value = int(t.value)
-    return t
-
-def t_COMMENT(t):
-    r"//.*"
     return t
 
 def t_CO(t):

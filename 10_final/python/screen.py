@@ -190,11 +190,10 @@ class Screen():
             y2 = m.get(1, i + 2)
             z2 = m.get(2, i + 2)
             if (vector.Vector(x1 - x0, y1 - y0, z1 - z0)).cross(vector.Vector(x2 - x0, y2 - y0, z2 - z0)).dot(vector.Vector(*view)) > 0:
-                [x0, y0, x1, y1, x2, y2] = [int(v) for v in [x0, y0, x1, y1, x2, y2]]
-                col = [random.randrange(255) for j in range(3)]
                 self.draw_line(x0, y0, z0, x1, y1, z1, col)
                 self.draw_line(x0, y0, z0, x2, y2, z2, col)
                 self.draw_line(x2, y2, z2, x1, y1, z1, col)
+                [x0, y0, x1, y1, x2, y2] = [int(v) for v in [x0, y0, x1, y1, x2, y2]]
                 pts = [(x0, y0, z0), (x1, y1, z1), (x2, y2, z2)]
                 ys = [y0, y1, y2]
                 top = pts[ys.index(max(ys))]
@@ -213,7 +212,7 @@ class Screen():
                     if y == mid[1]:
                         x1 = mid[0]
                         z1 = mid[2]
-                    self.draw_line(int(x0), y, z0, int(x1), y, z1, col)
+                    self.draw_line(int(x0), y, z0, int(x1), y, z1, [0, 0, 255])
                     x0 += (top[0] - bot[0]) * 1.0 / (top[1] - bot[1])
                     z0 += (top[2] - bot[2]) * 1.0 / (top[1] - bot[1])
                     if y < mid[1]:
