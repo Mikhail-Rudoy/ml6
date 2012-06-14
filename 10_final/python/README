@@ -121,6 +121,34 @@ light r g b x y z			- creates a light with the given
 shading wireframe|flat|goroud|phong|raytrace
 					- sets the shading type
 
+-------------------------------------------------------------------------
+DRAWING
+-------------------------------------------------------------------------
+
+sphere [constants] x y z r [latresolution longresolution] [coord_system]
+	       	       	       	       	- draws a sphere centered at the
+					  given location with the given 
+					  radius using the given coordinate
+					  system and set of lighting 
+					  constants and using at least 
+					  latresolutions and longresolution
+					  steps to model the sphere
+torus [constants] x y z r0 r1 [lat long] [coord_system]
+      		      	      	   	 - draws a torus
+box [constants] x0 y0 z0 x1 y1 z1 [coord_system]
+					 - draws a box with the two given
+					   points as opposite vertices
+mesh [constants] : filename [coord_system]
+					 - loads a mesh from a file and draws
+					   it; the file must begin with a 
+					   single line saying either "edges"
+					   or "faces" followed by some number 
+					   of lines containing space 
+					   seperated coordinates of either 
+					   2 or 3 points (2 for edge meshes, 
+					   3 for face meshes)
+
+
 =========================================================================
 MDL Specs -- Animation Mode (at least one animation command used):
 =========================================================================
@@ -228,4 +256,32 @@ tween start end knoblist0 knoblist1 function
 					  any function moving from 0 to 1 will
 					  result in the values moving from 
 					  knoblist0 to knoblist1)
+
+-------------------------------------------------------------------------
+LIGHTING
+-------------------------------------------------------------------------
+
+constants name kar kdr ksr kag kdg ksg kab kdb ksb [r g b]
+	       	       	       	       	- saves the given lighting constants 
+					  under the given name (NOTE: each of 
+					  the constants will generally be 
+					  between 0 and 255)
+constants name ka kd ks [c]		- saves the given lighting constants
+	       	     			  under the given name using the 
+					  same value for all three color 
+					  channels (NOTE: each of the 
+					  constants will generally be 
+					  between 0 and 255)
+ambient r g b				- sets the ambient intensity (NOTE: 
+	    				  intensity values range from 0 to
+					  1 and ambient intensity defaults
+					  to 1 for each color channel)
+light r g b x y z			- creates a light with the given
+      	      				  color intensities at the given 
+					  location (NOTE: intensity values 
+					  range from 0 to 1 and ambient 
+					  intensity defaults to 1 for each 
+					  color channel)
+shading wireframe|flat|goroud|phong|raytrace
+					- sets the shading type
 

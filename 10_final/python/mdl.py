@@ -220,7 +220,7 @@ def p_statement_torus_1(p):
         commands.append([p[1], None, p[2], p[3], p[4], p[5], p[6], [p[7], p[8]], p[9]])
         symbols.append(("coord_system", p[9]))
 
-def p_statement_torus_1(p):
+def p_statement_torus_2(p):
     """statement : TORUS SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER INT INT
                  | TORUS SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER
                  | TORUS SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER INT INT SYMBOL

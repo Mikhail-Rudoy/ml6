@@ -32,7 +32,7 @@ def run(filename):
             if s[0] == "knob":
                 knobs[s[1]] = 1.0
             if s[0] == "constants":
-                constants[s[1]] = [255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                constants[s[1]] = [255, 255, 255, 200, 200, 200, 100, 100, 100, 0, 0, 0]
             if s[0] == "coord_system":
                 coord_systems[s[1]] = matrix.ident()
         for command in arc["save_knobs"]:
@@ -130,7 +130,7 @@ def run(filename):
                 i = i + 1
             command[0] = "ignore"
         if command[0] == "basename":
-            image_requests .append(command[1], base_matrix, focalLength)
+            image_requests.append([command[1], base_matrix, focalLength])
             command[0] = "ignore"
         if command[0] == "camera":
             base_matrix = matrix.ident()
@@ -173,7 +173,7 @@ def run(filename):
         K = {}
         for k in knobs:
             K[k] = knobs[k][i]
-        for (basename, base_matrix, focalLength) in image_requests:
+        for basename, base_matrix, focalLength in image_requests:
             view = runCommands(commands, K, constants, coord_systems, base_matrix, focalLength)
             name = (basename + "%0" + str(len(str(frames - 1))) + "d.ppm") % i
             view.save(name)
@@ -181,7 +181,7 @@ def run(filename):
     
     print "converting to gif format ...", 
     sys.stdout.flush()
-    for name in basenames:
+    for name base_matrix, focalLength in image_requests:
         os.system("mogrify -format gif %s*.ppm" % name)
         os.system("convert -delay 2.5 -loop 0 %s[0-9]*.gif %s.gif" % (name, name))
         os.system("rm %s*.ppm" % name)
@@ -221,7 +221,7 @@ def runCommands(commands, knobs, constants, coord_systems, base_matrix, focalLen
     """
     stack = [base_matrix.clone()]
     view = screen.Screen()
-    constants[None] = [255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    constants[None] = [255, 255, 255, 200, 200, 200, 100, 100, 100, 0, 0, 0]
     lights = []
     ambient = [1.0, 1.0, 1.0]
     shading_type = "wireframe"

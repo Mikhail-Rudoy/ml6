@@ -823,9 +823,8 @@ class Screen():
                     x2 = x2 * self.focalLength / (z2 + self.focalLength)
                     x2 = x2 + (len(self.__pixels__[0]) * 0.5)
                 dx, dy, dz = ((vector.Vector(x1 - x0, y1 - y0, z1 - z0)).cross(vector.Vector(x2 - x0, y2 - y0, z2 - z0))).vals
-                if dx == 0 and dy == 0 and dz == 0:
-                    continue
-                dx, dy, dz = dx / math.sqrt(dx * dx + dy * dy + dz * dz), dy / math.sqrt(dx * dx + dy * dy + dz * dz), dz / math.sqrt(dx * dx + dy * dy + dz * dz)
+                if dx != 0 or dy != 0 or dz != 0:
+                    dx, dy, dz = dx / math.sqrt(dx * dx + dy * dy + dz * dz), dy / math.sqrt(dx * dx + dy * dy + dz * dz), dz / math.sqrt(dx * dx + dy * dy + dz * dz)
                 if normals.has_key((int(x0), int(y0), int(z0))):
                     normals[(int(x0), int(y0), int(z0))].append((dx, dy, dz))
                 else:
@@ -883,11 +882,13 @@ class Screen():
             i = i + 3
             if (vector.Vector(x1 - x0, y1 - y0, z1 - z0)).cross(vector.Vector(x2 - x0, y2 - y0, z2 - z0)).dot(vector.Vector(0, 0, -1)) == 0:
                 continue
-            if self.focalLength != 0 or (vector.Vector(x1 - x0, y1 - y0, z1 - z0)).cross(vector.Vector(x2 - x0, y2 - y0, z2 - z0)).dot(vector.Vector(0, 0, -1)) > 0 or shading_info[0] == "wireframe":
+            if (vector.Vector(x1 - x0, y1 - y0, z1 - z0)).cross(vector.Vector(x2 - x0, y2 - y0, z2 - z0)).dot(vector.Vector(0, 0, -1)) > 0 or shading_info[0] == "wireframe":
                 self.scanline_convert(x0, y0, z0, x1, y1, z1, x2, y2, z2, shading_info, normals)
     
     def get_color_from_normal_vector(self, consts, ambient, lights, normalvect, x, y, z):
         dx, dy, dz = normalvect.vals
+        if dx == 0 and dy == 0 and dz == 0:
+            return [consts[i] * ambient[i] + consts[9 + i] for i in range(3)]
         dx, dy, dz = dx / math.sqrt(dx * dx + dy * dy + dz * dz), dy / math.sqrt(dx * dx + dy * dy + dz * dz), dz / math.sqrt(dx * dx + dy * dy + dz * dz)
         normalvect = vector.Vector(dx, dy, dz)
         col = consts[9:]
