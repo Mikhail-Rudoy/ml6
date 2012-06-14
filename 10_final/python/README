@@ -8,4 +8,209 @@ make example will run the example script
 make clean will clean the directory
 make clear will clean the directory (will also delete ppm and gif files)
 
-The example (together with all the required commands) works. However, I did things a certain way that is slightly different from the norm. I will document my script specs here eventually. For now, stick with the example script.
+
+=========================================================================
+MDL Specs -- Static Mode (no frames, basename, tween, or vary commands):
+=========================================================================
+
+-------------------------------------------------------------------------
+COMMENTS
+-------------------------------------------------------------------------
+
+//					- comment to the end of the line
+
+-------------------------------------------------------------------------
+STACK COMMANDS
+-------------------------------------------------------------------------
+
+push					- pushes a copy of the matrix at 
+					  the top of the stack onto it 
+pop					- pops the top of the stack off
+save_coord_system name			- saves the current top of the 
+		  			  stack under the given name
+
+-------------------------------------------------------------------------
+TRANSFORMATION COMMANDS
+-------------------------------------------------------------------------
+
+move x y z [knob]			- apply a translation to the top 
+       	   				  of the stack
+scale x y z [knob]			- apply a scaling in all three 
+      	    				  directions to the top of the 
+					  stack
+scale x|y|z amt [knob]			- apply a scaling in one direction 
+      	    				  to the top of the stack
+rotate x|y|z degrees [knob]		- apply a rotation around an axis 
+       	     	     			  to the top of the stack
+
+-------------------------------------------------------------------------
+SAVING/DISPLAYING COMMANDS
+-------------------------------------------------------------------------
+
+screen [width height]			- creates a new screen of the 
+       	      				  given dimensions (or the default 
+					  500 by 500) and resets the stack
+save [filename]				- saves the current screen to the 
+     					  given filename in ppm format; 
+					  defaults to the previously used
+					  filename by this screen if none 
+					  provided
+display [filename]			- displays the given file as an 
+					  image; defaults to the last 
+					  filename this screen was  saved 
+					  to if none provided
+camera x y z xaim yaim zaim		- sets the camera position and 
+       	     	       			  direction and resets the stack 
+					  (NOTE: should only be used 
+					  directly before or directly after 
+					  a screen command)
+focal value				- sets the camera's focal length; 
+      					  0 is a special value used to 
+					  specify flat projection (NOTE: 
+					  should only be used directly 
+					  before or directly after a screen 
+					  command)
+basename filename			- ignored
+
+-------------------------------------------------------------------------
+KNOBS
+-------------------------------------------------------------------------
+
+set knobname value			- sets the given knob to the given
+    	     				  value
+set_knobs value				- sets the value of every knob to 
+	  				  the given value
+save_knobs knoblistname			- ignored
+
+-------------------------------------------------------------------------
+ANIMATION
+-------------------------------------------------------------------------
+
+frames numframes			- would activate animation mode
+vary knob start end startval endval	- would activate animation mode
+vary knob start end function 		- would activate animation mode
+tween start end knoblist0 knoblist1	- would activate animation mode
+tween start end knoblist0 knoblist1 function
+					- would activate animation mode
+
+-------------------------------------------------------------------------
+LIGHTING
+-------------------------------------------------------------------------
+
+constants name kar kdr ksr kag kdg ksg kab kdb ksb [r g b]
+	       	       	       	       	- saves the given lighting constants 
+					  under the given name
+constants name ka kd ks [c]		- saves the given lighting constants
+	       	     			  under the given name using the 
+					  same value for all three color 
+					  channels
+
+
+=========================================================================
+MDL Specs -- Animation Mode (at least one animation command used):
+=========================================================================
+
+-------------------------------------------------------------------------
+COMMENTS
+-------------------------------------------------------------------------
+
+//					- comment to the end of the line
+
+-------------------------------------------------------------------------
+STACK COMMANDS -- repeatedly evaluated during rendering
+-------------------------------------------------------------------------
+
+push					- pushes a copy of the matrix at 
+					  the top of the stack onto it 
+pop					- pops the top of the stack off
+save_coord_system name			- saves the current top of the 
+		  			  stack under the given name
+
+-------------------------------------------------------------------------
+TRANSFORMATION COMMANDS -- repeatedly evalueated during rendering
+-------------------------------------------------------------------------
+
+move x y z [knob]			- apply a translation to the top 
+       	   				  of the stack
+scale x y z [knob]			- apply a scaling in all three 
+      	    				  directions to the top of the 
+					  stack
+scale x|y|z amt [knob]			- apply a scaling in one direction 
+      	    				  to the top of the stack
+rotate x|y|z degrees [knob]		- apply a rotation around an axis 
+       	     	     			  to the top of the stack
+
+-------------------------------------------------------------------------
+SAVING/DISPLAYING COMMANDS -- evaluated during pre-rendering
+-------------------------------------------------------------------------
+
+screen [width height]			- ignored
+save [filename]				- ignored
+display [filename]			- ignored
+camera x y z xaim yaim zaim		- sets the camera position and 
+       	     	       			  direction; until this is called, 
+					  the default of pointing towards
+					  <0, 0, 1> from the origin is used 
+focal value				- sets the camera's focal length; 
+      					  0 is a special value used to 
+					  specify flat projection and is the 
+					  default used until this command is 
+					  called
+basename filename			- indicates that the animation should
+					  be recoded under the given basename 
+					  using the most recent camera and 
+					  focal settings; can be called once, 
+					  more than once, or never (in which 
+					  case the basename "image" is used)
+
+-------------------------------------------------------------------------
+KNOBS -- evaluated during pre-rendering
+-------------------------------------------------------------------------
+
+set knobname value			- sets the given knob to the given
+    	     				  value
+set_knobs value				- sets the value of every knob to 
+	  				  the given value
+save_knobs knoblistname			- sets the values in the named 
+	   				  knoblist to the current values of
+					  the knobs
+
+-------------------------------------------------------------------------
+ANIMATION -- evaluated during pre-rendering
+-------------------------------------------------------------------------
+
+frames numframes			- the number of frames to use; if a 
+       					  larger value is necessary to 
+					  accomodate a vary or tween command
+					  then that will be used instead
+vary knob start end startval endval	- varies the value of the specified 
+     	  	    	     		  knob between frames start and end 
+					  inclusive with the value ranging 
+					  from startval to endval linearly
+vary knob start end function 		- varies the value of the specified
+     	  	    			  knob between frames start and end 
+					  inclusive with the value taking on 
+					  the value of the given function at 
+					  consecutive integers starting with 
+					  0 (at start, the value is f(0), at
+					  start + 1 it is f(1), ... , and at
+					  frame end, the value is f(end - start))
+tween start end knoblist0 knoblist1	- linearly varies the values of all  
+      	    		  		  knobs between frames start and end 
+					  inclusive from their values in 
+					  knoblist0 to their values in 
+					  knoblist1
+tween start end knoblist0 knoblist1 function
+					- varies the values of all knobs 
+					  between frames start and end 
+					  inclusive; the value of any one 
+					  knob at frame i is the weighted
+					  average of the value of the knob
+					  in knoblist0 and the value of the
+					  knob in knoblist1 with the weigths
+					  being 1 - f(i - start) and 
+					  f(i - start) respectively (thus 
+					  any function moving from 0 to 1 will
+					  result in the values moving from 
+					  knoblist0 to knoblist1)
+

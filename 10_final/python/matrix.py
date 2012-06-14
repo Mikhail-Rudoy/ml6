@@ -307,6 +307,10 @@ class EdgeMatrix(PointMatrix):
         """
         if STEPS == None:
             STEPS = [int(R / 3), int(r / 3)]
+            if STEPS[0] < 15:
+                STEPS[0] = 15
+            if STEPS[1] < 15:
+                STEPS[1] = 15
         costheta = []
         sintheta = []
         cosphi = []
@@ -349,7 +353,11 @@ class EdgeMatrix(PointMatrix):
         This method adds edges that approximate a mesh of a torus.
         """
         if STEPS == None:
-            STEPS = [int(r / 5), int(r / 5)]
+            STEPS = [int(r / 5), int(R / 5)]
+            if STEPS[0] < 15:
+                STEPS[0] = 15
+            if STEPS[1] < 15:
+                STEPS[1] = 15
         costheta = []
         sintheta = []
         cosphi = []
@@ -445,7 +453,9 @@ class FaceMatrix(PointMatrix):
         This method adds faces approximating a sphere to the matrix.
         """
         if STEPS == None:
-            STEPS = [int(r / 5), int(r / 5)]
+            STEPS = [int(r / 5)] * 2
+            if STEPS[0] < 15:
+                STEPS = [15] * 2
         costheta = []
         sintheta = []
         cosphi = []
@@ -483,6 +493,10 @@ class FaceMatrix(PointMatrix):
         """
         if STEPS == None:
             STEPS = [int(R / 3), int(r / 3)]
+            if STEPS[0] < 15:
+                STEPS[0] = 15
+            if STEPS[1] < 15:
+                STEPS[0] = 15
         costheta = []
         sintheta = []
         cosphi = []

@@ -5,13 +5,14 @@ class Screen():
     This class stores the color data associated with an image.
     """
     
-    def __init__(self, w = 600, h = 600):
+    def __init__(self, w = 500, h = 500):
         """
         This constructor stores the pixel data for a screen of resolution 
         w by h.
         Every pixel is initialized to black.
         """
         black = [0, 0, 0]
+        self.focalLength = 0
         self.__pixels__ = []
         self.__zbuffer__ = []
         for r in range(h):
@@ -171,6 +172,19 @@ class Screen():
             x1 = m.get(0, i + 1)
             y1 = m.get(1, i + 1)
             y2 = m.get(2, i + 1)
+            if self.focalLength != 0:
+                y0 = y0 - (len(self.__pixels__) * 0.5)
+                y0 = y0 * self.focalLength / (z0 + self.focalLength)
+                y0 = y0 + (len(self.__pixels__) * 0.5)
+                y1 = y1 - (len(self.__pixels__) * 0.5)
+                y1 = y1 * self.focalLength / (z1 + self.focalLength)
+                y1 = y1 + (len(self.__pixels__) * 0.5)
+                x0 = x0 - (len(self.__pixels__[0]) * 0.5)
+                x0 = x0 * self.focalLength / (z0 + self.focalLength)
+                x0 = x0 + (len(self.__pixels__[0]) * 0.5)
+                x1 = x1 - (len(self.__pixels__[0]) * 0.5)
+                x1 = x1 * self.focalLength / (z1 + self.focalLength)
+                x1 = x1 + (len(self.__pixels__[0]) * 0.5)
             self.draw_line(int(x0), int(y0), z0, int(x1), int(y1), z1, col)
             i = i + 2
     
@@ -189,7 +203,27 @@ class Screen():
             x2 = m.get(0, i + 2)
             y2 = m.get(1, i + 2)
             z2 = m.get(2, i + 2)
-            if (vector.Vector(x1 - x0, y1 - y0, z1 - z0)).cross(vector.Vector(x2 - x0, y2 - y0, z2 - z0)).dot(vector.Vector(*view)) > 0:
+            if self.focalLength != 0:
+                y0 = y0 - (len(self.__pixels__) * 0.5)
+                y0 = y0 * self.focalLength / (z0 + self.focalLength)
+                y0 = y0 + (len(self.__pixels__) * 0.5)
+                y1 = y1 - (len(self.__pixels__) * 0.5)
+                y1 = y1 * self.focalLength / (z1 + self.focalLength)
+                y1 = y1 + (len(self.__pixels__) * 0.5)
+                y2 = y2 - (len(self.__pixels__) * 0.5)
+                y2 = y2 * self.focalLength / (z2 + self.focalLength)
+                y2 = y2 + (len(self.__pixels__) * 0.5)
+                x0 = x0 - (len(self.__pixels__[0]) * 0.5)
+                x0 = x0 * self.focalLength / (z0 + self.focalLength)
+                x0 = x0 + (len(self.__pixels__[0]) * 0.5)
+                x1 = x1 - (len(self.__pixels__[0]) * 0.5)
+                x1 = x1 * self.focalLength / (z1 + self.focalLength)
+                x1 = x1 + (len(self.__pixels__[0]) * 0.5)
+                x2 = x2 - (len(self.__pixels__[0]) * 0.5)
+                x2 = x2 * self.focalLength / (z2 + self.focalLength)
+                x2 = x2 + (len(self.__pixels__[0]) * 0.5)
+            if self.focalLength != 0 or (vector.Vector(x1 - x0, y1 - y0, z1 - z0)).cross(vector.Vector(x2 - x0, y2 - y0, z2 - z0)).dot(vector.Vector(*view)) > 0:
+                col = [random.randrange(256) for j in range(3)]
                 self.draw_line(x0, y0, z0, x1, y1, z1, col)
                 self.draw_line(x0, y0, z0, x2, y2, z2, col)
                 self.draw_line(x2, y2, z2, x1, y1, z1, col)
@@ -212,7 +246,7 @@ class Screen():
                     if y == mid[1]:
                         x1 = mid[0]
                         z1 = mid[2]
-                    self.draw_line(int(x0), y, z0, int(x1), y, z1, [0, 0, 255])
+                    self.draw_line(int(x0), y, z0, int(x1), y, z1, col)
                     x0 += (top[0] - bot[0]) * 1.0 / (top[1] - bot[1])
                     z0 += (top[2] - bot[2]) * 1.0 / (top[1] - bot[1])
                     if y < mid[1]:

@@ -39,7 +39,6 @@ tokens = (
     "FOCAL", 
     "DISPLAY", 
     "SCREEN", 
-    "WEB", 
     "CO", 
     "FUNCTION"
 )
@@ -84,7 +83,6 @@ reserved = {
     "set_knobs" : "SET_KNOBS", 
     "focal" : "FOCAL", 
     "display" : "DISPLAY", 
-    "web" : "WEB"
 }
 
 t_ignore = " \t"
@@ -138,7 +136,7 @@ def p_stuff(p):
 
 def p_statement_comment(p):
     'statement : COMMENT'
-    commands.append(["ignore"])
+    commands.append(["ignore", p[1]])
 
 def p_statement_stack(p):
     """statement : POP
@@ -223,8 +221,24 @@ def p_statement_vary(p):
     symbols.append(("knob", p[2]))
     if len(p) == 6:
         commands.append(p[1:])
-    else:
+    elif p[4] != p[3]:
         commands.append([p[1], p[2], p[3], p[4], eval("lambda t : " + str(float(p[5])) + " + t * (" + str(float(p[6] - p[5]) / (p[4] - p[3])) + ")")])
+    else:
+        commands.append([p[1], p[2], p[3], p[4], eval("lambda t: " + str(float(p[6])))])
+
+def p_statement_tween(p):
+    """statement : TWEEN INT INT SYMBOL SYMBOL
+                 | TWEEN INT INT SYMBOL SYMBOL FUNCTION"""
+    if p[2] < 0:
+        p[2] = 0
+    symbols.append(("knoblist", p[4]))
+    symbols.append(("knoblist", p[5]))
+    if len(p) == 7:
+        commands.append(p[1:])
+    elif p[3] != p[2]:
+        commands.append(p[1:] + [eval("lambda t: (1.0 * t) / (" + str(p[3] - p[2]) + ")")])
+    else:
+        commands.append(p[1:] + [lambda t: 1.0])
 
 def p_statement_move(p):
     """statement : MOVE NUMBER NUMBER NUMBER SYMBOL
@@ -244,6 +258,15 @@ def p_statement_scale(p):
         commands.append(p[1:])
         symbols.append(("knob", p[5]))
 
+def p_statement_scale_single(p):
+    """statement : SCALE XYZ NUMBER
+                 | SCALE XYZ NUMBER SYMBOL"""
+    if len(p) == 4:
+        commands.append(["scaleXYZ", p[2], p[3], None])
+    else:
+        command.append(["scaleXYZ", p[2], p[3], p[4]])
+        symbols.append(("knob", p[4]))
+
 def p_statement_rotate(p):
     """statement : ROTATE XYZ NUMBER SYMBOL
                  | ROTATE XYZ NUMBER"""
@@ -252,6 +275,36 @@ def p_statement_rotate(p):
     else:
         commands.append(p[1:])
         symbols.append(("knob", p[4]))
+
+def p_statement_constants(p):
+    """statement : CONSTANTS SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
+                 | CONSTANTS SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
+                 | CONSTANTS SYMBOL NUMBER NUMBER NUMBER
+                 | CONSTANTS SYMBOL NUMBER NUMBER NUMBER NUMBER"""
+    symbols.append(("constants", p[2]))
+    if len(p) == 6:
+        commands.append(p[1:3] + 3 * [p[3]] + 3 * [p[4]] + 3 * [p[5]] + 3 * [0])
+    elif len(p) == 7:
+        commands.append(p[1:3] + 3 * [p[3]] + 3 * [p[4]] + 3 * [p[5]] + 3 * [p[6]])
+    elif len(p) == 12:
+        commands.append(p[1:12] + [0, 0, 0])
+    else:
+        commands.append(p[1:])
+
+def p_statement_save_coord_system(p):
+    """statement : SAVE_COORDS SYMBOL"""
+    symbols.append(("coord_system", p[2]))
+    commands.append(p[1:])
+
+def p_statement_save_knobs(p):
+    """statement : SAVE_KNOBS SYMBOL"""
+    symbols.append(("knoblist", p[2]))
+    commands.append(p[1:])
+
+def p_statement_camera(p):
+    """statement : CAMERA NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
+                 | FOCAL NUMBER"""
+    commands.append(p[1:])
 
 def p_SYMBOL(p):
     """SYMBOL : XYZ
