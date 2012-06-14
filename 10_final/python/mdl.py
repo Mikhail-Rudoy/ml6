@@ -171,25 +171,90 @@ def p_statement_knobs(p):
     if p[1] == "set":
         symbols.append(("knob", p[2]))
 
-def p_statement_sphere(p):
+def p_statement_sphere_1(p):
     """statement : SPHERE NUMBER NUMBER NUMBER NUMBER INT INT
-                 | SPHERE NUMBER NUMBER NUMBER NUMBER"""
+                 | SPHERE NUMBER NUMBER NUMBER NUMBER
+                 | SPHERE NUMBER NUMBER NUMBER NUMBER INT INT SYMBOL
+                 | SPHERE NUMBER NUMBER NUMBER NUMBER SYMBOL"""
     if len(p) == 6:
-        commands.append([p[1], p[2], p[3], p[4], p[5], None])
+        commands.append([p[1], None, p[2], p[3], p[4], p[5], None, None])
+    elif len(p) == 8:
+        commands.append([p[1], None, p[2], p[3], p[4], p[5], [p[6], p[7]], None])
+    elif len(p) == 7:
+        commands.append([p[1], None, p[2], p[3], p[4], p[5], None, p[6]])
+        symbols.append(("coord_system", p[6]))
     else:
-        commands.append([p[1], p[2], p[3], p[4], p[5], [p[6], p[7]]])
+        commands.append([p[1], None, p[2], p[3], p[4], p[5], [p[6], p[7]], p[8]])
+        symbols.append(("coord_system", p[8]))
 
-def p_statement_torus(p):
-    """statement : TORUS NUMBER NUMBER NUMBER NUMBER NUMBER INT INT
-                 | TORUS NUMBER NUMBER NUMBER NUMBER NUMBER"""
+def p_statement_sphere_2(p):
+    """statement : SPHERE SYMBOL NUMBER NUMBER NUMBER NUMBER INT INT
+                 | SPHERE SYMBOL NUMBER NUMBER NUMBER NUMBER
+                 | SPHERE SYMBOL NUMBER NUMBER NUMBER NUMBER INT INT SYMBOL
+                 | SPHERE SYMBOL NUMBER NUMBER NUMBER NUMBER SYMBOL"""
+    symbols.append(("constants", p[2]))
     if len(p) == 7:
-        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], None])
+        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], None, None])
+    elif len(p) == 9:
+        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], [p[7], p[8]], None])
+    elif len(p) == 8:
+        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], None, p[7]])
+        symbols.append(("coord_system", p[7]))
     else:
-        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], [p[7], p[8]]])
+        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], [p[7], p[8]], p[9]])
+        symbols.append(("coord_system", p[9]))
 
-def p_statement_box(p):
-    "statement : BOX NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER"
-    commands.append(p[1:])
+def p_statement_torus_1(p):
+    """statement : TORUS NUMBER NUMBER NUMBER NUMBER NUMBER INT INT
+                 | TORUS NUMBER NUMBER NUMBER NUMBER NUMBER
+                 | TORUS NUMBER NUMBER NUMBER NUMBER NUMBER INT INT SYMBOL
+                 | TORUS NUMBER NUMBER NUMBER NUMBER NUMBER SYMBOL"""
+    if len(p) == 7:
+        commands.append([p[1], None, p[2], p[3], p[4], p[5], p[6], None, None])
+    elif len(p) == 9:
+        commands.append([p[1], None, p[2], p[3], p[4], p[5], p[6], [p[7], p[8]], None])
+    elif len(p) == 8:
+        commands.append([p[1], None, p[2], p[3], p[4], p[5], p[6], None, p[7]])
+        symbols.append(("coord_system", p[7]))
+    else:
+        commands.append([p[1], None, p[2], p[3], p[4], p[5], p[6], [p[7], p[8]], p[9]])
+        symbols.append(("coord_system", p[9]))
+
+def p_statement_torus_1(p):
+    """statement : TORUS SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER INT INT
+                 | TORUS SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER
+                 | TORUS SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER INT INT SYMBOL
+                 | TORUS SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER SYMBOL"""
+    if len(p) == 8:
+        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], p[7], None, None])
+    elif len(p) == 10:
+        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], p[7], [p[8], p[9]], None])
+    elif len(p) == 9:
+        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], p[7], None, p[8]])
+        symbols.append(("coord_system", p[8]))
+    else:
+        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], p[7], [p[8], p[9]], p[10]])
+        symbols.append(("coord_system", p[10]))
+
+def p_statement_box_1(p):
+    """statement : BOX NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
+                 | BOX NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER SYMBOL"""
+    if len(p) == 8:
+        commands.append([p[1], None, p[2], p[3], p[4], p[5], p[6], p[7], None])
+    else:
+        commands.append([p[1], None, p[2], p[3], p[4], p[5], p[6], p[7], p[8]])
+        symbols.append(("coord_system", p[8]))
+
+def p_statement_box_3(p):
+    """statement : BOX SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
+                 | BOX SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER SYMBOL"""
+    symbols.append(("constants", p[2]))
+    if len(p) == 9:
+        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], None])
+    else:
+        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9]])
+        symbols.append(("coord_system", p[8]))
+
 
 def p_statement_line(p):
     "statement : LINE NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER"

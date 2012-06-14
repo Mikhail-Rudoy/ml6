@@ -221,7 +221,7 @@ def runCommands(commands, knobs, constants, coord_systems, base_matrix, focalLen
     """
     stack = [base_matrix.clone()]
     view = screen.Screen()
-    default_constants = [255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    constants[None] = [255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     lights = []
     ambient = [1.0, 1.0, 1.0]
     shading_type = "wireframe"
@@ -275,34 +275,43 @@ def runCommands(commands, knobs, constants, coord_systems, base_matrix, focalLen
             lights.append(command[1:])
         elif command[0] == "sphere":
             m = matrix.FaceMatrix()
-            m.add_sphere(*command[1:])
-            m.apply(stack[-1])
-            view.draw_FaceMatrix(m, [255, 255, 255])
+            m.add_sphere(*command[2:7])
+            if command[7]:
+                m.apply(coord_systems[command[7]])
+            else:
+                m.apply(stack[-1])
+            view.draw_FaceMatrix(m, [shading_type, constants[command[1]], ambient, lights])
         elif command[0] == "torus":
             m = matrix.FaceMatrix()
-            m.add_torus(*command[1:])
-            m.apply(stack[-1])
-            view.draw_FaceMatrix(m, [255, 255, 255])
+            m.add_torus(*command[2:8])
+            if command[8]:
+                m.apply(coord_systems[command[8]])
+            else:
+                m.apply(stack[-1])
+            view.draw_FaceMatrix(m, [shading_type, constants[command[1]], ambient, lights])
         elif command[0] == "box":
             m = matrix.FaceMatrix()
-            m.add_box(*command[1:])
-            m.apply(stack[-1])
-            view.draw_FaceMatrix(m, [255, 255, 255])
+            m.add_box(*(command[2:8]))
+            if command[8]:
+                m.apply(coord_systems[command[8]])
+            else:
+                m.apply(stack[-1])
+            view.draw_FaceMatrix(m, [shading_type, constants[command[1]], ambient, lights])
         elif command[0] == "line":
             m = matrix.EdgeMatrix()
             m.add_edge(*command[1:])
             m.apply(stack[-1])
-            view.draw_EdgeMatrix(m, [255, 255, 255])
+            view.draw_EdgeMatrix(m, [shading_type, constants[command[1]], ambient, lights])
         elif command[0] == "bezier":
             m = matrix.EdgeMatrix()
             m.add_bezier_curve(*command[1:])
             m.apply(stack[-1])
-            view.draw_EdgeMatrix(m, [255, 255, 255])
+            view.draw_EdgeMatrix(m, [shading_type, constants[command[1]], ambient, lights])
         elif command[0] == "hermite":
             m = matrix.EdgeMatrix()
             m.add_hermite_curve(*command[1:])
             m.apply(stack[-1])
-            view.draw_EdgeMatrix(m, [255, 255, 255])
+            view.draw_EdgeMatrix(m, [shading_type, constants[command[1]], ambient, lights])
         elif command[0] == "mesh":
             try:
                 meshFile = open(command[2])
@@ -316,16 +325,16 @@ def runCommands(commands, knobs, constants, coord_systems, base_matrix, focalLen
                         line = line.strip()
                         vals = [float(x) for x in line.split(" ")]
                         m.add_edge(*vals)
-                    view.draw_EdgeMatrix(m, [255, 255, 255])
+                    view.draw_EdgeMatrix(m, [shading_type, constants[command[1]], ambient, lights])
                 else:
                     m = matrix.FaceMatrix()
                     for line in meshFile.readlines():
                         line = line.strip()
                         vals = [float(x) for x in line.split(" ")]
                         m.add_face(*vals)
-                    view.draw_FaceMatrix(m, [255, 255, 255])
+                    view.draw_FaceMatrix(m, [shading_type, constants[command[1]], ambient, lights])
                 if command[3]:
-                    m.apply(command[3])
+                    m.apply(coord_systems[command[3]])
                 else:
                     m.apply(stack[-1])
                 meshFile.close()
@@ -335,6 +344,8 @@ def runCommands(commands, knobs, constants, coord_systems, base_matrix, focalLen
             coord_systems[command[1]] = stack[-1].clone()
         elif command[0] == "constants":
             constants[command[1]] = command[2:]
+        elif command[0] == "shading":
+            shading_type = command[1]
         elif command[0] == "move":
             if command[4]:
                 val = float(knobs[command[4]])

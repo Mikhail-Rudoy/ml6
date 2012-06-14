@@ -1,21 +1,25 @@
+constants lights 255 255 255 200 200 200 50 50 50 0 0 0
+ambient .25 0 0
+light 1 1 1 500 200 -500
 camera 0 50 -500 0 0 0
+shading phong
 move 250 250 0
-box -100 -200 -150 100 200 150
-sphere -200 0 0 95
+box lights -100 -200 -150 100 200 150
+sphere lights -200 0 0 95
 save tmpfile.ppm
 display
 screen
 camera -100 -25 -500 0 0 0
 move 250 250 0
-box -100 -200 -150 100 200 150
-sphere -200 0 0 95
+box lights -100 -200 -150 100 200 150
+sphere lights -200 0 0 95
 save tmpfile.ppm
 display
 screen
-focal 200
+focal 900
 camera -100 -25 -500 0 0 0
 move 250 250 0
-box -100 -200 -150 100 200 150
-sphere -200 0 0 95
+box lights -100 -200 -150 100 200 150
+sphere lights -200 0 0 95
 save tmpfile.ppm
 display

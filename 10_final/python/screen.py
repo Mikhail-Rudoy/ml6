@@ -50,11 +50,13 @@ class Screen():
         FILE.close()
     
     def set(self, x, y, z, col):
-        """
-        This method draws a color to a particular pixel of the 
-        screen.
-        """
         c, r = int(x), int(y)
+        col = [int(v) for v in col]
+        for i in range(3):
+            if col[i] < 0:
+                col[i] = 0
+            if col[i] > 255:
+                col[i] = 255
         if r < len(self.__pixels__) and r >= 0 and \
                 c >= 0 and c < len(self.__pixels__[r]) and \
                 self.__zbuffer__[r][c] > z:
@@ -62,27 +64,12 @@ class Screen():
             self.__zbuffer__[r][c] = z
     
     def get(self, x, y):
-        """
-        This method returns the color currently occupying the given
-        pixel.
-        """
         c, r = int(x), int(y)
         if r < len(self.__pixels__) and r >= 0 and \
                 c >= 0 and c < len(self.__pixels__[r]):
             return self.__pixels__[r][c]
     
-    def draw_line(self, x0, y0, z0, x1, y1, z1, shading_info):
-        """
-        This method draws a line between two points on the screen.
-        """
-        if shading_info[0] == "color":
-            col = shading_info[1]
-        if shading_info[0] == "colors":
-            col0 = shading_info[1]
-            col1 = shading_info[2]
-            R, G, B = col0
-            dR, dG, dB = col1
-            dR, dG, dB = dR - R, dG - G, dB - B
+    def draw_line_one_color(self, x0, y0, z0, x1, y1, z1, col):
         x0 = int(x0)
         y0 = int(y0)
         z0 = float(z0)
@@ -165,52 +152,444 @@ class Screen():
                     x = x + 1
                     d = d - dy
                 y = y + 1
-                z = z + dz / dx
+                z = z + dz / dy
                 d = d + dx
-    
-    def draw_EdgeMatrix(self, m, shading_info):
-        """
-        This method draws the edges contained in an EdgeMatrix.
-        """
-        if shading_info[0] == "wireframe":
-            shading_info = ["color", [255, 255, 255]]
-        
-        if shading_info[0] in ["goroud", "phong"]:
-            edges = {}
-            i = 0
-            while i < m.width() - 1:
-                x0 = m.get(0, i)
-                y0 = m.get(1, i)
-                z0 = m.get(2, i)
-                x1 = m.get(0, i + 1)
-                y1 = m.get(1, i + 1)
-                y2 = m.get(2, i + 1)
-                i = i + 2
-                dx = float(x0 - x1)
-                dy = float(y0 - y1)
-                dz = float(z0 - z1)
-                dx, dy, dz = dx / math.sqrt(dx * dx + dy * dy + dz * dz), dy / math.sqrt(dx * dx + dy * dy + dz * dz), dz / math.sqrt(dx * dx + dy * dy + dz * dz)
-                if edges.has_key((x0, y0, z0)):
-                    edges[(x0, y0, z0)].append((dx, dy, dz))
-                else:
-                    edges[(x0, y0, z0)] = [(dx, dy, dz)]
-                if edges.has_key((x1, y1, z1)):
-                    edges[(x1, y1, z1)].append((dx, dy, dz))
-                else:
-                    edges[(x1, y1, z1)] = [(dx, dy, dz)]
 
-        for k in edges.keys():
-            x = 0
-            y = 0
-            z = 0
-            n = 0
-            for dx, dy, dz in edges[k]:
-                x += dx
-                y += dy
-                z += dz
-                n += 1
-            edges[k] = vector.Vector((x / n, y / n, z / n))
-            
+    def draw_line_two_segment_vectors(self, x0, y0, z0, x1, y1, z1, consts, ambient, lights, segmentvect0, segmentvect1):
+        x0 = int(x0)
+        y0 = int(y0)
+        z0 = float(z0)
+        x1 = int(x1)
+        y1 = int(y1)
+        z1 = float(z1)
+        dx = x1 - x0
+        dy = y1 - y0
+        dz = z1 - z0
+        dx0, dy0, dz0 = [float(v) for v in segmentvect0.vals]
+        dx1, dy1, dz1 = [float(v) for v in segmentvect1.vals]
+        ddx = dx1 - dx0
+        ddy = dy1 - dy0
+        ddz = dz1 - dz0
+        if dx + dy < 0:
+            dx = 0 - dx
+            dy = 0 - dy
+            dz = 0 - dz
+            ddx = 0 - ddx
+            ddy = 0 - ddy
+            ddz = 0 - ddz
+            x0, x1 = x1, x0
+            y0, y1 = y1, y0
+            z0, z1 = z1, z0
+            dx0, dx1 = dx1, dx0
+            dy0, dy1 = dy1, dy0
+            dz0, dz1 = dz1, dz0
+        if dx == 0 and dy == 0:
+            if z0 > z1:
+                self.set(x0, y0, z0, self.get_color_from_segment_vector(consts, ambient, lights, segmentvector0, x0, y0, z0))
+            else:
+                self.set(x0, y0, z1, self.get_color_from_segment_vector(consts, ambient, lights, segmentvector1, x1, y1, z1))
+        elif dx == 0:
+            y = y0
+            z = z0
+            DX = dx0
+            DY = dy0
+            DZ = dz0
+            while y <= y1:
+                self.set(x0, y, z, self.get_color_from_segment_vector(consts, ambient, lights, vector.Vector(DX, DY, DZ), x0, y, z))
+                y = y + 1
+                z = z + dz / dy
+                DX = DX + ddx / dy
+                DY = DY + ddy / dy
+                DZ = DZ + ddz / dy
+        elif dy == 0:
+            x = x0
+            z = z0
+            DX = dx0
+            DY = dy0
+            DZ = dz0
+            while x <= x1:
+                self.set(x, y0, z, self.get_color_from_segment_vector(consts, ambient, lights, vector.Vector(DX, DY, DZ), x, y0, z))
+                x = x + 1
+                z = z + dz / dx
+                DX = DX + ddx / dx
+                DY = DY + ddy / dx
+                DZ = DZ + ddz / dx
+        elif dy < 0:
+            d = 0
+            x = x0
+            y = y0
+            z = z0
+            DX = dx0
+            DY = dy0
+            DZ = dz0
+            while x <= x1:
+                self.set(x, y, z, self.get_color_from_segment_vector(consts, ambient, lights, vector.Vector(DX, DY, DZ), x, y, z))
+                if d > 0:
+                    y = y - 1
+                    d = d - dx
+                x = x + 1
+                z = z + dz / dx
+                d = d - dy
+                DX = DX + ddx / dx
+                DY = DY + ddy / dx
+                DZ = DZ + ddz / dx
+        elif dx < 0:
+            d = 0
+            z = z0
+            x = x0
+            y = y0
+            DX = dx0
+            DY = dy0
+            DZ = dz0
+            while y <= y1:
+                self.set(x, y, z, self.get_color_from_segment_vector(consts, ambient, lights, vector.Vector(DX, DY, DZ), x, y, z))
+                if d > 0:
+                    x = x - 1
+                    d = d - dy
+                y = y + 1
+                z = z + dz / dy
+                d = d - dx
+                DX = DX + ddx / dy
+                DY = DY + ddy / dy
+                DZ = DZ + ddz / dy
+        elif dx > dy:
+            d = 0
+            x = x0
+            y = y0
+            z = z0
+            DX = dx0
+            DY = dy0
+            DZ = dz0
+            while x <= x1:
+                self.set(x, y, z, self.get_color_from_segment_vector(consts, ambient, lights, vector.Vector(DX, DY, DZ), x, y, z))
+                if d > 0:
+                    y = y + 1
+                    d = d - dx
+                x = x + 1
+                z = z + dz / dx
+                d = d + dy
+                DX = DX + ddx / dx
+                DY = DY + ddy / dx
+                DZ = DZ + ddz / dx
+        else:
+            d = 0
+            x = x0
+            y = y0
+            z = z0
+            DX = dx0
+            DY = dy0
+            DZ = dz0
+            while y <= y1:
+                self.set(x, y, z, self.get_color_from_segment_vector(consts, ambient, lights, vector.Vector(DX, DY, DZ), x, y, z))
+                if d > 0:
+                    x = x + 1
+                    d = d - dy
+                y = y + 1
+                z = z + dz / dy
+                d = d + dx
+                DX = DX + ddx / dy
+                DY = DY + ddy / dy
+                DZ = DZ + ddz / dy
+    
+    def draw_line_two_normal_vectors(self, x0, y0, z0, x1, y1, z1, consts, ambient, lights, normalvect0, normalvect1):
+        x0 = int(x0)
+        y0 = int(y0)
+        z0 = float(z0)
+        x1 = int(x1)
+        y1 = int(y1)
+        z1 = float(z1)
+        dx = x1 - x0
+        dy = y1 - y0
+        dz = z1 - z0
+        dx0, dy0, dz0 = [float(v) for v in normalvect0.vals]
+        dx1, dy1, dz1 = [float(v) for v in normalvect1.vals]
+        ddx = dx1 - dx0
+        ddy = dy1 - dy0
+        ddz = dz1 - dz0
+        if dx + dy < 0:
+            dx = 0 - dx
+            dy = 0 - dy
+            dz = 0 - dz
+            ddx = 0 - ddx
+            ddy = 0 - ddy
+            ddz = 0 - ddz
+            x0, x1 = x1, x0
+            y0, y1 = y1, y0
+            z0, z1 = z1, z0
+            dx0, dx1 = dx1, dx0
+            dy0, dy1 = dy1, dy0
+            dz0, dz1 = dz1, dz0
+        if dx == 0 and dy == 0:
+            if z0 > z1:
+                self.set(x0, y0, z0, self.get_color_from_normal_vector(consts, ambient, lights, normalvect0, x0, y0, z0))
+            else:
+                self.set(x0, y0, z1, self.get_color_from_normal_vector(consts, ambient, lights, normalvect1, x1, y1, z1))
+        elif dx == 0:
+            y = y0
+            z = z0
+            DX = dx0
+            DY = dy0
+            DZ = dz0
+            while y <= y1:
+                self.set(x0, y, z, self.get_color_from_normal_vector(consts, ambient, lights, vector.Vector(DX, DY, DZ), x0, y, z))
+                y = y + 1
+                z = z + dz / dy
+                DX = DX + ddx / dy
+                DY = DY + ddy / dy
+                DZ = DZ + ddz / dy
+        elif dy == 0:
+            x = x0
+            z = z0
+            DX = dx0
+            DY = dy0
+            DZ = dz0
+            while x <= x1:
+                self.set(x, y0, z, self.get_color_from_normal_vector(consts, ambient, lights, vector.Vector(DX, DY, DZ), x, y0, z))
+                x = x + 1
+                z = z + dz / dx
+                DX = DX + ddx / dx
+                DY = DY + ddy / dx
+                DZ = DZ + ddz / dx
+        elif dy < 0:
+            d = 0
+            x = x0
+            y = y0
+            z = z0
+            DX = dx0
+            DY = dy0
+            DZ = dz0
+            while x <= x1:
+                self.set(x, y, z, self.get_color_from_normal_vector(consts, ambient, lights, vector.Vector(DX, DY, DZ), x, y, z))
+                if d > 0:
+                    y = y - 1
+                    d = d - dx
+                x = x + 1
+                z = z + dz / dx
+                d = d - dy
+                DX = DX + ddx / dx
+                DY = DY + ddy / dx
+                DZ = DZ + ddz / dx
+        elif dx < 0:
+            d = 0
+            z = z0
+            x = x0
+            y = y0
+            DX = dx0
+            DY = dy0
+            DZ = dz0
+            while y <= y1:
+                self.set(x, y, z, self.get_color_from_normal_vector(consts, ambient, lights, vector.Vector(DX, DY, DZ), x, y, z))
+                if d > 0:
+                    x = x - 1
+                    d = d - dy
+                y = y + 1
+                z = z + dz / dy
+                d = d - dx
+                DX = DX + ddx / dy
+                DY = DY + ddy / dy
+                DZ = DZ + ddz / dy
+        elif dx > dy:
+            d = 0
+            x = x0
+            y = y0
+            z = z0
+            DX = dx0
+            DY = dy0
+            DZ = dz0
+            while x <= x1:
+                self.set(x, y, z, self.get_color_from_normal_vector(consts, ambient, lights, vector.Vector(DX, DY, DZ), x, y, z))
+                if d > 0:
+                    y = y + 1
+                    d = d - dx
+                x = x + 1
+                z = z + dz / dx
+                d = d + dy
+                DX = DX + ddx / dx
+                DY = DY + ddy / dx
+                DZ = DZ + ddz / dx
+        else:
+            d = 0
+            x = x0
+            y = y0
+            z = z0
+            DX = dx0
+            DY = dy0
+            DZ = dz0
+            while y <= y1:
+                self.set(x, y, z, self.get_color_from_normal_vector(consts, ambient, lights, vector.Vector(DX, DY, DZ), x, y, z))
+                if d > 0:
+                    x = x + 1
+                    d = d - dy
+                y = y + 1
+                z = z + dz / dy
+                d = d + dx
+                DX = DX + ddx / dy
+                DY = DY + ddy / dy
+                DZ = DZ + ddz / dy
+    
+    def draw_line_two_colors(self, x0, y0, z0, x1, y1, z1, col0, col1):
+        x0 = int(x0)
+        y0 = int(y0)
+        z0 = float(z0)
+        r0 = float(col0[0])
+        g0 = float(col0[1])
+        b0 = float(col0[2])
+        x1 = int(x1)
+        y1 = int(y1)
+        z1 = float(z1)
+        r1 = float(col1[0])
+        g1 = float(col1[1])
+        b1 = float(col1[2])
+        dx = x1 - x0
+        dy = y1 - y0
+        dz = z1 - z0
+        dr = r1 - r0
+        dg = g1 - g0
+        db = b1 - b0
+        if dx + dy < 0:
+            dx = 0 - dx
+            dy = 0 - dy
+            dz = 0 - dz
+            dr = 0 - dr
+            dg = 0 - dg
+            db = 0 - db
+            x0, x1 = x1, x0
+            y0, y1 = y1, y0
+            z0, z1 = z1, z0
+            r0, r1 = r1, r0
+            g0, g1 = g1, g0
+            b0, b1 = b1, b0
+        if dx == 0 and dy == 0:
+            if z0 > z1:
+                self.set(x0, y0, z0, [r0, g0, b0])
+            else:
+                self.set(x0, y0, z1, [r1, g1, b1])
+        elif dx == 0:
+            y = y0
+            z = z0
+            r = r0
+            g = g0
+            b = b0
+            while y <= y1:
+                self.set(x0, y, z, [r, g, b])
+                y = y + 1
+                z = z + dz / dy
+                r = r + dr / dy
+                g = g + dg / dy
+                b = b + db / dy
+        elif dy == 0:
+            x = x0
+            z = z0
+            r = r0
+            g = g0
+            b = b0
+            while x <= x1:
+                self.set(x, y0, z, [r, g, b])
+                x = x + 1
+                z = z + dz / dx
+                r = r + dr / dx
+                g = g + dg / dx
+                b = b + db / dx
+        elif dy < 0:
+            d = 0
+            x = x0
+            y = y0
+            z = z0
+            r = r0
+            g = g0
+            b = b0
+            while x <= x1:
+                self.set(x, y, z, [r, g, b])
+                if d > 0:
+                    y = y - 1
+                    d = d - dx
+                x = x + 1
+                z = z + dz / dx
+                d = d - dy
+                r = r + dr / dx
+                g = g + dg / dx
+                b = b + db / dx
+        elif dx < 0:
+            d = 0
+            z = z0
+            x = x0
+            y = y0
+            r = r0
+            g = g0
+            b = b0
+            while y <= y1:
+                self.set(x, y, z, [r, g, b])
+                if d > 0:
+                    x = x - 1
+                    d = d - dy
+                y = y + 1
+                z = z + dz / dy
+                d = d - dx
+                r = r + dr / dy
+                g = g + dg / dy
+                b = b + db / dy
+        elif dx > dy:
+            d = 0
+            x = x0
+            y = y0
+            z = z0
+            r = r0
+            g = g0
+            b = b0
+            while x <= x1:
+                self.set(x, y, z, [r, g, b])
+                if d > 0:
+                    y = y + 1
+                    d = d - dx
+                x = x + 1
+                z = z + dz / dx
+                d = d + dy
+                r = r + dr / dx
+                g = g + dg / dx
+                b = b + db / dx
+        else:
+            d = 0
+            x = x0
+            y = y0
+            z = z0
+            r = r0
+            g = g0
+            b = b0
+            while y <= y1:
+                self.set(x, y, z, [r, g, b])
+                if d > 0:
+                    x = x + 1
+                    d = d - dy
+                y = y + 1
+                z = z + dz / dy
+                d = d + dx
+                r = r + dr / dy
+                g = g + dg / dy
+                b = b + db / dy
+
+    def get_color_from_segment_vector(self, consts, ambient, lights, segmentvect, x, y, z):
+        dx, dy, dz = segmentvect.vals
+        dx, dy, dz = dx / math.sqrt(dx * dx + dy * dy + dz * dz), dy / math.sqrt(dx * dx + dy * dy + dz * dz), dz / math.sqrt(dx * dx + dy * dy + dz * dz)
+        segmentvect = vector.Vector(dx, dy, dz)
+        col = consts[9:]
+        for i in range(3):
+            col[i] += consts[i] * ambient[i]
+        for light in lights:
+            xlight = light[3]
+            ylight = light[4]
+            zlight = light[5]
+            dx = float(x - xlight)
+            dy = float(y - ylight)
+            dz = float(z - zlight)
+            dx, dy, dz = dx / math.sqrt(dx * dx + dy * dy + dz * dz), dy / math.sqrt(dx * dx + dy * dy + dz * dz), dz / math.sqrt(dx * dx + dy * dy + dz * dz)
+            lightvect = vector.Vector(dx, dy, dz)
+            for i in range(3):
+                col[i] += light[i] * consts[i + 3] * math.sqrt(1 - Math.pow(lightvect.dot(segmentvect), 2))
+                val = math.cos(math.acos(math.sqrt(1 - Math.pow(lightvect.dot(segmentvect), 2))) - math.acos(0 - segmentvect.vals[2]))
+                col[i] += light[i] * consts[i + 6] * (abs(val) + val) * 0.5
+        return [float(v) for v in col]
+
+    def draw_EdgeMatrix_wireframe(self, m):
         i = 0
         while i < m.width() - 1:
             x0 = m.get(0, i)
@@ -232,76 +611,245 @@ class Screen():
                 x1 = x1 - (len(self.__pixels__[0]) * 0.5)
                 x1 = x1 * self.focalLength / (z1 + self.focalLength)
                 x1 = x1 + (len(self.__pixels__[0]) * 0.5)
-            if shading_info[0] == "flat":
-                consts = shading_info[1]
-                ambient = shading_info[2]
-                lights = shading_info[3]
-                col = consts[9:]
-                dx = float(x0 - x1)
-                dy = float(y0 - y1)
-                dz = float(z0 - z1)
-                dx, dy, dz = dx / math.sqrt(dx * dx + dy * dy + dz * dz), dy / math.sqrt(dx * dx + dy * dy + dz * dz), dz / math.sqrt(dx * dx + dy * dy + dz * dz)
-                segmentvect = vector.Vector(dx, dy, dz)
-                xcenter = 0.5 * (x0 + x1)
-                ycenter = 0.5 * (y0 + y1)
-                zcenter = 0.5 * (z0 + z1)
-                for light in lights:
-                    xlight = light[3]
-                    ylight = light[4]
-                    zlight = light[5]
-                    dx2 = float(xcenter - xlight)
-                    dy2 = float(ycenter - ylight)
-                    dz2 = float(zcenter - zlight)
-                    dx2, dy2, dz2 = dx2 / math.sqrt(dx2 * dx2 + dy2 * dy2 + dz2 * dz2), dy2 / math.sqrt(dx2 * dx2 + dy2 * dy2 + dz2 * dz2), dz2 / math.sqrt(dx2 * dx2 + dy2 * dy2 + dz2 * dz2)
-                    lightvect = vector.Vector(dx2, dy2, dz2)
-                    for i in range(3):
-                        col[i] += consts[i] * ambient[i]
-                        col[i] += light[i] * consts[i + 3] * math.sqrt(1 - Math.pow(lightvect.dot(segmentvect), 2))
-                        val = math.cos(math.acos(math.sqrt(1 - Math.pow(lightvect.dot(segmentvect), 2))) - math.acos(0 - dz))
-                        col[i] += light[i] * consts[i + 6] * (math.abs(val) + val) * 0.5
-                col = [int(v) for v in col]
-                self.draw_line(int(x0), int(y0), z0, int(x1), int(y1), z1, ["color", col])
-            elif shading_info[0] == "goroud":
-                consts = shading_info[1]
-                ambient = shading_info[2]
-                lights = shading_info[3]
-                col0 = consts[9:]
-                col1 = col0[:]
-                for light in lights:
-                    xlight = light[3]
-                    ylight = light[4]
-                    zlight = light[5]
-                    dx0 = float(x0 - xlight)
-                    dy0 = float(y0 - ylight)
-                    dz0 = float(z0 - zlight)
-                    dx0, dy0, dz0 = dx0 / math.sqrt(dx0 * dx0 + dy0 * dy0 + dz0 * dz0), dy0 / math.sqrt(dx0 * dx0 + dy0 * dy0 + dz0 * dz0), dz0 / math.sqrt(dx0 * dx0 + dy0 * dy0 + dz0 * dz0)
-                    lightvect0 = vector.Vector(dx0, dy0, dz0)
-                    dx1 = float(x1 - xlight)
-                    dy1 = float(y1 - ylight)
-                    dz1 = float(z1 - zlight)
-                    dx1, dy, dz1 = dx1 / math.sqrt(dx1 * dx1 + dy1 * dy1 + dz1 * dz1), dy1 / math.sqrt(dx1 * dx1 + dy1 * dy1 + dz1 * dz1), dz1 / math.sqrt(dx1 * dx1 + dy1 * dy1 + dz1 * dz1)
-                    lightvect1 = vector.Vector(dx1, dy1, dz1)
-                    for i in range(3):
-                        col0[i] += consts[i] * ambient[i]
-                        col1[i] += consts[i] * ambient[i]
-                        col0[i] += light[i] * consts[i + 3] * math.sqrt(1 - Math.pow(lightvect0.dot(edges[(x0, y0, z0)]), 2))
-                        col1[i] += light[i] * consts[i + 3] * math.sqrt(1 - Math.pow(lightvect1.dot(edges[(x1, y1, z1)]), 2))
-                        val0 = math.cos(math.acos(math.sqrt(1 - Math.pow(lightvect0.dot(edges[(x0, y0, z0)]), 2))) - math.acos(0 - dz0))
-                        col0[i] += light[i] * consts[i + 6] * (math.abs(val0) + val0) * 0.5
-                        val1 = math.cos(math.acos(math.sqrt(1 - Math.pow(lightvect1.dot(edges[(x1, y1, z1)]), 2))) - math.acos(0 - dz1))
-                        col1[i] += light[i] * consts[i + 6] * (math.abs(val1) + val1) * 0.5
-                self.draw_line(int(x0), int(y0), z0, int(x1), int(y1), z1, ["colors", col0, col1])
-            elif shading_info[0] == "phong":
-                self.draw_line(int(x0), int(y0), z0, int(x1), int(y1), z1, ["edge_vectors", edges[(x0, y0, z0)], edges[(x1, y1, z1)]] + shading_info[1:])
-            else:
-                self.draw_line(int(x0), int(y0), z0, int(x1), int(y1), z1, shading_info)
-                
+            self.draw_line_one_color(int(x0), int(y0), z0, int(x1), int(y1), z1, [255, 255, 255])    
             i = i + 2
     
-    def draw_FaceMatrix(self, m, shading_info, view = [0, 0, -1]):
-        """
-        This method draws the faces contained in a FaceMatrix.
-        """
+    def draw_EdgeMatrix_flat(self, m, consts, ambient, lights):
+        i = 0
+        while i < m.width() - 1:
+            x0 = m.get(0, i)
+            y0 = m.get(1, i)
+            z0 = m.get(2, i)
+            x1 = m.get(0, i + 1)
+            y1 = m.get(1, i + 1)
+            y2 = m.get(2, i + 1)
+            if self.focalLength != 0:
+                y0 = y0 - (len(self.__pixels__) * 0.5)
+                y0 = y0 * self.focalLength / (z0 + self.focalLength)
+                y0 = y0 + (len(self.__pixels__) * 0.5)
+                y1 = y1 - (len(self.__pixels__) * 0.5)
+                y1 = y1 * self.focalLength / (z1 + self.focalLength)
+                y1 = y1 + (len(self.__pixels__) * 0.5)
+                x0 = x0 - (len(self.__pixels__[0]) * 0.5)
+                x0 = x0 * self.focalLength / (z0 + self.focalLength)
+                x0 = x0 + (len(self.__pixels__[0]) * 0.5)
+                x1 = x1 - (len(self.__pixels__[0]) * 0.5)
+                x1 = x1 * self.focalLength / (z1 + self.focalLength)
+                x1 = x1 + (len(self.__pixels__[0]) * 0.5)
+            dx = float(x0 - x1)
+            dy = float(y0 - y1)
+            dz = float(z0 - z1)
+            x = 0.5 * (x0 + x1)
+            y = 0.5 * (y0 + y1)
+            z = 0.5 * (z0 + z1)
+            col = self.get_color_from_segment_vector(consts, ambient, lights, vector.Vector(dx, dy, dz), x, y, z)
+            self.draw_line_one_color(int(x0), int(y0), z0, int(x1), int(y1), z1, col)
+            i = i + 2
+    
+    def draw_EdgeMatrix_goroud(self, m, consts, ambient, lights):
+        edges = {}
+        i = 0
+        while i < m.width() - 1:
+            x0 = m.get(0, i)
+            y0 = m.get(1, i)
+            z0 = m.get(2, i)
+            x1 = m.get(0, i + 1)
+            y1 = m.get(1, i + 1)
+            y2 = m.get(2, i + 1)
+            i = i + 2
+            dx = float(x0 - x1)
+            dy = float(y0 - y1)
+            dz = float(z0 - z1)
+            if dx == 0 and dy == 0 and dz == 0:
+                continue
+            dx, dy, dz = dx / math.sqrt(dx * dx + dy * dy + dz * dz), dy / math.sqrt(dx * dx + dy * dy + dz * dz), dz / math.sqrt(dx * dx + dy * dy + dz * dz)
+            if edges.has_key((x0, y0, z0)):
+                edges[(x0, y0, z0)].append((dx, dy, dz))
+            else:
+                edges[(x0, y0, z0)] = [(dx, dy, dz)]
+            if edges.has_key((x1, y1, z1)):
+                edges[(x1, y1, z1)].append((dx, dy, dz))
+            else:
+                edges[(x1, y1, z1)] = [(dx, dy, dz)]
+        
+        for k in edges.keys():
+            x = 0
+            y = 0
+            z = 0
+            n = 0.0
+            for dx, dy, dz in edges[k]:
+                x += dx
+                y += dy
+                z += dz
+                n += 1
+            edges[k] = vector.Vector((x / n, y / n, z / n))
+        
+        i = 0
+        while i < m.width() - 1:
+            x0 = m.get(0, i)
+            y0 = m.get(1, i)
+            z0 = m.get(2, i)
+            x1 = m.get(0, i + 1)
+            y1 = m.get(1, i + 1)
+            y2 = m.get(2, i + 1)
+            if self.focalLength != 0:
+                y0 = y0 - (len(self.__pixels__) * 0.5)
+                y0 = y0 * self.focalLength / (z0 + self.focalLength)
+                y0 = y0 + (len(self.__pixels__) * 0.5)
+                y1 = y1 - (len(self.__pixels__) * 0.5)
+                y1 = y1 * self.focalLength / (z1 + self.focalLength)
+                y1 = y1 + (len(self.__pixels__) * 0.5)
+                x0 = x0 - (len(self.__pixels__[0]) * 0.5)
+                x0 = x0 * self.focalLength / (z0 + self.focalLength)
+                x0 = x0 + (len(self.__pixels__[0]) * 0.5)
+                x1 = x1 - (len(self.__pixels__[0]) * 0.5)
+                x1 = x1 * self.focalLength / (z1 + self.focalLength)
+                x1 = x1 + (len(self.__pixels__[0]) * 0.5)
+            if x0 == x1 and y0 == y1 and z0 == z1:
+                i = i + 2
+                continue
+            col0 = self.get_color_from_segment_vector(consts, ambient, lights, edges[(x0, y0, z0)], x0, y0, z0)
+            col1 = self.get_color_from_segment_vector(consts, ambient, lights, edges[(x1, y1, z1)], x1, y1, z1)
+            self.draw_line_two_colors(int(x0), int(y0), z0, int(x1), int(y1), z1, col0, col1)
+            i = i + 2
+    
+    def draw_EdgeMatrix_phong(self, m, consts, ambient, lights):
+        edges = {}
+        i = 0
+        while i < m.width() - 1:
+            x0 = m.get(0, i)
+            y0 = m.get(1, i)
+            z0 = m.get(2, i)
+            x1 = m.get(0, i + 1)
+            y1 = m.get(1, i + 1)
+            y2 = m.get(2, i + 1)
+            i = i + 2
+            dx = float(x0 - x1)
+            dy = float(y0 - y1)
+            dz = float(z0 - z1)
+            if dx == 0 and dy == 0 and dz == 0:
+                continue
+            dx, dy, dz = dx / math.sqrt(dx * dx + dy * dy + dz * dz), dy / math.sqrt(dx * dx + dy * dy + dz * dz), dz / math.sqrt(dx * dx + dy * dy + dz * dz)
+            if edges.has_key((x0, y0, z0)):
+                edges[(x0, y0, z0)].append((dx, dy, dz))
+            else:
+                edges[(x0, y0, z0)] = [(dx, dy, dz)]
+            if edges.has_key((x1, y1, z1)):
+                edges[(x1, y1, z1)].append((dx, dy, dz))
+            else:
+                edges[(x1, y1, z1)] = [(dx, dy, dz)]
+        for k in edges.keys():
+            x = 0
+            y = 0
+            z = 0
+            n = 0.0
+            for dx, dy, dz in edges[k]:
+                x += dx
+                y += dy
+                z += dz
+                n += 1
+            edges[k] = vector.Vector((x / n, y / n, z / n))
+        
+        i = 0
+        while i < m.width() - 1:
+            x0 = m.get(0, i)
+            y0 = m.get(1, i)
+            z0 = m.get(2, i)
+            x1 = m.get(0, i + 1)
+            y1 = m.get(1, i + 1)
+            y2 = m.get(2, i + 1)
+            if self.focalLength != 0:
+                y0 = y0 - (len(self.__pixels__) * 0.5)
+                y0 = y0 * self.focalLength / (z0 + self.focalLength)
+                y0 = y0 + (len(self.__pixels__) * 0.5)
+                y1 = y1 - (len(self.__pixels__) * 0.5)
+                y1 = y1 * self.focalLength / (z1 + self.focalLength)
+                y1 = y1 + (len(self.__pixels__) * 0.5)
+                x0 = x0 - (len(self.__pixels__[0]) * 0.5)
+                x0 = x0 * self.focalLength / (z0 + self.focalLength)
+                x0 = x0 + (len(self.__pixels__[0]) * 0.5)
+                x1 = x1 - (len(self.__pixels__[0]) * 0.5)
+                x1 = x1 * self.focalLength / (z1 + self.focalLength)
+                x1 = x1 + (len(self.__pixels__[0]) * 0.5)
+            if x0 == x1 and y0 == y1 and z0 == z1:
+                i = i + 2
+                continue
+            self.draw_line_two_segment_vectors(int(x0), int(y0), z0, int(x1), int(y1), z1, consts, ambient, lights, edges[(x0, y0, z0)], edges[(x0, y0, z0)])
+            i = i + 2
+    
+    def draw_EdgeMatrix(self, m, shading_info):
+        if shading_info[0] == "wireframe":
+            self.draw_EdgeMatrix_wireframe(m)
+        elif shading_info[0] == "flat":
+            self.draw_EdgeMatrix_flat(m, shading_info[1], shading_info[2], shading_info[3])
+        elif shading_info[0] == "goroud":
+            self.draw_EdgeMatrix_goroud(m, shading_info[1], shading_info[2], shading_info[3])
+        elif shading_info[0] == "phong":
+            self.draw_EdgeMatrix_phong(m, shading_info[1], shading_info[2], shading_info[3])
+    
+    def draw_FaceMatrix(self, m, shading_info):
+        normals = None
+        if shading_info[0] in ["goroud", "phong"]:
+            i = 0
+            normals = {}
+            while i < m.width() - 2:
+                x0 = m.get(0, i)
+                y0 = m.get(1, i)
+                z0 = m.get(2, i)
+                x1 = m.get(0, i + 1)
+                y1 = m.get(1, i + 1)
+                z1 = m.get(2, i + 1)
+                x2 = m.get(0, i + 2)
+                y2 = m.get(1, i + 2)
+                z2 = m.get(2, i + 2)
+                i = i + 2
+                if self.focalLength != 0:
+                    y0 = y0 - (len(self.__pixels__) * 0.5)
+                    y0 = y0 * self.focalLength / (z0 + self.focalLength)
+                    y0 = y0 + (len(self.__pixels__) * 0.5)
+                    y1 = y1 - (len(self.__pixels__) * 0.5)
+                    y1 = y1 * self.focalLength / (z1 + self.focalLength)
+                    y1 = y1 + (len(self.__pixels__) * 0.5)
+                    y2 = y2 - (len(self.__pixels__) * 0.5)
+                    y2 = y2 * self.focalLength / (z2 + self.focalLength)
+                    y2 = y2 + (len(self.__pixels__) * 0.5)
+                    x0 = x0 - (len(self.__pixels__[0]) * 0.5)
+                    x0 = x0 * self.focalLength / (z0 + self.focalLength)
+                    x0 = x0 + (len(self.__pixels__[0]) * 0.5)
+                    x1 = x1 - (len(self.__pixels__[0]) * 0.5)
+                    x1 = x1 * self.focalLength / (z1 + self.focalLength)
+                    x1 = x1 + (len(self.__pixels__[0]) * 0.5)
+                    x2 = x2 - (len(self.__pixels__[0]) * 0.5)
+                    x2 = x2 * self.focalLength / (z2 + self.focalLength)
+                    x2 = x2 + (len(self.__pixels__[0]) * 0.5)
+                dx, dy, dz = ((vector.Vector(x1 - x0, y1 - y0, z1 - z0)).cross(vector.Vector(x2 - x0, y2 - y0, z2 - z0))).vals
+                if dx == 0 and dy == 0 and dz == 0:
+                    continue
+                dx, dy, dz = dx / math.sqrt(dx * dx + dy * dy + dz * dz), dy / math.sqrt(dx * dx + dy * dy + dz * dz), dz / math.sqrt(dx * dx + dy * dy + dz * dz)
+                if normals.has_key((int(x0), int(y0), int(z0))):
+                    normals[(int(x0), int(y0), int(z0))].append((dx, dy, dz))
+                else:
+                    normals[(int(x0), int(y0), int(z0))] = [(dx, dy, dz)]
+                if normals.has_key((int(x1), int(y1), int(z1))):
+                    normals[(int(x1), int(y1), int(z1))].append((dx, dy, dz))
+                else:
+                    normals[(int(x1), int(y1), int(z1))] = [(dx, dy, dz)]
+                if normals.has_key((int(x2), int(y2), int(z2))):
+                    normals[(int(x2), int(y2), int(z2))].append((dx, dy, dz))
+                else:
+                    normals[(int(x2), int(y2), int(z2))] = [(dx, dy, dz)]
+            for k in normals.keys():
+                x = 0
+                y = 0
+                z = 0
+                n = 0.0
+                for dx, dy, dz in normals[k]:
+                    x += dx
+                    y += dy
+                    z += dz
+                    n += 1
+                normals[k] = vector.Vector(x / n, y / n, z / n)
+        
         i = 0
         while i < m.width() - 2:
             x0 = m.get(0, i)
@@ -332,17 +880,56 @@ class Screen():
                 x2 = x2 - (len(self.__pixels__[0]) * 0.5)
                 x2 = x2 * self.focalLength / (z2 + self.focalLength)
                 x2 = x2 + (len(self.__pixels__[0]) * 0.5)
-            if self.focalLength != 0 or (vector.Vector(x1 - x0, y1 - y0, z1 - z0)).cross(vector.Vector(x2 - x0, y2 - y0, z2 - z0)).dot(vector.Vector(*view)) > 0:
-                self.scanline_convert(x0, y0, z0, x1, y1, z1, x2, y2, z2, shading_info)
             i = i + 3
+            if (vector.Vector(x1 - x0, y1 - y0, z1 - z0)).cross(vector.Vector(x2 - x0, y2 - y0, z2 - z0)).dot(vector.Vector(0, 0, -1)) == 0:
+                continue
+            if self.focalLength != 0 or (vector.Vector(x1 - x0, y1 - y0, z1 - z0)).cross(vector.Vector(x2 - x0, y2 - y0, z2 - z0)).dot(vector.Vector(0, 0, -1)) > 0 or shading_info[0] == "wireframe":
+                self.scanline_convert(x0, y0, z0, x1, y1, z1, x2, y2, z2, shading_info, normals)
     
-    def scanline_convert(self, x0, y0, z0, x1, y1, z1, x2, y2, z2, shading_info):
-        """
-        this method shades a triangle
-        """
-        self.draw_line(x0, y0, z0, x1, y1, z1, col)
-        self.draw_line(x0, y0, z0, x2, y2, z2, col)
-        self.draw_line(x2, y2, z2, x1, y1, z1, col)[x0, y0, x1, y1, x2, y2] = [int(v) for v in [x0, y0, x1, y1, x2, y2]]
+    def get_color_from_normal_vector(self, consts, ambient, lights, normalvect, x, y, z):
+        dx, dy, dz = normalvect.vals
+        dx, dy, dz = dx / math.sqrt(dx * dx + dy * dy + dz * dz), dy / math.sqrt(dx * dx + dy * dy + dz * dz), dz / math.sqrt(dx * dx + dy * dy + dz * dz)
+        normalvect = vector.Vector(dx, dy, dz)
+        col = consts[9:]
+        for i in range(3):
+            col[i] += consts[i] * ambient[i]
+        for light in lights:
+            xlight = light[3]
+            ylight = light[4]
+            zlight = light[5]
+            dx = 0 - float(x - xlight)
+            dy = 0 - float(y - ylight)
+            dz = 0 - float(z - zlight)
+            dx, dy, dz = dx / math.sqrt(dx * dx + dy * dy + dz * dz), dy / math.sqrt(dx * dx + dy * dy + dz * dz), dz / math.sqrt(dx * dx + dy * dy + dz * dz)
+            lightvect = vector.Vector(dx, dy, dz)
+            for i in range(3):
+                val = light[i] * consts[i + 3] * (normalvect.dot(lightvect))
+                col[i] += (abs(val) + val) * 0.5
+                val = vector.Vector(*[2 * lightvect.dot(normalvect) * normalvect.vals[i] - lightvect.vals[i] for i in range(3)]).dot(vector.Vector(0, 0, -1))
+                col[i] += light[i] * consts[i + 6] * (abs(val) + val) * 0.5
+        return [float(v) for v in col]
+    
+    def scanline_convert(self, x0, y0, z0, x1, y1, z1, x2, y2, z2, shading_info, normals):
+        if shading_info[0] == "wireframe":
+            self.scanline_convert_wireframe(x0, y0, z0, x1, y1, z1, x2, y2, z2)
+        elif shading_info[0] == "flat":
+            self.scanline_convert_flat(x0, y0, z0, x1, y1, z1, x2, y2, z2, shading_info[1], shading_info[2], shading_info[3])
+        elif shading_info[0] == "goroud":
+            self.scanline_convert_goroud(x0, y0, z0, x1, y1, z1, x2, y2, z2, shading_info[1], shading_info[2], shading_info[3], normals)
+        elif shading_info[0] == "phong": 
+            self.scanline_convert_phong(x0, y0, z0, x1, y1, z1, x2, y2, z2, shading_info[1], shading_info[2], shading_info[3], normals)
+    
+    def scanline_convert_wireframe(self, x0, y0, z0, x1, y1, z1, x2, y2, z2):
+        self.draw_line_one_color(x0, y0, z0, x1, y1, z1, [255, 255, 255])
+        self.draw_line_one_color(x0, y0, z0, x2, y2, z2, [255, 255, 255])
+        self.draw_line_one_color(x2, y2, z2, x1, y1, z1, [255, 255, 255])
+    
+    def scanline_convert_flat(self, x0, y0, z0, x1, y1, z1, x2, y2, z2, consts, ambient, lights):
+        col = self.get_color_from_normal_vector(consts, ambient, lights, (vector.Vector(x1 - x0, y1 - y0, z1 - z0)).cross(vector.Vector(x2 - x0, y2 - y0, z2 - z0)), (x0 + x1 + x2) / 3.0, (y0 + y1 + y2) / 3.0, (z0 + z1 + z2) / 3.0)
+        self.draw_line_one_color(x0, y0, z0, x1, y1, z1, col)
+        self.draw_line_one_color(x0, y0, z0, x2, y2, z2, col)
+        self.draw_line_one_color(x2, y2, z2, x1, y1, z1, col)
+        [x0, y0, x1, y1, x2, y2] = [int(v) for v in [x0, y0, x1, y1, x2, y2]]
         pts = [(x0, y0, z0), (x1, y1, z1), (x2, y2, z2)]
         ys = [y0, y1, y2]
         top = pts[ys.index(max(ys))]
@@ -361,7 +948,7 @@ class Screen():
             if y == mid[1]:
                 x1 = mid[0]
                 z1 = mid[2]
-            self.draw_line(int(x0), y, z0, int(x1), y, z1, col)
+            self.draw_line_one_color(int(x0), y, z0, int(x1), y, z1, col)
             x0 += (top[0] - bot[0]) * 1.0 / (top[1] - bot[1])
             z0 += (top[2] - bot[2]) * 1.0 / (top[1] - bot[1])
             if y < mid[1]:
@@ -370,6 +957,98 @@ class Screen():
             elif y < top[1]:
                 x1 += (top[0] - mid[0]) * 1.0 / (top[1] - mid[1])
                 z1 += (top[2] - mid[2]) * 1.0 / (top[1] - mid[1])
+            y = y + 1
+    
+    def scanline_convert_goroud(self, x0, y0, z0, x1, y1, z1, x2, y2, z2, consts, ambient, lights, normals):
+        col0 = self.get_color_from_normal_vector(consts, ambient, lights, normals[(int(x0), int(y0), int(z0))], x0, y0, z0)
+        col1 = self.get_color_from_normal_vector(consts, ambient, lights, normals[(int(x1), int(y1), int(z1))], x1, y1, z1)
+        col2 = self.get_color_from_normal_vector(consts, ambient, lights, normals[(int(x2), int(y2), int(z2))], x2, y2, z2)
+        self.draw_line_two_colors(x0, y0, z0, x1, y1, z1, col0, col1)
+        self.draw_line_two_colors(x0, y0, z0, x2, y2, z2, col0, col2)
+        self.draw_line_two_colors(x2, y2, z2, x1, y1, z1, col2, col1)
+        [x0, y0, x1, y1, x2, y2] = [int(v) for v in [x0, y0, x1, y1, x2, y2]]
+        pts = [(x0, y0, z0, col0), (x1, y1, z1, col1), (x2, y2, z2, col2)]
+        ys = [y0, y1, y2]
+        top = pts[ys.index(max(ys))]
+        pts = [pts[j] for j in range(len(pts)) if j != ys.index(max(ys))]
+        ys = [ys[j] for j in range(len(ys)) if j != ys.index(max(ys))]
+        mid = pts[ys.index(max(ys))]
+        pts = [pts[j] for j in range(len(pts)) if j != ys.index(max(ys))]
+        ys = [ys[j] for j in range(len(ys)) if j != ys.index(max(ys))]
+        bot = pts[0]
+        y = bot[1]
+        x0 = bot[0] * 1.0
+        x1 = bot[0] * 1.0
+        z0 = bot[2] * 1.0
+        z1 = bot[2] * 1.0
+        col0 = bot[3][:]
+        col1 = bot[3][:]
+        while y < top[1]:
+            if y == mid[1]:
+                x1 = mid[0]
+                z1 = mid[2]
+                col1 = mid[3][:]
+            self.draw_line_two_colors(int(x0), y, z0, int(x1), y, z1, col0, col1)
+            x0 += (top[0] - bot[0]) * 1.0 / (top[1] - bot[1])
+            z0 += (top[2] - bot[2]) * 1.0 / (top[1] - bot[1])
+            for i in range(3):
+                col0[i] += (top[3][i] - bot[3][i]) / (top[1] - bot[1])
+            if y < mid[1]:
+                x1 += (mid[0] - bot[0]) * 1.0 / (mid[1] - bot[1])
+                z1 += (mid[2] - bot[2]) * 1.0 / (mid[1] - bot[1])
+                for i in range(3):
+                    col1[i] += (mid[3][i] - bot[3][i]) / (mid[1] - bot[1])
+            elif y < top[1]:
+                x1 += (top[0] - mid[0]) * 1.0 / (top[1] - mid[1])
+                z1 += (top[2] - mid[2]) * 1.0 / (top[1] - mid[1])
+                for i in range(3):
+                    col1[i] += (top[3][i] - mid[3][i]) / (top[1] - mid[1])
+            y = y + 1
+    
+    def scanline_convert_phong(self, x0, y0, z0, x1, y1, z1, x2, y2, z2, consts, ambient, lights, normals):
+        norm0 = normals[(int(x0), int(y0), int(z0))].vals
+        norm1 = normals[(int(x1), int(y1), int(z1))].vals
+        norm2 = normals[(int(x2), int(y2), int(z2))].vals
+        self.draw_line_two_normal_vectors(x0, y0, z0, x1, y1, z1, consts, ambient, lights, vector.Vector(*norm0), vector.Vector(*norm1))
+        self.draw_line_two_normal_vectors(x0, y0, z0, x2, y2, z2, consts, ambient, lights, vector.Vector(*norm0), vector.Vector(*norm2))
+        self.draw_line_two_normal_vectors(x2, y2, z2, x1, y1, z1, consts, ambient, lights, vector.Vector(*norm2), vector.Vector(*norm1))
+        [x0, y0, x1, y1, x2, y2] = [int(v) for v in [x0, y0, x1, y1, x2, y2]]
+        pts = [(x0, y0, z0, norm0), (x1, y1, z1, norm1), (x2, y2, z2, norm2)]
+        ys = [y0, y1, y2]
+        top = pts[ys.index(max(ys))]
+        pts = [pts[j] for j in range(len(pts)) if j != ys.index(max(ys))]
+        ys = [ys[j] for j in range(len(ys)) if j != ys.index(max(ys))]
+        mid = pts[ys.index(max(ys))]
+        pts = [pts[j] for j in range(len(pts)) if j != ys.index(max(ys))]
+        ys = [ys[j] for j in range(len(ys)) if j != ys.index(max(ys))]
+        bot = pts[0]
+        y = bot[1]
+        x0 = bot[0] * 1.0
+        x1 = bot[0] * 1.0
+        z0 = bot[2] * 1.0
+        z1 = bot[2] * 1.0
+        norm0 = bot[3][:]
+        norm1 = bot[3][:]
+        while y < top[1]:
+            if y == mid[1]:
+                x1 = mid[0]
+                z1 = mid[2]
+                norm1 = mid[3][:]
+            self.draw_line_two_normal_vectors(int(x0), y, z0, int(x1), y, z1, consts, ambient, lights, vector.Vector(*norm0), vector.Vector(*norm1))
+            x0 += (top[0] - bot[0]) * 1.0 / (top[1] - bot[1])
+            z0 += (top[2] - bot[2]) * 1.0 / (top[1] - bot[1])
+            for i in range(3):
+                norm0[i] += (top[3][i] - bot[3][i]) * 1.0 / (top[1] - bot[1])
+            if y < mid[1]:
+                x1 += (mid[0] - bot[0]) * 1.0 / (mid[1] - bot[1])
+                z1 += (mid[2] - bot[2]) * 1.0 / (mid[1] - bot[1])
+                for i in range(3):
+                    norm1[i] += (mid[3][i] - bot[3][i]) * 1.0 / (mid[1] - bot[1])
+            elif y < top[1]:
+                x1 += (top[0] - mid[0]) * 1.0 / (top[1] - mid[1])
+                z1 += (top[2] - mid[2]) * 1.0 / (top[1] - mid[1])
+                for i in range(3):
+                    norm1[i] += (top[3][i] - mid[3][i]) * 1.0 / (top[1] - mid[1])
             y = y + 1
 
 def display(source = None):
