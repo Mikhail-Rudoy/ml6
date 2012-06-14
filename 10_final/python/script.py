@@ -32,7 +32,7 @@ def run(filename):
             if s[0] == "knob":
                 knobs[s[1]] = 1.0
             if s[0] == "constants":
-                constants[s[1]] = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                constants[s[1]] = [255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             if s[0] == "coord_system":
                 coord_systems[s[1]] = matrix.ident()
         for command in arc["save_knobs"]:
@@ -67,7 +67,7 @@ def run(filename):
         if s[0] == "knob" and not knobs.has_key(s[1]):
             knobs[s[1]] = []
         if s[0] == "constants" and not constants.has_key(s[1]):
-            constants[s[1]] = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            constants[s[1]] = [255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         if s[0] == "coord_system" and not coord_systems.has_key(s[1]):
             coord_systems[s[1]] = matrix.ident()
     
@@ -221,7 +221,10 @@ def runCommands(commands, knobs, constants, coord_systems, base_matrix, focalLen
     """
     stack = [base_matrix.clone()]
     view = screen.Screen()
-    texture = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    default_constants = [255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    lights = []
+    ambient = [1.0, 1.0, 1.0]
+    shading_type = "wireframe"
     for command in commands:
         if command[0] == "ignore":
             pass
@@ -266,6 +269,10 @@ def runCommands(commands, knobs, constants, coord_systems, base_matrix, focalLen
         elif command[0] == "set_knobs":
             for name in knobs.keys():
                 knobs[name] = float(command[1])
+        elif command[0] == "ambient":
+            ambient = command[1:]
+        elif command[0] == "light":
+            lights.append(command[1:])
         elif command[0] == "sphere":
             m = matrix.FaceMatrix()
             m.add_sphere(*command[1:])
@@ -296,6 +303,34 @@ def runCommands(commands, knobs, constants, coord_systems, base_matrix, focalLen
             m.add_hermite_curve(*command[1:])
             m.apply(stack[-1])
             view.draw_EdgeMatrix(m, [255, 255, 255])
+        elif command[0] == "mesh":
+            try:
+                meshFile = open(command[2])
+                line1 = meshFile.readline()
+                if line1 not in ["edges", "faces"]:
+                    meshFile.close()
+                    continue
+                if line1 == "edges":
+                    m = matrix.EdgeMatrix()
+                    for line in meshFile.readlines():
+                        line = line.strip()
+                        vals = [float(x) for x in line.split(" ")]
+                        m.add_edge(*vals)
+                    view.draw_EdgeMatrix(m, [255, 255, 255])
+                else:
+                    m = matrix.FaceMatrix()
+                    for line in meshFile.readlines():
+                        line = line.strip()
+                        vals = [float(x) for x in line.split(" ")]
+                        m.add_face(*vals)
+                    view.draw_FaceMatrix(m, [255, 255, 255])
+                if command[3]:
+                    m.apply(command[3])
+                else:
+                    m.apply(stack[-1])
+                meshFile.close()
+            except:
+                pass
         elif command[0] == "save_coord_system":
             coord_systems[command[1]] = stack[-1].clone()
         elif command[0] == "constants":

@@ -99,12 +99,27 @@ LIGHTING
 
 constants name kar kdr ksr kag kdg ksg kab kdb ksb [r g b]
 	       	       	       	       	- saves the given lighting constants 
-					  under the given name
+					  under the given name (NOTE: each of 
+					  the constants will generally be 
+					  between 0 and 255)
 constants name ka kd ks [c]		- saves the given lighting constants
 	       	     			  under the given name using the 
 					  same value for all three color 
-					  channels
-
+					  channels (NOTE: each of the 
+					  constants will generally be 
+					  between 0 and 255)
+ambient r g b				- sets the ambient intensity (NOTE: 
+	    				  intensity values range from 0 to
+					  1 and ambient intensity defaults
+					  to 1 for each color channel)
+light r g b x y z			- creates a light with the given
+      	      				  color intensities at the given 
+					  location (NOTE: intensity values 
+					  range from 0 to 1 and ambient 
+					  intensity defaults to 1 for each 
+					  color channel)
+shading wireframe|flat|goroud|phong|raytrace
+					- sets the shading type
 
 =========================================================================
 MDL Specs -- Animation Mode (at least one animation command used):

@@ -77,7 +77,7 @@ reserved = {
     "shading" : "SHADING", 
     "phong" : "SHADING_TYPE", 
     "flat" : "SHADING_TYPE", 
-    "ground" : "SHADING_TYPE", 
+    "goroud" : "SHADING_TYPE", 
     "raytrace" : "SHADING_TYPE", 
     "wireframe" : "SHADING_TYPE", 
     "set_knobs" : "SET_KNOBS", 
@@ -305,6 +305,34 @@ def p_statement_camera(p):
     """statement : CAMERA NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
                  | FOCAL NUMBER"""
     commands.append(p[1:])
+
+def p_statement_light(p):
+    """statement : LIGHT NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
+                 | AMBIENT NUMBER NUMBER NUMBER"""
+    commands.append(p[1:])
+
+def p_statement_shading(p):
+    """statement : SHADING SHADING_TYPE"""
+    commands.append(p[1:])
+
+def p_statement_mesh_1(p):
+    """statement : MESH CO TEXT
+                 | MESH CO TEXT SYMBOL"""
+    if len(p) == 5:
+        symbols.append(("coord_system", p[4]))
+        commands.append([p[1], None, p[3], p[4]])
+    else:
+        commands.append([p[1], None, p[3], None])
+
+def p_statement_mesh_2(p):
+    """statement : MESH SYMBOL CO TEXT
+                 | MESH SYMBOL CO TEXT SYMBOL"""
+    symbols.append(("constants", p[2]))
+    if len(p) == 6:
+        symbols.append(("coord_system", p[5]))
+        commands.append([p[1], p[2], p[4], p[5]])
+    else:
+        commands.append([p[1], p[2], p[4], None])
 
 def p_SYMBOL(p):
     """SYMBOL : XYZ
