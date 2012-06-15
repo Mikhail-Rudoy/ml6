@@ -185,9 +185,9 @@ class Screen():
             dz0, dz1 = dz1, dz0
         if dx == 0 and dy == 0:
             if z0 > z1:
-                self.set(x0, y0, z0, self.get_color_from_segment_vector(consts, ambient, lights, segmentvector0, x0, y0, z0))
+                self.set(x0, y0, z0, self.get_color_from_segment_vector(consts, ambient, lights, segmentvect0, x0, y0, z0))
             else:
-                self.set(x0, y0, z1, self.get_color_from_segment_vector(consts, ambient, lights, segmentvector1, x1, y1, z1))
+                self.set(x0, y0, z1, self.get_color_from_segment_vector(consts, ambient, lights, segmentvect1, x1, y1, z1))
         elif dx == 0:
             y = y0
             z = z0
@@ -569,6 +569,8 @@ class Screen():
 
     def get_color_from_segment_vector(self, consts, ambient, lights, segmentvect, x, y, z):
         dx, dy, dz = segmentvect.vals
+        if dx == 0 and dy == 0 and dz == 0:
+            return [consts[i] * ambient[i] + consts[9 + i] for i in range(3)]
         dx, dy, dz = dx / math.sqrt(dx * dx + dy * dy + dz * dz), dy / math.sqrt(dx * dx + dy * dy + dz * dz), dz / math.sqrt(dx * dx + dy * dy + dz * dz)
         segmentvect = vector.Vector(dx, dy, dz)
         col = consts[9:]
@@ -584,8 +586,8 @@ class Screen():
             dx, dy, dz = dx / math.sqrt(dx * dx + dy * dy + dz * dz), dy / math.sqrt(dx * dx + dy * dy + dz * dz), dz / math.sqrt(dx * dx + dy * dy + dz * dz)
             lightvect = vector.Vector(dx, dy, dz)
             for i in range(3):
-                col[i] += light[i] * consts[i + 3] * math.sqrt(1 - Math.pow(lightvect.dot(segmentvect), 2))
-                val = math.cos(math.acos(math.sqrt(1 - Math.pow(lightvect.dot(segmentvect), 2))) - math.acos(0 - segmentvect.vals[2]))
+                col[i] += light[i] * consts[i + 3] * math.sqrt(1 - math.pow(lightvect.dot(segmentvect), 2))
+                val = math.cos(math.acos(math.sqrt(1 - math.pow(lightvect.dot(segmentvect), 2))) - math.acos(0 - segmentvect.vals[2]))
                 col[i] += light[i] * consts[i + 6] * (abs(val) + val) * 0.5
         return [float(v) for v in col]
 
@@ -597,7 +599,7 @@ class Screen():
             z0 = m.get(2, i)
             x1 = m.get(0, i + 1)
             y1 = m.get(1, i + 1)
-            y2 = m.get(2, i + 1)
+            z1 = m.get(2, i + 1)
             if self.focalLength != 0:
                 y0 = y0 - (len(self.__pixels__) * 0.5)
                 y0 = y0 * self.focalLength / (z0 + self.focalLength)
@@ -622,7 +624,7 @@ class Screen():
             z0 = m.get(2, i)
             x1 = m.get(0, i + 1)
             y1 = m.get(1, i + 1)
-            y2 = m.get(2, i + 1)
+            z1 = m.get(2, i + 1)
             if self.focalLength != 0:
                 y0 = y0 - (len(self.__pixels__) * 0.5)
                 y0 = y0 * self.focalLength / (z0 + self.focalLength)
@@ -655,7 +657,7 @@ class Screen():
             z0 = m.get(2, i)
             x1 = m.get(0, i + 1)
             y1 = m.get(1, i + 1)
-            y2 = m.get(2, i + 1)
+            z1 = m.get(2, i + 1)
             i = i + 2
             dx = float(x0 - x1)
             dy = float(y0 - y1)
@@ -682,7 +684,7 @@ class Screen():
                 y += dy
                 z += dz
                 n += 1
-            edges[k] = vector.Vector((x / n, y / n, z / n))
+            edges[k] = vector.Vector(x / n, y / n, z / n)
         
         i = 0
         while i < m.width() - 1:
@@ -691,7 +693,7 @@ class Screen():
             z0 = m.get(2, i)
             x1 = m.get(0, i + 1)
             y1 = m.get(1, i + 1)
-            y2 = m.get(2, i + 1)
+            z1 = m.get(2, i + 1)
             if self.focalLength != 0:
                 y0 = y0 - (len(self.__pixels__) * 0.5)
                 y0 = y0 * self.focalLength / (z0 + self.focalLength)
@@ -722,7 +724,7 @@ class Screen():
             z0 = m.get(2, i)
             x1 = m.get(0, i + 1)
             y1 = m.get(1, i + 1)
-            y2 = m.get(2, i + 1)
+            z1 = m.get(2, i + 1)
             i = i + 2
             dx = float(x0 - x1)
             dy = float(y0 - y1)
@@ -748,7 +750,7 @@ class Screen():
                 y += dy
                 z += dz
                 n += 1
-            edges[k] = vector.Vector((x / n, y / n, z / n))
+            edges[k] = vector.Vector(x / n, y / n, z / n)
         
         i = 0
         while i < m.width() - 1:
@@ -757,7 +759,7 @@ class Screen():
             z0 = m.get(2, i)
             x1 = m.get(0, i + 1)
             y1 = m.get(1, i + 1)
-            y2 = m.get(2, i + 1)
+            z1 = m.get(2, i + 1)
             if self.focalLength != 0:
                 y0 = y0 - (len(self.__pixels__) * 0.5)
                 y0 = y0 * self.focalLength / (z0 + self.focalLength)

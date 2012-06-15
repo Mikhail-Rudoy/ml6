@@ -107,7 +107,7 @@ def run(filename):
             knoblists[command[1]] = tmpknobs.copy()
             command[0] = "ignore"
         if command[0] == "tween":
-            (tweenliteral, start, end, knoblist0, knoblist1, f)
+            (tweenliteral, start, end, knoblist0, knoblist1, f) = command
             i = start
             if start <= end:
                 for k in knobs.keys():
@@ -116,7 +116,7 @@ def run(filename):
             while i <= end:
                 slider = float(f(float(i - start)))
                 for k in knobs.keys():
-                    knobs[k][i] = slider * knoblist1[k] + (1 - slider) * knoblist0[k]
+                    knobs[k][i] = slider * knoblists[knoblist1][k] + (1 - slider) * knoblists[knoblist0][k]
                 i = i + 1
             command[0] = "ignore"
         if command[0] == "vary":
@@ -181,7 +181,7 @@ def run(filename):
     
     print "converting to gif format ...", 
     sys.stdout.flush()
-    for name base_matrix, focalLength in image_requests:
+    for name, base_matrix, focalLength in image_requests:
         os.system("mogrify -format gif %s*.ppm" % name)
         os.system("convert -delay 2.5 -loop 0 %s[0-9]*.gif %s.gif" % (name, name))
         os.system("rm %s*.ppm" % name)
@@ -223,7 +223,7 @@ def runCommands(commands, knobs, constants, coord_systems, base_matrix, focalLen
     view = screen.Screen()
     constants[None] = [255, 255, 255, 200, 200, 200, 100, 100, 100, 0, 0, 0]
     lights = []
-    ambient = [1.0, 1.0, 1.0]
+    ambient = [0, 0, 0]
     shading_type = "wireframe"
     for command in commands:
         if command[0] == "ignore":
@@ -275,17 +275,17 @@ def runCommands(commands, knobs, constants, coord_systems, base_matrix, focalLen
             lights.append(command[1:])
         elif command[0] == "sphere":
             m = matrix.FaceMatrix()
-            m.add_sphere(*command[2:7])
-            if command[7]:
-                m.apply(coord_systems[command[7]])
+            m.add_sphere(*[command[i] for i in range(2, 8) if i != 5])
+            if command[5]:
+                m.apply(coord_systems[command[5]])
             else:
                 m.apply(stack[-1])
             view.draw_FaceMatrix(m, [shading_type, constants[command[1]], ambient, lights])
         elif command[0] == "torus":
             m = matrix.FaceMatrix()
-            m.add_torus(*command[2:8])
-            if command[8]:
-                m.apply(coord_systems[command[8]])
+            m.add_torus(*[command[i] for i in range(2, 9) if i != 5])
+            if command[5]:
+                m.apply(coord_systems[command[5]])
             else:
                 m.apply(stack[-1])
             view.draw_FaceMatrix(m, [shading_type, constants[command[1]], ambient, lights])
@@ -298,24 +298,61 @@ def runCommands(commands, knobs, constants, coord_systems, base_matrix, focalLen
                 m.apply(stack[-1])
             view.draw_FaceMatrix(m, [shading_type, constants[command[1]], ambient, lights])
         elif command[0] == "line":
+            m = matrix.PointMatrix()
+            n = matrix.PointMatrix()
+            m.add_point(*command[2:5])
+            n.add_point(*command[6:9])
+            if command[5]:
+                m.apply(coord_systems[command[5]])
+            else:
+                m.apply(stack[-1])
+            if command[9]:
+                n.apply(coord_systems[command[9]])
+            else:
+                n.apply(stack[-1])
+            [x0, y0, z0] = [m.get(i, 0) for i in range(3)]
+            [x1, y1, z1] = [n.get(i, 0) for i in range(3)]
             m = matrix.EdgeMatrix()
-            m.add_edge(*command[1:])
-            m.apply(stack[-1])
+            m.add_edge(x0, y0, z0, x1, y1, z1)
             view.draw_EdgeMatrix(m, [shading_type, constants[command[1]], ambient, lights])
         elif command[0] == "bezier":
+            xs = []
+            ys = []
+            zs = []
+            for i in range(4):
+                m = matrix.PointMatrix()
+                m.add_point(*command[2 + 4 * i:5 + 4 * i])
+                if command[5 + 4 * i]:
+                    m.apply(coord_systems[command[5 + 4 * i]])
+                else:
+                    m.apply(stack[-1])
+                xs.append(m.get(0, 0))
+                ys.append(m.get(1, 0))
+                zs.append(m.get(2, 0))
             m = matrix.EdgeMatrix()
-            m.add_bezier_curve(*command[1:])
-            m.apply(stack[-1])
+            m.add_bezier_curve(xs[0], ys[0], zs[0], xs[1], ys[1], zs[1], xs[2], ys[2], zs[2], xs[3], ys[3], zs[3], command[18])
             view.draw_EdgeMatrix(m, [shading_type, constants[command[1]], ambient, lights])
         elif command[0] == "hermite":
+            xs = []
+            ys = []
+            zs = []
+            for i in range(4):
+                m = matrix.PointMatrix()
+                m.add_point(*command[2 + 4 * i:5 + 4 * i])
+                if command[5 + 4 * i]:
+                    m.apply(coord_systems[command[5 + 4 * i]])
+                else:
+                    m.apply(stack[-1])
+                xs.append(m.get(0, 0))
+                ys.append(m.get(1, 0))
+                zs.append(m.get(2, 0))
             m = matrix.EdgeMatrix()
-            m.add_hermite_curve(*command[1:])
-            m.apply(stack[-1])
+            m.add_hermite_curve(xs[0], ys[0], zs[0], xs[1], ys[1], zs[1], xs[2], ys[2], zs[2], xs[3], ys[3], zs[3], command[18])
             view.draw_EdgeMatrix(m, [shading_type, constants[command[1]], ambient, lights])
         elif command[0] == "mesh":
             try:
                 meshFile = open(command[2])
-                line1 = meshFile.readline()
+                line1 = meshFile.readline().strip()
                 if line1 not in ["edges", "faces"]:
                     meshFile.close()
                     continue
@@ -325,6 +362,10 @@ def runCommands(commands, knobs, constants, coord_systems, base_matrix, focalLen
                         line = line.strip()
                         vals = [float(x) for x in line.split(" ")]
                         m.add_edge(*vals)
+                    if command[3]:
+                        m.apply(coord_systems[command[3]])
+                    else:
+                        m.apply(stack[-1])
                     view.draw_EdgeMatrix(m, [shading_type, constants[command[1]], ambient, lights])
                 else:
                     m = matrix.FaceMatrix()
@@ -332,11 +373,12 @@ def runCommands(commands, knobs, constants, coord_systems, base_matrix, focalLen
                         line = line.strip()
                         vals = [float(x) for x in line.split(" ")]
                         m.add_face(*vals)
+                    if command[3]:
+                        m.apply(coord_systems[command[3]])
+                    else:
+                        m.apply(stack[-1])
                     view.draw_FaceMatrix(m, [shading_type, constants[command[1]], ambient, lights])
-                if command[3]:
-                    m.apply(coord_systems[command[3]])
-                else:
-                    m.apply(stack[-1])
+                
                 meshFile.close()
             except:
                 pass

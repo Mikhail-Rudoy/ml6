@@ -19,7 +19,6 @@ tokens = (
     "BEZIER", 
     "HERMITE", 
     "MESH", 
-    "TEXTURE", 
     "SET", 
     "MOVE", 
     "SCALE", 
@@ -32,7 +31,6 @@ tokens = (
     "PUSH", 
     "POP", 
     "SAVE", 
-    "GENERATE_RAYFILES", 
     "SHADING", 
     "SHADING_TYPE", 
     "SET_KNOBS", 
@@ -60,7 +58,6 @@ reserved = {
     "bezier" : "BEZIER", 
     "hermite" : "HERMITE", 
     "mesh" : "MESH", 
-    "texture" : "TEXTURE", 
     "set" : "SET", 
     "move" : "MOVE", 
     "scale" : "SCALE", 
@@ -73,7 +70,6 @@ reserved = {
     "push" : "PUSH", 
     "pop" : "POP", 
     "save" : "SAVE", 
-    "generate_rayfiles" : "GENERATE_RAYFILES", 
     "shading" : "SHADING", 
     "phong" : "SHADING_TYPE", 
     "flat" : "SHADING_TYPE", 
@@ -171,70 +167,37 @@ def p_statement_knobs(p):
     if p[1] == "set":
         symbols.append(("knob", p[2]))
 
-def p_statement_sphere_1(p):
-    """statement : SPHERE NUMBER NUMBER NUMBER NUMBER INT INT
-                 | SPHERE NUMBER NUMBER NUMBER NUMBER
-                 | SPHERE NUMBER NUMBER NUMBER NUMBER INT INT SYMBOL
-                 | SPHERE NUMBER NUMBER NUMBER NUMBER SYMBOL"""
-    if len(p) == 6:
-        commands.append([p[1], None, p[2], p[3], p[4], p[5], None, None])
-    elif len(p) == 8:
-        commands.append([p[1], None, p[2], p[3], p[4], p[5], [p[6], p[7]], None])
-    elif len(p) == 7:
-        commands.append([p[1], None, p[2], p[3], p[4], p[5], None, p[6]])
-        symbols.append(("coord_system", p[6]))
-    else:
-        commands.append([p[1], None, p[2], p[3], p[4], p[5], [p[6], p[7]], p[8]])
-        symbols.append(("coord_system", p[8]))
-
-def p_statement_sphere_2(p):
-    """statement : SPHERE SYMBOL NUMBER NUMBER NUMBER NUMBER INT INT
-                 | SPHERE SYMBOL NUMBER NUMBER NUMBER NUMBER
-                 | SPHERE SYMBOL NUMBER NUMBER NUMBER NUMBER INT INT SYMBOL
-                 | SPHERE SYMBOL NUMBER NUMBER NUMBER NUMBER SYMBOL"""
-    symbols.append(("constants", p[2]))
+def p_statement_sphere(p):
+    """statement : SPHERE POINT NUMBER
+                 | SPHERE POINT NUMBER INT INT
+                 | SPHERE SYMBOL POINT NUMBER
+                 | SPHERE SYMBOL POINT NUMBER INT INT"""
     if len(p) == 7:
-        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], None, None])
-    elif len(p) == 9:
-        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], [p[7], p[8]], None])
-    elif len(p) == 8:
-        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], None, p[7]])
-        symbols.append(("coord_system", p[7]))
+        symbols.append(("constants", p[2]))
+        commands.append([p[1], p[2]] + p[3] + [p[4], [p[5], p[6]]])
+    elif len(p) == 5:
+        symbols.append(("constants", p[2]))
+        commands.append([p[1], p[2]] + p[3] + [p[4], None])
+    elif len(p) == 6:
+        commands.append([p[1], None] + p[2] + [p[3], [p[4], p[5]]])
     else:
-        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], [p[7], p[8]], p[9]])
-        symbols.append(("coord_system", p[9]))
+        commands.append([p[1], None] + p[2] + [p[3], None])
 
-def p_statement_torus_1(p):
-    """statement : TORUS NUMBER NUMBER NUMBER NUMBER NUMBER INT INT
-                 | TORUS NUMBER NUMBER NUMBER NUMBER NUMBER
-                 | TORUS NUMBER NUMBER NUMBER NUMBER NUMBER INT INT SYMBOL
-                 | TORUS NUMBER NUMBER NUMBER NUMBER NUMBER SYMBOL"""
-    if len(p) == 7:
-        commands.append([p[1], None, p[2], p[3], p[4], p[5], p[6], None, None])
-    elif len(p) == 9:
-        commands.append([p[1], None, p[2], p[3], p[4], p[5], p[6], [p[7], p[8]], None])
-    elif len(p) == 8:
-        commands.append([p[1], None, p[2], p[3], p[4], p[5], p[6], None, p[7]])
-        symbols.append(("coord_system", p[7]))
-    else:
-        commands.append([p[1], None, p[2], p[3], p[4], p[5], p[6], [p[7], p[8]], p[9]])
-        symbols.append(("coord_system", p[9]))
-
-def p_statement_torus_2(p):
-    """statement : TORUS SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER INT INT
-                 | TORUS SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER
-                 | TORUS SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER INT INT SYMBOL
-                 | TORUS SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER SYMBOL"""
+def p_statement_torus(p):
+    """statement : TORUS POINT NUMBER NUMBER
+                 | TORUS POINT NUMBER NUMBER INT INT
+                 | TORUS SYMBOL POINT NUMBER NUMBER
+                 | TORUS SYMBOL POINT NUMBER NUMBER INT INT"""
     if len(p) == 8:
-        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], p[7], None, None])
-    elif len(p) == 10:
-        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], p[7], [p[8], p[9]], None])
-    elif len(p) == 9:
-        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], p[7], None, p[8]])
-        symbols.append(("coord_system", p[8]))
+        symbols.append(("constants", p[2]))
+        commands.append([p[1], p[2]] + p[3] + [p[4], p[5], [p[6], p[7]]])
+    elif len(p) == 6:
+        symbols.append(("constants", p[2]))
+        commands.append([p[1], p[2]] + p[3] + [p[4], p[5], None])
+    elif len(p) == 7:
+        commands.append([p[1], None] + p[2] + [p[3], p[4], [p[5], p[6]]])
     else:
-        commands.append([p[1], p[2], p[3], p[4], p[5], p[6], p[7], [p[8], p[9]], p[10]])
-        symbols.append(("coord_system", p[10]))
+        commands.append([p[1], None] + p[2] + [p[3], p[4], None])
 
 def p_statement_box_1(p):
     """statement : BOX NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
@@ -245,7 +208,7 @@ def p_statement_box_1(p):
         commands.append([p[1], None, p[2], p[3], p[4], p[5], p[6], p[7], p[8]])
         symbols.append(("coord_system", p[8]))
 
-def p_statement_box_3(p):
+def p_statement_box_2(p):
     """statement : BOX SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
                  | BOX SYMBOL NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER SYMBOL"""
     symbols.append(("constants", p[2]))
@@ -255,20 +218,35 @@ def p_statement_box_3(p):
         commands.append([p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8], p[9]])
         symbols.append(("coord_system", p[8]))
 
-
 def p_statement_line(p):
-    "statement : LINE NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER"
-    commands.append(p[1:])
-
-def p_statement_curve(p):
-    """statement : BEZIER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER INT
-                 | BEZIER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER
-                 | HERMITE NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER INT
-                 | HERMITE NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER"""
-    if len(p) == 14:
-        commands.append(p[1:] + [80])
+    """statement : LINE POINT POINT
+                 | LINE SYMBOL POINT POINT"""
+    if len(p) == 4:
+        commands.append([p[1], None] + p[2] + p[3])
     else:
-        commands.append(p[1:])
+        symbols.append((p[2]))
+        commands.append([p[1], p[2]] + p[3] + p[4])
+
+def p_statement_curve_1(p):
+    """statement : BEZIER POINT POINT POINT POINT
+                 | BEZIER POINT POINT POINT POINT INT
+                 | HERMITE POINT POINT POINT POINT
+                 | HERMITE POINT POINT POINT POINT INT"""
+    if len(p) == 6:
+        commands.append([p[1], None] + p[2] + p[3] + p[4] + p[5] + [80])
+    else:
+        commands.append([p[1], None] + p[2] + p[3] + p[4] + p[5] + [p[6]])
+
+def p_statement_curve_2(p):
+    """statement : BEZIER SYMBOL POINT POINT POINT POINT
+                 | BEZIER SYMBOL POINT POINT POINT POINT INT
+                 | HERMITE SYMBOL POINT POINT POINT POINT
+                 | HERMITE SYMBOL POINT POINT POINT POINT INT"""
+    symbols.append(("constants", p[2]))
+    if len(p) == 7:
+        commands.append([p[1], p[2]] + p[3] + p[4] + p[5] + p[6] + [80])
+    else:
+        commands.append([p[1], p[2]] + p[3] + p[4] + p[5] + p[6] + [p[7]])
 
 def p_statement_basename(p):
     """statement : BASENAME TEXT"""
@@ -398,6 +376,15 @@ def p_statement_mesh_2(p):
         commands.append([p[1], p[2], p[4], p[5]])
     else:
         commands.append([p[1], p[2], p[4], None])
+
+def p_POINT(p):
+    """POINT : NUMBER NUMBER NUMBER
+             | NUMBER NUMBER NUMBER SYMBOL"""
+    if len(p) == 4:
+        p[0] = p[1:] + [None]
+    else:
+        symbols.append(("coord_system", p[4]))
+        p[0] = p[1:]
 
 def p_SYMBOL(p):
     """SYMBOL : XYZ

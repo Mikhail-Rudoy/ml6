@@ -13,7 +13,7 @@ class Matrix():
         """
         if len(args) == 2:
             w, h = args
-            self.matrix = [[[0.0] * h] for c in range(w)]
+            self.matrix = [[0.0] * h for c in range(w)]
         elif len(args) == 1:
             self.matrix = [col[:] for col in args[0]]
         else:
@@ -279,7 +279,7 @@ class EdgeMatrix(PointMatrix):
         l = []
         for n in range(STEPS + 1):
             t = (n * 1.0) / STEPS
-            l.append(Matrix([[t * t * t], [t * t], [t], [1]]) * C)
+            l.append((Matrix([[t * t * t], [t * t], [t], [1]]) * C).matrix)
         for i in range(STEPS):
             [[x0], [y0], [z0]] = l[i]
             [[x1], [y1], [z1]] = l[i + 1]
@@ -295,7 +295,7 @@ class EdgeMatrix(PointMatrix):
         l = []
         for n in range(STEPS + 1):
             t = (n * 1.0) / STEPS
-            l.append(Matrix([[t * t * t], [t * t], [t], [1]]) * C)
+            l.append((Matrix([[1], [t], [t * t], [t * t * t]]) * C).matrix)
         for i in range(STEPS):
             [[x0], [y0], [z0]] = l[i]
             [[x1], [y1], [z1]] = l[i + 1]

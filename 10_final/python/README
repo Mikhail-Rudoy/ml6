@@ -8,6 +8,10 @@ make example will run the example script
 make clean will clean the directory
 make clear will clean the directory (will also delete ppm and gif files)
 
+Raytracing, textures, and a genetic algorithm to match meshes to images 
+are not implemented. Expect some of these features in the ml2x submission 
+of this project.
+
 
 =========================================================================
 MDL Specs -- Static Mode (no frames, basename, tween, or vary commands):
@@ -119,13 +123,14 @@ light r g b x y z			- creates a light with the given
 					  intensity defaults to 1 for each 
 					  color channel)
 shading wireframe|flat|goroud|phong|raytrace
-					- sets the shading type
+					- sets the shading type (NOTE: 
+					  raytrace is not implemented)
 
 -------------------------------------------------------------------------
 DRAWING
 -------------------------------------------------------------------------
 
-sphere [constants] x y z r [latresolution longresolution] [coord_system]
+sphere [constants] x y z [coord_system] r [latresolution longresolution]
 	       	       	       	       	- draws a sphere centered at the
 					  given location with the given 
 					  radius using the given coordinate
@@ -133,21 +138,30 @@ sphere [constants] x y z r [latresolution longresolution] [coord_system]
 					  constants and using at least 
 					  latresolutions and longresolution
 					  steps to model the sphere
-torus [constants] x y z r0 r1 [lat long] [coord_system]
-      		      	      	   	 - draws a torus
+torus [constants] x y z [coord_system] r0 r1 [lat long]
+      		      	      	   	- draws a torus
 box [constants] x0 y0 z0 x1 y1 z1 [coord_system]
-					 - draws a box with the two given
-					   points as opposite vertices
+					- draws a box with the two given
+					  points as opposite vertices
 mesh [constants] : filename [coord_system]
-					 - loads a mesh from a file and draws
-					   it; the file must begin with a 
-					   single line saying either "edges"
-					   or "faces" followed by some number 
-					   of lines containing space 
-					   seperated coordinates of either 
-					   2 or 3 points (2 for edge meshes, 
-					   3 for face meshes)
-
+					- loads a mesh from a file and draws
+					  it; the file must begin with a 
+					  single line saying either "edges"
+					  or "faces" followed by some number 
+					  of lines containing space 
+					  seperated coordinates of either 
+					  2 or 3 points (2 for edge meshes, 
+					  3 for face meshes)
+line [constants] x0 y0 z0 [coord_sys0] x1 y1 z1 [coord_sys1]
+     		       	  	     	- draws a line between the two given
+					  points
+bezier|hermite [constants] p0 p1 p2 p3 [steps]
+				        - draws a cubic curve using the 4 given
+					  points (p0 through p4); each of the 
+					  points consists of three parameters
+					  representing the coordinates followed
+					  by an optional parameter representing 
+					  the coordinate system
 
 =========================================================================
 MDL Specs -- Animation Mode (at least one animation command used):
@@ -237,7 +251,8 @@ vary knob start end function 		- varies the value of the specified
 					  consecutive integers starting with 
 					  0 (at start, the value is f(0), at
 					  start + 1 it is f(1), ... , and at
-					  frame end, the value is f(end - start))
+					  frame end, the value is 
+					  f(end - start))
 tween start end knoblist0 knoblist1	- linearly varies the values of all  
       	    		  		  knobs between frames start and end 
 					  inclusive from their values in 
@@ -283,5 +298,42 @@ light r g b x y z			- creates a light with the given
 					  intensity defaults to 1 for each 
 					  color channel)
 shading wireframe|flat|goroud|phong|raytrace
-					- sets the shading type
+					- sets the shading type (NOTE: 
+					  raytrace is not implemented)
 
+-------------------------------------------------------------------------
+DRAWING
+-------------------------------------------------------------------------
+
+sphere [constants] x y z [coord_system] r [latresolution longresolution]
+	       	       	       	       	- draws a sphere centered at the
+					  given location with the given 
+					  radius using the given coordinate
+					  system and set of lighting 
+					  constants and using at least 
+					  latresolutions and longresolution
+					  steps to model the sphere
+torus [constants] x y z [coord_system] r0 r1 [lat long]
+      		      	      	   	- draws a torus
+box [constants] x0 y0 z0 x1 y1 z1 [coord_system]
+					- draws a box with the two given
+					  points as opposite vertices
+mesh [constants] : filename [coord_system]
+					- loads a mesh from a file and draws
+					  it; the file must begin with a 
+					  single line saying either "edges"
+					  or "faces" followed by some number 
+					  of lines containing space 
+					  seperated coordinates of either 
+					  2 or 3 points (2 for edge meshes, 
+					  3 for face meshes)
+line [constants] x0 y0 z0 [coord_sys0] x1 y1 z1 [coord_sys1]
+     		       	  	       	- draws a line between the two given
+					  points
+bezier|hermite [constants] p0 p1 p2 p3 [steps]
+					- draws a cubic curve using the 4 given
+					  points (p0 through p4); each of the 
+					  points consists of three parameters
+					  representing the coordinates followed
+					  by an optional parameter representing 
+					  the coordinate system
