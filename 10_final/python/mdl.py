@@ -361,6 +361,7 @@ def p_statement_shading(p):
 def p_statement_mesh_1(p):
     """statement : MESH CO TEXT
                  | MESH CO TEXT SYMBOL"""
+    symbols.append(("mesh", p[3]))
     if len(p) == 5:
         symbols.append(("coord_system", p[4]))
         commands.append([p[1], None, p[3], p[4]])
@@ -370,6 +371,7 @@ def p_statement_mesh_1(p):
 def p_statement_mesh_2(p):
     """statement : MESH SYMBOL CO TEXT
                  | MESH SYMBOL CO TEXT SYMBOL"""
+    symbols.append(("mesh", p[4]))
     symbols.append(("constants", p[2]))
     if len(p) == 6:
         symbols.append(("coord_system", p[5]))

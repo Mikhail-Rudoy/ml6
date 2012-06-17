@@ -28,6 +28,8 @@ def run(filename):
         knobs = {}
         constants = {}
         coord_systems = {}
+        meshesE = {}
+        meshesF = {}
         for s in symbols:
             if s[0] == "knob":
                 knobs[s[1]] = 1.0
@@ -35,11 +37,35 @@ def run(filename):
                 constants[s[1]] = [255, 255, 255, 200, 200, 200, 100, 100, 100, 0, 0, 0]
             if s[0] == "coord_system":
                 coord_systems[s[1]] = matrix.ident()
+            if s[0] == "mesh":            
+                try:
+                    meshFile = open(s[1])
+                    line1 = meshFile.readline().strip()
+                    if line1 not in ["edges", "faces"]:
+                        meshFile.close()
+                        continue
+                    if line1 == "edges" and not meshesE.has_key(s[1]):
+                        m = matrix.EdgeMatrix()
+                        for line in meshFile.readlines():
+                            line = line.strip()
+                            vals = [float(x) for x in line.split(" ")]
+                            m.add_edge(*vals)
+                            meshesE[s[1]] = m
+                    elif line1 == "faces" and not meshesF.has_key(s[1]):
+                        m = matrix.FaceMatrix()
+                        for line in meshFile.readlines():
+                            line = line.strip()
+                            vals = [float(x) for x in line.split(" ")]
+                            m.add_face(*vals)
+                            meshesF[s[1]] = m
+                    meshFile.close()
+                except:
+                    pass
         for command in arc["save_knobs"]:
             command[0] = "ignore"
         while 1:
             knobs = getKnobValues(knobs)
-            runCommands(commands, knobs, constants, coord_systems, matrix.ident(), 0)
+            runCommands(commands, knobs, constants, coord_systems, meshesE, meshesF, matrix.ident(), 0)
             while 1:
                 text = raw_input("Continue?\n> ")
                 if not text in ["yes", "no", "n", "y"]:
@@ -63,6 +89,8 @@ def run(filename):
     constants = {}
     coord_systems = {}
     knoblists = {}
+    meshesE = {}
+    meshesF = {}
     for s in symbols:
         if s[0] == "knob" and not knobs.has_key(s[1]):
             knobs[s[1]] = []
@@ -70,7 +98,31 @@ def run(filename):
             constants[s[1]] = [255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         if s[0] == "coord_system" and not coord_systems.has_key(s[1]):
             coord_systems[s[1]] = matrix.ident()
-    
+        if s[0] == "mesh":
+            try:
+                meshFile = open(s[1])
+                line1 = meshFile.readline().strip()
+                if line1 not in ["edges", "faces"]:
+                    meshFile.close()
+                    continue
+                if line1 == "edges" and not meshesE.has_key(s[1]):
+                    m = matrix.EdgeMatrix()
+                    for line in meshFile.readlines():
+                        line = line.strip()
+                        vals = [float(x) for x in line.split(" ")]
+                        m.add_edge(*vals)
+                        meshesE[s[1]] = m
+                elif line1 == "faces" and not meshesF.has_key(s[1]):
+                    m = matrix.FaceMatrix()
+                    for line in meshFile.readlines():
+                        line = line.strip()
+                        vals = [float(x) for x in line.split(" ")]
+                        m.add_face(*vals)
+                        meshesF[s[1]] = m
+                meshFile.close()
+            except:
+                pass
+
     for s in symbols:
         if s[0] == "knoblist" and not knoblists.has_key(s[1]):
             knoblists[s[1]] = {}
@@ -174,7 +226,7 @@ def run(filename):
         for k in knobs:
             K[k] = knobs[k][i]
         for basename, base_matrix, focalLength in image_requests:
-            view = runCommands(commands, K, constants, coord_systems, base_matrix, focalLength)
+            view = runCommands(commands, K, constants, coord_systems, meshesE, meshesF, base_matrix, focalLength)
             name = (basename + "%0" + str(len(str(frames - 1))) + "d.ppm") % i
             view.save(name)
         print "DONE"
@@ -215,7 +267,7 @@ def getKnobValues(knobs):
             print "No knob of that name found.\n"
     return knobs
 
-def runCommands(commands, knobs, constants, coord_systems, base_matrix, focalLength):
+def runCommands(commands, knobs, constants, coord_systems, meshesE, meshesF, base_matrix, focalLength):
     """
     Runs the given commands and returns the resulting screen
     """
@@ -350,38 +402,20 @@ def runCommands(commands, knobs, constants, coord_systems, base_matrix, focalLen
             m.add_hermite_curve(xs[0], ys[0], zs[0], xs[1], ys[1], zs[1], xs[2], ys[2], zs[2], xs[3], ys[3], zs[3], command[18])
             view.draw_EdgeMatrix(m, [shading_type, constants[command[1]], ambient, lights])
         elif command[0] == "mesh":
-            try:
-                meshFile = open(command[2])
-                line1 = meshFile.readline().strip()
-                if line1 not in ["edges", "faces"]:
-                    meshFile.close()
-                    continue
-                if line1 == "edges":
-                    m = matrix.EdgeMatrix()
-                    for line in meshFile.readlines():
-                        line = line.strip()
-                        vals = [float(x) for x in line.split(" ")]
-                        m.add_edge(*vals)
-                    if command[3]:
-                        m.apply(coord_systems[command[3]])
-                    else:
-                        m.apply(stack[-1])
-                    view.draw_EdgeMatrix(m, [shading_type, constants[command[1]], ambient, lights])
+            if meshesE.has_key(command[2]):
+                m = meshesE[command[2]].clone()
+                if command[3]:
+                    m.apply(coord_systems[command[3]])
                 else:
-                    m = matrix.FaceMatrix()
-                    for line in meshFile.readlines():
-                        line = line.strip()
-                        vals = [float(x) for x in line.split(" ")]
-                        m.add_face(*vals)
-                    if command[3]:
-                        m.apply(coord_systems[command[3]])
-                    else:
-                        m.apply(stack[-1])
-                    view.draw_FaceMatrix(m, [shading_type, constants[command[1]], ambient, lights])
-                
-                meshFile.close()
-            except:
-                pass
+                    m.apply(stack[-1])
+                view.draw_EdgeMatrix(m, [shading_type, constants[command[1]], ambient, lights])
+            elif meshesF.has_key(command[2]):
+                m = meshesF[command[2]].clone()
+                if command[3]:
+                    m.apply(coord_systems[command[3]])
+                else:
+                    m.apply(stack[-1])
+                view.draw_FaceMatrix(m, [shading_type, constants[command[1]], ambient, lights])
         elif command[0] == "save_coord_system":
             coord_systems[command[1]] = stack[-1].clone()
         elif command[0] == "constants":
