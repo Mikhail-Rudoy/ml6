@@ -1,17 +1,32 @@
+Mikhail Rudoy ml2x period 4
+
 Run this with 
 python main.py
 or
 python main.py <script>
 
+Run the sepperate mesh generator with
+python meshgen <input image> <output basename>
+
 make will run python main
-make example will run the example script
+make example will run the mesh generation example
 make clean will clean the directory
 make clear will clean the directory (will also delete ppm and gif files)
 
-Raytracing, textures, and a genetic algorithm to match meshes to images 
-are not implemented. Expect some of these features in the ml2x submission 
-of this project.
-
+The mesh generation script is an implementation of canny edge detection, 
+followed by a partition of the image into a graph of corners or intersection 
+points in the image (nodes) and their connecting edges (edges). The entire 
+result is saved under the basename with .mesh appended as a mesh file that 
+can be loaded into the main graphics program using the mdl command mesh. As 
+a biproduct, another file (the basename .ppm) is created containing an image
+of the input image after it is convolved and otherwise processed. The bright
+pixels are the nodes in the graph, and the dim ones are the pixels that were 
+detected as edges and used when concidering which edges to inclode in the 
+graph (and therefore in the mesh). Unfortunately, I had significant trouble 
+with the mdl and edge detection parts of this project; as I result, I was 
+unable to get to the part that actually involved things relevant to the AP 
+class (though I learned more doing image processing the "right" way -- using 
+various techniques -- than I would have doing it the wrong way -- a genetic algorithm). Sorry.
 
 =========================================================================
 MDL Specs -- Static Mode (no frames, basename, tween, or vary commands):

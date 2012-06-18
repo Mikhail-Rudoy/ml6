@@ -1,0 +1,3 @@
+mesh : valve.mesh
+save valve.ppm
+display

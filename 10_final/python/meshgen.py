@@ -1,4 +1,4 @@
-import sys, re, math, os
+import sys, re, math, os, random
 
 namein = sys.argv[1]
 nameout = sys.argv[2]
@@ -74,37 +74,45 @@ for rnum in range(len(board) - 2):
         gthetas[rnum].append(int((4.5 + 4 * math.atan2(gy, gx) / 3.141592653589) % 4))
         gthetas[rnum][cnum] = [(0, 1), (-1, 1), (-1, 0), (-1, -1)][gthetas[rnum][cnum]]
 
-T1 = .3
-T2 = .1
+
 newboard = [[0] * len(gs[0]) for i in range(len(gs))]
+T1 = .3
+T2 = .05
 for rnum in range(len(gs)):
     for cnum in range(len(gs[0])):
         if gs[rnum][cnum] > T1 and not newboard[rnum][cnum]:
             i = 0
-            while rnum + i * gthetas[rnum][cnum][0] >= 0 and rnum + i * gthetas[rnum][cnum][0] < len(gs) and cnum + i * gthetas[rnum][cnum][1] >= 0 and cnum + i * gthetas[rnum][cnum][1] < len(gs[0]) and gthetas[rnum + gthetas[rnum][cnum][0] * i][cnum + gthetas[rnum][cnum][1] * i] == gthetas[rnum][cnum] and gs[rnum + gthetas[rnum][cnum][0] * i][cnum + gthetas[rnum][cnum][1] * i] > T2:
-                newboard[rnum + gthetas[rnum][cnum][0] * i][cnum + gthetas[rnum][cnum][1] * i] = 0.1
+            while rnum - i * gthetas[rnum][cnum][1] >= 0 and rnum - i * gthetas[rnum][cnum][1] < len(gs) and cnum + i * gthetas[rnum][cnum][0] >= 0 and cnum + i * gthetas[rnum][cnum][0] < len(gs[0]) and gthetas[rnum - gthetas[rnum][cnum][1] * i][cnum + gthetas[rnum][cnum][0] * i] == gthetas[rnum][cnum] and gs[rnum - gthetas[rnum][cnum][1] * i][cnum + gthetas[rnum][cnum][0] * i] > T2:
+                newboard[rnum - gthetas[rnum][cnum][1] * i][cnum + gthetas[rnum][cnum][0] * i] = 0.1
                 i = i - 1
             i = 1
-            while rnum + i * gthetas[rnum][cnum][0] >= 0 and rnum + i * gthetas[rnum][cnum][0] < len(gs) and cnum + i * gthetas[rnum][cnum][1] >= 0 and cnum + i * gthetas[rnum][cnum][1] < len(gs[0]) and gthetas[rnum + gthetas[rnum][cnum][0] * i][cnum + gthetas[rnum][cnum][1] * i] == gthetas[rnum][cnum] and gs[rnum + gthetas[rnum][cnum][0] * i][cnum + gthetas[rnum][cnum][1] * i] > T2:
-                newboard[rnum + gthetas[rnum][cnum][0] * i][cnum + gthetas[rnum][cnum][1] * i] = 0.1
+            while rnum - i * gthetas[rnum][cnum][1] >= 0 and rnum - i * gthetas[rnum][cnum][1] < len(gs) and cnum + i * gthetas[rnum][cnum][0] >= 0 and cnum + i * gthetas[rnum][cnum][0] < len(gs[0]) and gthetas[rnum - gthetas[rnum][cnum][1] * i][cnum + gthetas[rnum][cnum][0] * i] == gthetas[rnum][cnum] and gs[rnum - gthetas[rnum][cnum][1] * i][cnum + gthetas[rnum][cnum][0] * i] > T2:
+                newboard[rnum - gthetas[rnum][cnum][1] * i][cnum + gthetas[rnum][cnum][0] * i] = 0.1
                 i = i + 1
 board = newboard
 
-newboard = []
 for rnum in range(len(board)):
-    newboard.append([])
     for cnum in range(len(board[0])):
-        newboard[rnum].append([])
-        newboard[rnum][cnum] = board[rnum][cnum]
-        if board[rnum][cnum]:
-            count = 0
-            for i in range(-1, 2):
-                for j in range(-1, 2):
-                    if i + rnum == -1 or i + rnum == len(board) or j + cnum == -1 or j + cnum == len(board[0]) or board[rnum + i][cnum + j]:
-                        count = count + 1
-            if count > 7 or count < 2:
-                newboard[rnum][cnum] = 0
-board = newboard
+        if gthetas[rnum][cnum] == (0, 1):
+            if rnum > 0 and gs[rnum - 1][cnum] - gs[rnum][cnum] > 0.02:
+                board[rnum][cnum] = 0
+            if rnum < len(board) - 1 and gs[rnum + 1][cnum] - gs[rnum][cnum] > 0.02:
+                board[rnum][cnum] = 0
+        if gthetas[rnum][cnum] == (-1, 1):
+            if rnum > 0 and cnum < len(board[0]) - 1 and gs[rnum - 1][cnum + 1] - gs[rnum][cnum] > 0.02:
+                board[rnum][cnum] = 0
+            if rnum < len(board) - 1 and cnum > 0 and gs[rnum + 1][cnum - 1] - gs[rnum][cnum] > 0.02:
+                board[rnum][cnum] = 0
+        if gthetas[rnum][cnum] == (-1, 0):
+            if cnum > 0 and gs[rnum][cnum - 1] - gs[rnum][cnum] > 0.02:
+                board[rnum][cnum] = 0
+            if cnum < len(board[0]) - 1and gs[rnum][cnum + 1] - gs[rnum][cnum] > 0.02:
+                board[rnum][cnum] = 0
+        if gthetas[rnum][cnum] == (-1, -1):
+            if rnum > 0 and cnum > 0 and gs[rnum - 1][cnum - 1] - gs[rnum][cnum] > 0.02:
+                board[rnum][cnum] = 0
+            if rnum < len(board) - 1 and cnum < len(board[0]) - 1 and gs[rnum + 1][cnum + 1] - gs[rnum][cnum] > 0.02:
+                board[rnum][cnum] = 0
 
 graph = {}
 for rnum in range(len(board)):
@@ -122,6 +130,8 @@ for rnum in range(len(board)):
             if count != 3 or avgx != 0 or avgy != 0:
                 board[rnum][cnum] = 1
                 graph[(rnum, cnum)] = []
+         
+
 
 def isvalid(r, c):
     return r >= 0 and r < len(board) and c >= 0 and c < len(board[0])
@@ -201,7 +211,7 @@ for (r, c) in graph.keys():
             while board[r + i * dr][c + i * dc] != 1:
                 i = i + 1
             graph[(r, c)].append((r + i * dr, c + i * dc))
-            
+
 for (r, c) in graph.keys():
     if len(graph[(r, c)]) == 2:
         path = draw_line(graph[(r, c)][0], graph[(r, c)][1])
@@ -209,7 +219,7 @@ for (r, c) in graph.keys():
         for (row, col) in path:
             if board[row][col] != 0:
                 count = count + 1
-        if count * 1.0 / len(path) > 0.5 or count > 5:
+        if count * 1.0 / len(path) > 0.4:
             other1 = graph[(r, c)][0]
             other2 = graph[(r, c)][1]
             graph[other1][graph[other1].index((r, c))] = other2
@@ -217,7 +227,8 @@ for (r, c) in graph.keys():
             del graph[(r, c)]
             board[r][c] = 0.1
 
-f = open(nameout, "w")
+
+f = open("%s.mesh" % nameout, "w")
 f.write("edges\n")
 for (r, c) in graph.keys():
     x = c
@@ -226,10 +237,10 @@ for (r, c) in graph.keys():
         f.write("%f %f 0 %f %f 0\n" % (x, y, x2, y2))
 f.close()
 
-#f = open(nameout, "w")
-#f.write("P3 %d %d 255\n" % (len(board[0]), len(board)))
-#for row in board:
-#    for cell in row:
-#        val = int(255 * cell)
-#        f.write("%d %d %d  " % (val, val, val))
-#f.close()
+f = open("%s.ppm" % nameout, "w")
+f.write("P3 %d %d 255\n" % (len(board[0]), len(board)))
+for row in board:
+    for cell in row:
+        val = int(255 * cell)
+        f.write("%d %d %d  " % (val, val, val))
+f.close()
